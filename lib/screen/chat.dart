@@ -1,6 +1,8 @@
+import 'package:bobfriend/chatting/chat/new_message.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:bobfriend/chatting/chat/message.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -30,6 +32,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        //방제로 대체
         title: Text('채팅'),
         actions: [
           IconButton(
@@ -44,30 +47,15 @@ class _ChatScreenState extends State<ChatScreen> {
           )
         ],
       ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('chats/SQNTsFof7IyYCB81qYcH/message').snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          final docs = snapshot.data!.docs;
-          return ListView.builder(
-            itemCount: docs.length,
-            itemBuilder: (context, index){
-              return Container(
-                padding: EdgeInsets.all(8),
-                child: Text(
-                  docs[index]['text'],
-                  style: TextStyle(fontSize: 20),
-                ),
-              );
-            },
-          );
-        },
-      ),
+      body: Container(
+        child: Column(
+          children: [
+            Expanded(child: Message()),
+            //SizedBox(height: 150,),
+            NewMessage(),
+          ],
+        ),
+      )
     );
   }
 

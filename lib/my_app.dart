@@ -1,4 +1,5 @@
 import 'package:bobfriend/screen/chat.dart';
+import 'package:bobfriend/screen/chat_list.dart';
 import 'package:bobfriend/screen/home.dart';
 import 'package:bobfriend/screen/login_signup.dart';
 import 'package:flutter/material.dart';
@@ -9,28 +10,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //로그인 되어 있지 않다면 초기 로그인/회원가입 화면 보여줌
-    //로그인 되어 있다면 바로 홈스크린으로
-    bool session = false;
-
-    if (session) {
-      return HomeScreen();
-    } else return MaterialApp(
+      return MaterialApp(
         title: 'BobFriend',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSwatch().copyWith(
-            brightness: Brightness.dark,
-            primary: Colors.black26,
-            secondary: Colors.black12,
+            brightness: Brightness.light,
+            primary: Colors.lightBlueAccent,
+            secondary: Colors.lightBlueAccent,
           ),
           fontFamily: 'BM',
         ),
         home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot){
-            if(snapshot.hasData){
-              return ChatScreen();
+            //session이 유지되어 있으면 홈스크린으로
+            if(snapshot.hasData) {
+              //return ChatScreen();
+              return HomeScreen();
             }
+            //아니면 로그인 스크린으로
             return LoginSignUpScreen();
           },
         ),

@@ -1,4 +1,5 @@
 import 'package:bobfriend/screen/chat.dart';
+import 'package:bobfriend/screen/chat_list.dart';
 import 'package:bobfriend/screen/home.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -54,7 +55,7 @@ class _LoginSignUpScreenState extends State<LoginSignUpScreen> {
                     height: 300,
                     decoration: const BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage('image/amumu.jpeg'),
+                          image: AssetImage('image/sky.jpg'),
                           fit: BoxFit.fill,
                         )),
                     child: Container(
@@ -103,7 +104,7 @@ class _LoginSignUpScreenState extends State<LoginSignUpScreen> {
                             '모여모여 배달비 절감!',
                             style: TextStyle(
                               letterSpacing: 1.0,
-                              color: Colors.white,
+                              color: Colors.black54,
                             ),
                           ),
                         ],
@@ -164,7 +165,7 @@ class _LoginSignUpScreenState extends State<LoginSignUpScreen> {
                                       margin: EdgeInsets.only(top: 3),
                                       height: 2,
                                       width: 55,
-                                      color: Colors.orange,
+                                      color: Colors.lightBlueAccent,
                                     )
                                 ],
                               ),
@@ -191,7 +192,7 @@ class _LoginSignUpScreenState extends State<LoginSignUpScreen> {
                                       margin: EdgeInsets.only(top: 3),
                                       height: 2,
                                       width: 55,
-                                      color: Colors.orange,
+                                      color: Colors.lightBlueAccent,
                                     )
                                 ],
                               ),
@@ -235,7 +236,7 @@ class _LoginSignUpScreenState extends State<LoginSignUpScreen> {
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.orange),
+                                            color: Colors.lightBlueAccent),
                                         borderRadius:
                                         BorderRadius.all(Radius.circular(35.0)),
                                       ),
@@ -286,7 +287,7 @@ class _LoginSignUpScreenState extends State<LoginSignUpScreen> {
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.orange),
+                                            color: Colors.lightBlueAccent),
                                         borderRadius:
                                         BorderRadius.all(Radius.circular(35.0)),
                                       ),
@@ -329,7 +330,7 @@ class _LoginSignUpScreenState extends State<LoginSignUpScreen> {
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.orange),
+                                            color: Colors.lightBlueAccent),
                                         borderRadius:
                                         BorderRadius.all(Radius.circular(35.0)),
                                       ),
@@ -390,7 +391,7 @@ class _LoginSignUpScreenState extends State<LoginSignUpScreen> {
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.orange),
+                                            color: Colors.lightBlueAccent),
                                         borderRadius:
                                         BorderRadius.all(Radius.circular(35.0)),
                                       ),
@@ -434,7 +435,7 @@ class _LoginSignUpScreenState extends State<LoginSignUpScreen> {
                                       ),
                                       focusedBorder: OutlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.orange),
+                                            color: Colors.lightBlueAccent),
                                         borderRadius:
                                         BorderRadius.all(Radius.circular(35.0)),
                                       ),
@@ -496,7 +497,8 @@ class _LoginSignUpScreenState extends State<LoginSignUpScreen> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context){
-                                      return ChatScreen();
+                                      //return ChatScreen();
+                                      return ChatListScreen();
                                     })
                                 );
                                 setState(() {
@@ -543,7 +545,7 @@ class _LoginSignUpScreenState extends State<LoginSignUpScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                                colors: [Colors.orange, Colors.red],
+                                colors: [Colors.lightBlueAccent, Colors.white],
                                 begin: Alignment.topLeft,
                                 end: Alignment.topRight
                             ),

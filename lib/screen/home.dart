@@ -12,16 +12,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'BobFriend',
-      theme: ThemeData(
-          colorScheme: ColorScheme.fromSwatch().copyWith(
-            brightness: Brightness.dark,
-            primary: Colors.black26,
-            secondary: Colors.black12,
-          )
-      ),
-      home: const DefaultTabController(
+    return const DefaultTabController(
         length: 4,
         child: Scaffold(
           body: TabBarView(
@@ -36,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           bottomNavigationBar: BottomBar(),
         ),
-      ),
     );
   }
 }

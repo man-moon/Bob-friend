@@ -6,6 +6,8 @@ class BottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const TabBar(
+        unselectedLabelColor: Colors.lightBlueAccent,
+        labelColor: Colors.blue,
         tabs: [
           Tab(icon: Icon(Icons.wechat_rounded)),
           Tab(icon: Icon(Icons.format_list_bulleted_rounded)),
