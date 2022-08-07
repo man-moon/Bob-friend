@@ -1,3 +1,4 @@
+import 'package:bobfriend/screen/create_room_form.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,7 +21,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
     FirebaseFirestore.instance.collection('room').add({
       'time': Timestamp.now(),
-      'owner': user!.uid,
+      'owner': user.uid,
       'personnel': personnel,
     });
     FirebaseFirestore.instance.collection('room').add({
@@ -80,7 +81,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          //입력폼 띄우고
+          //입력폼
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context){
+                return CreateRoomFormScreen();
+              })
+          );
           //폼 입력을 모두 받은 후, 버튼을 누르면 _createRoom(var personnel, String roomTitle)
         },
         backgroundColor: Colors.lightBlueAccent[150],

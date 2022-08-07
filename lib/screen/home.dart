@@ -1,6 +1,8 @@
+import 'package:bobfriend/screen/MyPage.dart';
 import 'package:bobfriend/screen/chat_list.dart';
 import 'package:bobfriend/widget/bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -10,9 +12,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   @override
   Widget build(BuildContext context) {
-    return const DefaultTabController(
+    return DefaultTabController(
         length: 4,
         child: Scaffold(
           body: TabBarView(
@@ -22,7 +25,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ChatListScreen(),
               Center(child: Text('Community'),),
               Center(child: Text('Friends'),),
-              Center(child: Text('My Page'),),
+              //MyPage
+              Center(
+                child: MyPageScreen()
+              )
             ],
           ),
           bottomNavigationBar: BottomBar(),

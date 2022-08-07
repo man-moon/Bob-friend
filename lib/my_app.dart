@@ -29,6 +29,8 @@ class MyApp extends StatelessWidget {
               return HomeScreen();
             }
             //아니면 로그인 스크린으로
+            print('==test==');
+            print('LoginSignUpScreen');
             return LoginSignUpScreen();
           },
         ),
