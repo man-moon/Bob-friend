@@ -1,6 +1,13 @@
 import 'package:bobfriend/config/palette.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class CreateRoomFormScreen extends StatefulWidget {
   const CreateRoomFormScreen({Key? key}) : super(key: key);
@@ -10,153 +17,220 @@ class CreateRoomFormScreen extends StatefulWidget {
 }
 
 class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
+  bool autoValidate = true;
+  bool readOnly = false;
+  bool showSegmentedControl = true;
+  final _formKey = GlobalKey<FormBuilderState>();
+  bool _roomNameHasError = false;
+  bool _genderHasError = false;
 
-  final _formKey = GlobalKey<FormState>();
-  String roomName = '';
-  Object roomMaxPersonnel = '2';
-  bool showSpinner = false;
+  var genderOptions = ['남자만 있었으면 좋겠어요', '여자만 있었으면 좋겠어요', '혼성도 괜찮아요'];
 
-
-  void _tryValidation() {
-    //모든 textformfield validator 호출
-    final isValid = _formKey.currentState!.validate();
-
-    if (isValid) {
-      //각 textformfield에서 onSaved 메소드 호출
-      _formKey.currentState!.save();
-    }
-  }
+  void _onChanged(dynamic val) => debugPrint(val.toString());
 
   @override
   Widget build(BuildContext context) {
+
+
+
     return Scaffold(
-        appBar: AppBar(
-          //방제로 대체
-          title: Text('채팅방 만들기'),
-        ),
-        body: ModalProgressHUD(
-          inAsyncCall: showSpinner,
-          child: GestureDetector(
-            onTap: (){
-              FocusScope.of(context).unfocus();
-            },
-            child: Container(
-              margin: EdgeInsets.only(top: 15, left: 25, right: 25),
-              child: Form(
+      appBar: AppBar(title: const Text('방 만들기')),
+      body: Padding(
+        padding: const EdgeInsets.all(10),
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              FormBuilder(
                 key: _formKey,
+                // enabled: false,
+                onChanged: () {
+                  _formKey.currentState!.save();
+                  debugPrint(_formKey.currentState!.value.toString());
+                },
+                autovalidateMode: AutovalidateMode.disabled,
+                initialValue: const {
+                  'maxPersonnel': 2,
+                  'roomName': '나랑 밥 먹을 사람~',
+                  'gender': '혼성도 괜찮아요',
+                },
+                skipDisabled: true,
                 child: Column(
                   children: <Widget>[
-                    SizedBox(height: 20,),
-                    TextFormField(
-                      key: ValueKey(1),
-                      validator: (value){
-                        if(value!.isEmpty) {
-                          return '방 제목을 입력해주세요';
-                        }
-                        return null;
-                      },
-                      onChanged: (value){
-                        roomName = value;
-                      },
-                      onSaved: (value){
-                        roomName = value!;
-                      },
-                      style: const TextStyle(color: Colors.black),
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.meeting_room,
-                          color: Palette.iconColor,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Palette.textColor1),
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(12.0)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              color: Colors.lightBlueAccent),
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(12.0)),
-                        ),
-                        hintText: '방 제목',
-                        hintStyle: TextStyle(
-                            fontSize: 14,
-                            color: Palette.textColor1),
-                        contentPadding: EdgeInsets.all(10.0),
+                    const SizedBox(height: 15),
+                    FormBuilderTextField(
+                      autovalidateMode: AutovalidateMode.always,
+                      name: 'roomName',
+                      decoration: InputDecoration(
+                        labelText: '방 제목',
+                        suffixIcon: _roomNameHasError
+                            ? const Icon(Icons.error, color: Colors.red)
+                            : const Icon(Icons.check, color: Colors.green),
                       ),
+                      onChanged: (val) {
+                        setState(() {
+                          _roomNameHasError = !(_formKey.currentState?.fields['roomName']
+                              ?.validate() ??
+                              false);
+                        });
+                      },
+                      // valueTransformer: (text) => num.tryParse(text),
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(),
+                        //FormBuilderValidators.numeric(),
+                        FormBuilderValidators.max(70),
+                      ]),
+                      // initialValue: '12',
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
                     ),
-                    SizedBox(height: 20,),
-                    DropdownButton(
-                      isExpanded: true,
-                        alignment: Alignment.center,
-                        style: TextStyle(color: Palette.textColor1, fontWeight: FontWeight.bold),
-                        focusColor: Colors.lightBlueAccent,
-                        icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                        iconDisabledColor: Palette.textColor1,
-                        iconEnabledColor: Palette.textColor1,
-                        underline: Container(),
-                        value: roomMaxPersonnel,
-                        items: const [
-                          DropdownMenuItem(
-                            value: '2',
-                            child: Text(
-                              '2',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: '3',
-                            child: Text(
-                              '3',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: '4',
-                            child: Text(
-                              '4',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: '5',
-                            child: Text(
-                              '5',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ),
-                          DropdownMenuItem(
-                            value: '6',
-                            child: Text(
-                              '6',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            roomMaxPersonnel = value!;
-                          });
-                        },
+                    FormBuilderDateTimePicker(
+                      name: 'date',
+                      initialEntryMode: DatePickerEntryMode.calendar,
+                      initialValue: DateTime.now(),
+                      inputType: InputType.both,
+                      decoration: InputDecoration(
+                        labelText: '식사 시간대',
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () {
+                            _formKey.currentState!.fields['date']?.didChange(null);
+                          },
+                        ),
                       ),
-                    // Center(
-                    //   // child: GestureDetector(
-                    //   //   onTap: () {
-                    //   //     setState(() {
-                    //   //       showSpinner = true;
-                    //   //     });
-                    //   //   },
-                    //   // ),
-                    //   child: IconButton(
-                    //   ),
-                    // ),
+                      initialTime: TimeOfDay.now(),
+                      //locale: const Locale.fromSubtags(languageCode: 'ko'),
+                      locale: const Locale('ko'),
+                    ),
+
+                    FormBuilderDropdown<String>(
+                      // autovalidate: true,
+                      name: 'gender',
+                      decoration: InputDecoration(
+                        labelText: '입장 가능한 성별',
+                        suffix: _genderHasError ? const Icon(Icons.error) : const Icon(Icons.check),
+                      ),
+                      // initialValue: 'Male',
+                      allowClear: true,
+                      hint: const Text('성별', textAlign: TextAlign.center,),
+                      validator: FormBuilderValidators.compose(
+                          [FormBuilderValidators.required()]),
+                      items: genderOptions
+                          .map((gender) => DropdownMenuItem(
+                        alignment: AlignmentDirectional.centerStart,
+                        value: gender,
+                        child: Text(gender),
+                      ))
+                          .toList(),
+                      onChanged: (val) {
+                        setState(() {
+                          _genderHasError = !(_formKey
+                              .currentState?.fields['gender']
+                              ?.validate() ??
+                              false);
+                        });
+                      },
+                      valueTransformer: (val) => val?.toString(),
+                    ),
+                    FormBuilderSegmentedControl(
+                      decoration: const InputDecoration(
+                        labelText: '방 인원수',
+                      ),
+                      name: 'maxPersonnel',
+                      // initialValue: 1,
+                      // textStyle: TextStyle(fontWeight: FontWeight.bold),
+                      options: List.generate(5, (i) => i + 2)
+                          .map((number) => FormBuilderFieldOption(
+                        value: number,
+                        child: Text(
+                          number.toString(),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ))
+                          .toList(),
+                      onChanged: _onChanged,
+                    ),
+
+                    FormBuilderFilterChip<String>(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: const InputDecoration(
+                          labelText: '뭐 먹을까요?'),
+                      name: 'foodType',
+                      selectedColor: Colors.lightBlueAccent,
+                      options: const [
+                        FormBuilderChipOption(
+                          value: '한식',
+                          avatar: CircleAvatar(backgroundImage: AssetImage('image/korean.jpg')),
+                        ),
+                        FormBuilderChipOption(
+                          value: '양식',
+                          avatar: CircleAvatar(child: Text('K')),
+                        ),
+                        FormBuilderChipOption(
+                          value: '일식',
+                          avatar: CircleAvatar(child: Text('J')),
+                        ),
+                        FormBuilderChipOption(
+                          value: '중식',
+                          avatar: CircleAvatar(child: Text('S')),
+                        ),
+                        FormBuilderChipOption(
+                          value: '패스트푸드',
+                          avatar: CircleAvatar(child: Text('O')),
+                        ),
+                      ],
+                      onChanged: _onChanged,
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.minLength(1, errorText: '한 개 이상의 카테고리를 골라주세요'),
+                        //FormBuilderValidators.maxLength(3),
+                      ]),
+                    ),
                   ],
                 ),
               ),
-            ),
+              SizedBox(height: 7),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState?.saveAndValidate() ?? false) {
+                          debugPrint(_formKey.currentState?.value.toString());
+                          debugPrint(_formKey.currentState!.value['roomName']);
+
+                          FirebaseFirestore.instance
+                              .collection('chats').doc().set({
+                            'roomName': _formKey.currentState!.value['roomName']
+                          });
+
+                        } else {
+                          debugPrint(_formKey.currentState?.value.toString());
+                          debugPrint('validation failed');
+                        }
+                      },
+                      child: const Text(
+                        '방 만들기',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        )
+        ),
+      ),
     );
   }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  // }
+  //
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   initializeDateFormatting('ko_KR');
+  // }
 }

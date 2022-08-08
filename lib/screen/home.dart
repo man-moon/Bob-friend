@@ -3,6 +3,8 @@ import 'package:bobfriend/screen/chat_list.dart';
 import 'package:bobfriend/widget/bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -15,6 +17,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    initializeDateFormatting(Localizations.localeOf(context).languageCode);
+
     return DefaultTabController(
         length: 4,
         child: Scaffold(

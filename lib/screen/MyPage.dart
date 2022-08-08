@@ -1,3 +1,4 @@
+import 'package:bobfriend/config/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -14,15 +15,25 @@ class _MyPageScreenState extends State<MyPageScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: IconButton(
-          onPressed: (){
-            _authentication.signOut();
-            //Navigator.pop(context);
-          },
-          icon: Icon(
-            Icons.exit_to_app_rounded,
-            color: Colors.black26,
-          )
+      margin: EdgeInsets.only(bottom: 10),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              '로그아웃',
+              style: TextStyle(color: Palette.textColor1),
+            ),
+            IconButton(
+                onPressed: () {
+                  _authentication.signOut();
+                  //Navigator.pop(context);
+                },
+                icon: Icon(
+                  Icons.logout_rounded,
+                  color: Palette.textColor1,
+                )
+            ),
+          ]
       ),
     );
   }
