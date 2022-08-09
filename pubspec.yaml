@@ -71,6 +71,10 @@ flutter:
     - image/amumu.jpeg
     - image/sky.jpg
     - image/korean.jpg
+    - image/steak.png
+    - image/sushi.png
+    - image/jaja.png
+    - image/burger.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

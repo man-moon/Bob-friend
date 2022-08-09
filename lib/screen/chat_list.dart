@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 //지역 변경시에 다시 로드되어야하므로 stateful
 class ChatListScreen extends StatefulWidget {
@@ -14,25 +15,30 @@ class ChatListScreen extends StatefulWidget {
 
 class _ChatListScreenState extends State<ChatListScreen> {
   Object _value = '1';
+  var _chatList = [];
+  bool showSpinner = true;
 
-  void _createRoom(String personnel, String roomTitle) async {
-    final user = FirebaseAuth.instance.currentUser;
-    final userData = await FirebaseFirestore.instance.collection('user').doc(user!.uid).get();
-
-    FirebaseFirestore.instance.collection('room').add({
-      'time': Timestamp.now(),
-      'owner': user.uid,
-      'personnel': personnel,
+  void loadChatList() async{
+    _chatList = [];
+    var result = await FirebaseFirestore.instance.collection('chats').get().then((QuerySnapshot querySnapshot) =>{
+      querySnapshot.docs.forEach((doc) {
+        _chatList.add(doc.data());
+      })
     });
-    FirebaseFirestore.instance.collection('room').add({
-      'time': Timestamp.now(),
-      'userId': user.uid,
-      'userNickname': userData.data()!['userNickname'],
+    setState(() {
+      _chatList = _chatList;
     });
   }
 
   @override
+  void initState() {
+    super.initState();
+    loadChatList();
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -62,22 +68,27 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 onChanged: (value) {
                   setState(() {
                     _value = value!;
+                    debugPrint(_chatList.toString());
                   });
+                  loadChatList();
                 })
           ],
         ),
       ),
-        body: Container(
-        child: Column(
-          children: [
-            if(_value == '1')
-              //firebase 구조 (ajou, inha(collection) -> 방제(doc) -> 채팅기록(collection) -> 채팅메시지, 로그(field)
-              Expanded(child: Text('ajou')),
-            if(_value == '2')
-              Expanded(child: Text('inha')),
-          ],
-        ),
+        body: ModalProgressHUD(
+          inAsyncCall: showSpinner,
+          child: Container(
+          child: Column(
+            children: [
+              Center(
+                child: Center(
+                  child: Text(_chatList.toString()),
+                )
+              )
+            ],
+          ),
       ),
+        ),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -85,7 +96,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           Navigator.push(
               context,
               MaterialPageRoute(builder: (context){
-                return CreateRoomFormScreen();
+                return CreateRoomFormScreen(univ: _value.toString(),);
               })
           );
           //폼 입력을 모두 받은 후, 버튼을 누르면 _createRoom(var personnel, String roomTitle)

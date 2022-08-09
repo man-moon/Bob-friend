@@ -1,4 +1,5 @@
 import 'package:bobfriend/config/palette.dart';
+import 'package:bobfriend/screen/chat.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -10,7 +11,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class CreateRoomFormScreen extends StatefulWidget {
-  const CreateRoomFormScreen({Key? key}) : super(key: key);
+  const CreateRoomFormScreen({required this.univ, Key? key}) : super(key: key);
+  final String univ;
 
   @override
   State<CreateRoomFormScreen> createState() => _CreateRoomFormScreenState();
@@ -30,8 +32,6 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-
 
     return Scaffold(
       appBar: AppBar(title: const Text('방 만들기')),
@@ -164,19 +164,19 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                         ),
                         FormBuilderChipOption(
                           value: '양식',
-                          avatar: CircleAvatar(child: Text('K')),
+                          avatar: CircleAvatar(backgroundImage: AssetImage('image/steak.png')),
                         ),
                         FormBuilderChipOption(
                           value: '일식',
-                          avatar: CircleAvatar(child: Text('J')),
+                          avatar: CircleAvatar(backgroundImage: AssetImage('image/sushi.png')),
                         ),
                         FormBuilderChipOption(
                           value: '중식',
-                          avatar: CircleAvatar(child: Text('S')),
+                          avatar: CircleAvatar(backgroundImage: AssetImage('image/jaja.png')),
                         ),
                         FormBuilderChipOption(
                           value: '패스트푸드',
-                          avatar: CircleAvatar(child: Text('O')),
+                          avatar: CircleAvatar(backgroundImage: AssetImage('image/burger.png')),
                         ),
                       ],
                       onChanged: _onChanged,
@@ -200,8 +200,21 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
 
                           FirebaseFirestore.instance
                               .collection('chats').doc().set({
-                            'roomName': _formKey.currentState!.value['roomName']
+                            'roomName': _formKey.currentState!.value['roomName'],
+                            'maxPersonnel': _formKey.currentState!.value['maxPersonnel'],
+                            'date': _formKey.currentState!.value['date'],
+                            'gender': _formKey.currentState!.value['gender'],
+                            'foodType': _formKey.currentState!.value['foodType'],
+                            'univ': widget.univ,
                           });
+
+                          Navigator.pop(context);
+                          Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                              return ChatScreen();
+                            })
+                          );
+
 
                         } else {
                           debugPrint(_formKey.currentState?.value.toString());
