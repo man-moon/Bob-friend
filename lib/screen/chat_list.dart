@@ -26,6 +26,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       })
     });
     setState(() {
+      showSpinner = false;
       _chatList = _chatList;
     });
   }
@@ -66,11 +67,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
                   ),
                 ],
                 onChanged: (value) {
+                  showSpinner = true;
                   setState(() {
                     _value = value!;
                     debugPrint(_chatList.toString());
                   });
                   loadChatList();
+                  //showSpinner = false;
                 })
           ],
         ),
