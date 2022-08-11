@@ -193,13 +193,16 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                 children: <Widget>[
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState?.saveAndValidate() ?? false) {
                           debugPrint(_formKey.currentState?.value.toString());
                           debugPrint(_formKey.currentState!.value['roomName']);
 
-                          FirebaseFirestore.instance
-                              .collection('chats').doc().set({
+                          final ref = FirebaseFirestore.instance
+                              .collection("chats")
+                              .doc();
+
+                          await ref.set({
                             'roomName': _formKey.currentState!.value['roomName'],
                             'maxPersonnel': _formKey.currentState!.value['maxPersonnel'],
                             'date': _formKey.currentState!.value['date'],
@@ -208,10 +211,34 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                             'univ': widget.univ,
                           });
 
+                          await ref.collection("chat").doc("WelcomeMessage").set({
+                            'text': '채팅방을 생성하였습니다! 새로운 친구가 오면 알려드릴게요!',
+                            'time': Timestamp.now(),
+                            'userId': 'admin',
+                            'userNickname': '귀요미',
+                          });
+
+
+                          // await FirebaseFirestore.instance
+                          //     .collection('chats').doc().set({
+                          //   'roomName': _formKey.currentState!.value['roomName'],
+                          //   'maxPersonnel': _formKey.currentState!.value['maxPersonnel'],
+                          //   'date': _formKey.currentState!.value['date'],
+                          //   'gender': _formKey.currentState!.value['gender'],
+                          //   'foodType': _formKey.currentState!.value['foodType'],
+                          //   'univ': widget.univ,
+                          // });
+                          //
+                          // await FirebaseFirestore.instance.collection('chats').doc().collection('chat').doc().set({
+                          //   'text': 'hello'
+                          // });
+
                           Navigator.pop(context);
                           Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                              return ChatScreen();
+
+                              //deliver doc ref
+                              return ChatScreen(ref);
                             })
                           );
 

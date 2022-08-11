@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class NewMessage extends StatefulWidget {
-  const NewMessage({Key? key}) : super(key: key);
+  const NewMessage(this.ref, {Key? key}) : super(key: key);
 
+  final dynamic ref;
   @override
   State<NewMessage> createState() => _NewMessageState();
 }
@@ -17,7 +18,8 @@ class _NewMessageState extends State<NewMessage> {
   void _sendMessage() async {
     final user = FirebaseAuth.instance.currentUser;
     final userData = await FirebaseFirestore.instance.collection('user').doc(user!.uid).get();
-    FirebaseFirestore.instance.collection('chat').add({
+
+    (widget.ref).collection('chat').add({
       'text': _userEnterMessage,
       'time': Timestamp.now(),
       'userId': user.uid,

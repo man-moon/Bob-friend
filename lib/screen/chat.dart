@@ -5,7 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bobfriend/chatting/chat/message.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({Key? key}) : super(key: key);
+  const ChatScreen(this.ref, {Key? key}) : super(key: key);
+
+  final dynamic ref;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -50,9 +52,9 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Container(
         child: Column(
           children: [
-            Expanded(child: Message()),
+            Expanded(child: Message(widget.ref)),
             //SizedBox(height: 150,),
-            NewMessage(),
+            NewMessage(widget.ref),
           ],
         ),
       )
