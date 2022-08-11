@@ -199,7 +199,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                           debugPrint(_formKey.currentState!.value['roomName']);
 
                           final ref = FirebaseFirestore.instance
-                              .collection("chats")
+                              .collection('chats')
                               .doc();
 
                           await ref.set({

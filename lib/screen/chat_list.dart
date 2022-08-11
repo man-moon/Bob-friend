@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:bobfriend/screen/chat.dart';
 
 //지역 변경시에 다시 로드되어야하므로 stateful
 class ChatListScreen extends StatefulWidget {
@@ -16,20 +17,30 @@ class ChatListScreen extends StatefulWidget {
 class _ChatListScreenState extends State<ChatListScreen> {
   Object _value = '1';
   var _chatList = [];
+  //var _chatListCount = 0;
   bool showSpinner = true;
 
   void loadChatList() async{
     _chatList = [];
-    var result = await FirebaseFirestore.instance.collection('chats').get().then((QuerySnapshot querySnapshot) =>{
+
+    final tmpRef = FirebaseFirestore.instance.collection('chats').get();
+    await tmpRef.then((QuerySnapshot querySnapshot) =>{
       querySnapshot.docs.forEach((doc) {
-        _chatList.add(doc.data());
+        _chatList.add([doc.data(), doc.id]);
       })
     });
+
+    // await tmpRef.then((snapshot) {
+    //   _chatListCount = snapshot.docs.length;
+    // });
+
     setState(() {
       showSpinner = false;
       _chatList = _chatList;
     });
   }
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -78,20 +89,61 @@ class _ChatListScreenState extends State<ChatListScreen> {
           ],
         ),
       ),
-        body: ModalProgressHUD(
-          inAsyncCall: showSpinner,
-          child: Container(
-          child: Column(
-            children: [
-              Center(
-                child: Center(
-                  child: Text(_chatList.toString()),
-                )
-              )
-            ],
-          ),
-      ),
+      //   body: ModalProgressHUD(
+      //     inAsyncCall: showSpinner,
+      //     child: Container(
+      //     child: Column(
+      //       children: [
+      //         Container(
+      //           child: ScrollView(
+      //
+      //           ),
+      //         )
+      //       ],
+      //     ),
+      // ),
+      //   ),
+      body: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        color: Colors.white,
+        backgroundColor: Colors.blue,
+        strokeWidth: 4.0,
+        onRefresh: () async {
+          // Replace this delay with the code to be executed during refresh
+          // and return a Future when code finishs execution.
+          loadChatList();
+          //debugPrint(_chatList.toString());
+
+          return Future<void>.delayed(const Duration(seconds: 1));
+        },
+        // Pull from top to show refresh indicator.
+        child: ListView.builder(
+          itemCount: _chatList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+              onTap: () {
+                final ref = FirebaseFirestore.instance
+                    .collection('chats').doc(_chatList[index][1].toString());
+
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) {
+                      //deliver doc ref
+                      return ChatScreen(ref);
+                    })
+                );
+              },
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(_chatList[index][0]['roomName']),
+                    Text(_chatList[index][0]['maxPersonnel'].toString())
+                  ]),
+            );
+          },
         ),
+      ),
+
+
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
