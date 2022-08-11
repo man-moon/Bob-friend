@@ -61,6 +61,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                       autovalidateMode: AutovalidateMode.always,
                       name: 'roomName',
                       decoration: InputDecoration(
+                        hintText: '나랑 밥 먹을 사람~',
                         labelText: '방 제목',
                         suffixIcon: _roomNameHasError
                             ? const Icon(Icons.error, color: Colors.red)
@@ -77,7 +78,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.required(),
                         //FormBuilderValidators.numeric(),
-                        FormBuilderValidators.max(70),
+                        FormBuilderValidators.maxLength(16, errorText: '제목 수는 16글자까지 작성 가능해요'),
                       ]),
                       // initialValue: '12',
                       keyboardType: TextInputType.text,
@@ -209,6 +210,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                             'gender': _formKey.currentState!.value['gender'],
                             'foodType': _formKey.currentState!.value['foodType'],
                             'univ': widget.univ,
+                            'nowPersonnel': 1,
                           });
 
                           await ref.collection("chat").doc("WelcomeMessage").set({
@@ -236,7 +238,6 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                           Navigator.pop(context);
                           Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-
                               //deliver doc ref
                               return ChatScreen(ref);
                             })
