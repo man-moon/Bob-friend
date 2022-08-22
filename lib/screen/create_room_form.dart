@@ -5,9 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 
 class CreateRoomFormScreen extends StatefulWidget {
@@ -189,7 +188,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: 7),
+              const SizedBox(height: 7),
               Row(
                 children: <Widget>[
                   Expanded(
@@ -203,6 +202,8 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                               .collection('chats')
                               .doc();
 
+                          final user = FirebaseAuth.instance.currentUser;
+
                           await ref.set({
                             'roomName': _formKey.currentState!.value['roomName'],
                             'maxPersonnel': _formKey.currentState!.value['maxPersonnel'],
@@ -211,6 +212,8 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                             'foodType': _formKey.currentState!.value['foodType'],
                             'univ': widget.univ,
                             'nowPersonnel': 1,
+                            'users': [user!.uid],
+                            'owner': user.uid,
                           });
 
                           await ref.collection("chat").doc("WelcomeMessage").set({
@@ -219,21 +222,6 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                             'userId': 'admin',
                             'userNickname': '귀요미',
                           });
-
-
-                          // await FirebaseFirestore.instance
-                          //     .collection('chats').doc().set({
-                          //   'roomName': _formKey.currentState!.value['roomName'],
-                          //   'maxPersonnel': _formKey.currentState!.value['maxPersonnel'],
-                          //   'date': _formKey.currentState!.value['date'],
-                          //   'gender': _formKey.currentState!.value['gender'],
-                          //   'foodType': _formKey.currentState!.value['foodType'],
-                          //   'univ': widget.univ,
-                          // });
-                          //
-                          // await FirebaseFirestore.instance.collection('chats').doc().collection('chat').doc().set({
-                          //   'text': 'hello'
-                          // });
 
                           Navigator.pop(context);
                           Navigator.push(context,

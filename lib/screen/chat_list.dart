@@ -19,7 +19,6 @@ class ChatListScreen extends StatefulWidget {
 class _ChatListScreenState extends State<ChatListScreen> {
   Object _value = '1';
   var _chatList = [];
-  //var _chatListCount = 0;
   bool showSpinner = true;
 
   void loadChatList() async{
@@ -100,20 +99,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           ],
         ),
       ),
-      //   body: ModalProgressHUD(
-      //     inAsyncCall: showSpinner,
-      //     child: Container(
-      //     child: Column(
-      //       children: [
-      //         Container(
-      //           child: ScrollView(
-      //
-      //           ),
-      //         )
-      //       ],
-      //     ),
-      // ),
-      //   ),
+
       body: RefreshIndicator(
         key: _refreshIndicatorKey,
         color: Colors.white,
@@ -123,7 +109,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
           // Replace this delay with the code to be executed during refresh
           // and return a Future when code finishs execution.
           loadChatList();
-          //debugPrint(_chatList.toString());
 
           return Future<void>.delayed(const Duration(seconds: 1));
         },
@@ -136,25 +121,43 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 final ref = FirebaseFirestore.instance
                     .collection('chats').doc(_chatList[index][1].toString());
 
+                final user = FirebaseAuth.instance.currentUser;
+
                 int max = 0;
                 int now = 0;
+                List<dynamic> users = [];
 
                 await ref.get().then((DocumentSnapshot ds){
                   max = ds.get('maxPersonnel');
                   now = ds.get('nowPersonnel');
+                  users = ds.get('users');
                 });
-                if(max <= now){
-                  //snack bar
+
+
+                if(users.contains(user!.uid)){
+                  if(!mounted) return;
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return ChatScreen(ref);
+                  })).then((value) {
+                    loadChatList();
+                  });
+                }
+
+                else if(max <= now){
+                  if(!mounted) return;
                   showTopSnackBar(
                     context,
-                    CustomSnackBar.error(message: '방이 가득찼어요'),
-                    animationDuration: Duration(milliseconds: 1200),
-                    displayDuration: Duration(milliseconds: 0),
-                    reverseAnimationDuration: Duration(milliseconds: 800),
+                    const CustomSnackBar.error(message: '방이 가득찼어요'),
+                    animationDuration: const Duration(milliseconds: 1200),
+                    displayDuration: const Duration(milliseconds: 0),
+                    reverseAnimationDuration: const Duration(milliseconds: 800),
                   );
                 }
                 else{
-                  ref.update({'nowPersonnel': now + 1});
+                  users.add(user.uid);
+                  await ref.update({'nowPersonnel': now + 1});
+                  await ref.update({'users': users});
+                  if(!mounted) return;
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return ChatScreen(ref);
                   })).then((value) {
