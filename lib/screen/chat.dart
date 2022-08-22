@@ -20,6 +20,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String roomName = '';
   late int now;
   List<dynamic> users = [];
+  List<dynamic> usersNickname = [];
 
   void getCurrentUser() {
     try {
@@ -41,8 +42,17 @@ class _ChatScreenState extends State<ChatScreen> {
         users = ds.get('users');
       });
     });
-    //debugPrint(roomName);
+
+    for (var e in users) {
+      var userData = await FirebaseFirestore.instance.collection('user').doc(e.toString()).get();
+      usersNickname.add(userData.data()!['userNickname']);
+    }
+    setState(() {
+      usersNickname = usersNickname;
+    });
+    //debugPrint(usersNickname.toString());
   }
+
   void showPopup() {
     showDialog(
         context: context,
@@ -70,10 +80,9 @@ class _ChatScreenState extends State<ChatScreen> {
               ],
             ),
             actions: <Widget>[
-
               TextButton(
                 child: Text('취소'),
-                onPressed: (){
+                onPressed: () {
                   Navigator.pop(context);
                 },
               ),
@@ -113,79 +122,58 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         drawer: Drawer(
           backgroundColor: Colors.white,
-          child: Column(children: [
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: <Widget>[
-                  DrawerHeader(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.lightBlueAccent,
-                            Colors.white,
-                          ]),
-                      color: Colors.blue,
-                    ),
-                    child: Text(
-                      '$roomName',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    DrawerHeader(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.lightBlueAccent,
+                              Colors.white,
+                            ]),
+                        color: Colors.blue,
+                      ),
+                      child: Text(
+                        '$roomName',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                        ),
                       ),
                     ),
-                  ),
-
-                  //방 인원
-                  ListTile(
-                    leading: Icon(Icons.account_circle),
-                    title: Text(''),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.account_circle),
-                    title: Text('Profile'),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.account_circle),
-                    title: Text('Settings'),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.account_circle),
-                    title: Text('Settings'),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.account_circle),
-                    title: Text('Settings'),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.settings),
-                    title: Text('Settings'),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              color: Palette.textColor1,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Text('방 나가기'),
-                  IconButton(
-                      onPressed: (){
-                        showPopup();
-                      },
-                      icon: Icon(
-                        Icons.exit_to_app_rounded,
-                        color: Colors.white,
+                    for (int i = 0; i < usersNickname.length; i++)
+                      ListTile(
+                        leading: Icon(Icons.account_circle),
+                        title: Text(usersNickname[i]),
                       )
-                  )
-                ],
+                  ],
+                ),
               ),
-            )
-          ],
+              Container(
+                color: Palette.textColor1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Text('방 나가기'),
+                    IconButton(
+                        onPressed: () {
+                          showPopup();
+                        },
+                        icon: Icon(
+                          Icons.exit_to_app_rounded,
+                          color: Colors.white,
+                        ))
+                  ],
+                ),
+              )
+            ],
           ),
         ),
         body: Container(
