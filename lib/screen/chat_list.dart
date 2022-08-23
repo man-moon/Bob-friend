@@ -49,6 +49,106 @@ class _ChatListScreenState extends State<ChatListScreen> {
       _chatList = _chatList;
     });
   }
+
+  void showPopup() {
+    showDialog(
+        context: context,
+        //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            actionsAlignment: MainAxisAlignment.end,
+            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            //Dialog Main Title
+            title: Column(
+              children: <Widget>[
+                Text('채팅방 설정'),
+              ],
+            ),
+            actions: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      child: Text('취소'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TextButton(
+                      child: Text('나가기'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        }
+      );
+  }
+  // void showOutPopup() {
+  //   showDialog(
+  //       context: context,
+  //       //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
+  //       barrierDismissible: false,
+  //       builder: (BuildContext context) {
+  //         return AlertDialog(
+  //           // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+  //           shape: RoundedRectangleBorder(
+  //               borderRadius: BorderRadius.circular(10.0)),
+  //           //Dialog Main Title
+  //           title: Column(
+  //             children: <Widget>[
+  //               Text('알림'),
+  //             ],
+  //           ),
+  //           //
+  //           content: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: <Widget>[
+  //               Text(
+  //                 '정말로 나가시겠습니까?',
+  //               ),
+  //             ],
+  //           ),
+  //           actions: <Widget>[
+  //             TextButton(
+  //               child: Text('취소'),
+  //               onPressed: () {
+  //                 Navigator.pop(context);
+  //               },
+  //             ),
+  //             TextButton(
+  //               child: Text('나가기'),
+  //               onPressed: () {
+  //                 users.remove(loggedUser!.uid);
+  //                 widget.ref.update({'nowPersonnel': now - 1});
+  //                 widget.ref.update({'users': users});
+  //
+  //                 Navigator.pop(context);
+  //                 Navigator.pop(context);
+  //                 Navigator.pop(context);
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       });
+  // }
+
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
   GlobalKey<RefreshIndicatorState>();
 
@@ -117,6 +217,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
           itemCount: _chatList.length,
           itemBuilder: (BuildContext context, int index) {
             return ListTile(
+              onLongPress: () {
+                showPopup();
+              },
               onTap: () async {
                 final ref = FirebaseFirestore.instance
                     .collection('chats').doc(_chatList[index][1].toString());

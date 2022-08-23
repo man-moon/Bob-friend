@@ -21,13 +21,14 @@ class _ChatScreenState extends State<ChatScreen> {
   late int now;
   List<dynamic> users = [];
   List<dynamic> usersNickname = [];
+  late String owner;
+  late final bool isOwner;
 
   void getCurrentUser() {
     try {
       final user = _authentication.currentUser;
       if (user != null) {
         loggedUser = user;
-        print(loggedUser!.email);
       }
     } catch (e) {
       print(e);
@@ -40,6 +41,7 @@ class _ChatScreenState extends State<ChatScreen> {
         roomName = ds.get('roomName');
         now = ds.get('nowPersonnel');
         users = ds.get('users');
+        owner = ds.get('owner');
       });
     });
 
@@ -49,11 +51,16 @@ class _ChatScreenState extends State<ChatScreen> {
     }
     setState(() {
       usersNickname = usersNickname;
+      if(owner.compareTo(loggedUser!.uid) == 0){
+        isOwner = true;
+      }
+      else{
+        isOwner = false;
+      }
     });
-    //debugPrint(usersNickname.toString());
   }
 
-  void showPopup() {
+  void showOutPopup() {
     showDialog(
         context: context,
         //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
@@ -102,25 +109,73 @@ class _ChatScreenState extends State<ChatScreen> {
           );
         });
   }
+  void showOwnerOutPopup() {
+    showDialog(
+        context: context,
+        //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            //Dialog Main Title
+            title: Column(
+              children: <Widget>[
+                Text('알림'),
+              ],
+            ),
+            //
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  '방장은 퇴장할 수 없습니다. 방을 삭제하시겠습니까?',
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('취소'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                child: Text('삭제'),
+                onPressed: () {
+                  users.remove(loggedUser!.uid);
+                  widget.ref.update({'nowPersonnel': now - 1});
+                  widget.ref.update({'users': users});
+
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          //방제로 대체
-          title: Text('채팅'),
-          actions: [
+          title: Text(roomName),
+          leading:
             IconButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
                 icon: Icon(
-                  Icons.exit_to_app_rounded,
-                  color: Colors.black26,
+                  Icons.arrow_back_rounded,
+                  color: Colors.white,
                 ))
-          ],
         ),
-        drawer: Drawer(
+        endDrawer: Drawer(
           backgroundColor: Colors.white,
           child: Column(
             children: [
@@ -158,18 +213,45 @@ class _ChatScreenState extends State<ChatScreen> {
               Container(
                 color: Palette.textColor1,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('방 나가기'),
-                    IconButton(
-                        onPressed: () {
-                          showPopup();
-                        },
-                        icon: Icon(
-                          Icons.exit_to_app_rounded,
-                          color: Colors.white,
-                        ))
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              showOutPopup();
+                            },
+                            icon: Icon(
+                              Icons.settings,
+                              color: Colors.white,
+                            )
+                        )
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        //Text('방 나가기'),
+                        IconButton(
+                          onPressed: () {
+                            if(!isOwner) {
+                              showOutPopup();
+                            }
+
+                            if(isOwner) {
+                              showOwnerOutPopup();
+                            }
+                          },
+                          icon: Icon(
+                            Icons.exit_to_app_rounded,
+                            color: Colors.white,
+                          )
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               )
@@ -193,5 +275,6 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     getCurrentUser();
     getRoomInfo();
+
   }
 }
