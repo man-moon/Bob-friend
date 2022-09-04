@@ -99,55 +99,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
         }
       );
   }
-  // void showOutPopup() {
-  //   showDialog(
-  //       context: context,
-  //       //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
-  //       barrierDismissible: false,
-  //       builder: (BuildContext context) {
-  //         return AlertDialog(
-  //           // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
-  //           shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.circular(10.0)),
-  //           //Dialog Main Title
-  //           title: Column(
-  //             children: <Widget>[
-  //               Text('알림'),
-  //             ],
-  //           ),
-  //           //
-  //           content: Column(
-  //             mainAxisSize: MainAxisSize.min,
-  //             crossAxisAlignment: CrossAxisAlignment.start,
-  //             children: <Widget>[
-  //               Text(
-  //                 '정말로 나가시겠습니까?',
-  //               ),
-  //             ],
-  //           ),
-  //           actions: <Widget>[
-  //             TextButton(
-  //               child: Text('취소'),
-  //               onPressed: () {
-  //                 Navigator.pop(context);
-  //               },
-  //             ),
-  //             TextButton(
-  //               child: Text('나가기'),
-  //               onPressed: () {
-  //                 users.remove(loggedUser!.uid);
-  //                 widget.ref.update({'nowPersonnel': now - 1});
-  //                 widget.ref.update({'users': users});
-  //
-  //                 Navigator.pop(context);
-  //                 Navigator.pop(context);
-  //                 Navigator.pop(context);
-  //               },
-  //             ),
-  //           ],
-  //         );
-  //       });
-  // }
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
   GlobalKey<RefreshIndicatorState>();
@@ -200,84 +151,85 @@ class _ChatListScreenState extends State<ChatListScreen> {
         ),
       ),
 
-      body: RefreshIndicator(
-        key: _refreshIndicatorKey,
-        color: Colors.white,
-        backgroundColor: Colors.blue,
-        strokeWidth: 4.0,
-        onRefresh: () async {
-          // Replace this delay with the code to be executed during refresh
-          // and return a Future when code finishs execution.
-          loadChatList();
+      body:
+          RefreshIndicator(
+          key: _refreshIndicatorKey,
+          color: Colors.white,
+          backgroundColor: Colors.blue,
+          strokeWidth: 4.0,
+          onRefresh: () async {
+            // Replace this delay with the code to be executed during refresh
+            // and return a Future when code finishs execution.
+            loadChatList();
 
-          return Future<void>.delayed(const Duration(seconds: 1));
-        },
-        // Pull from top to show refresh indicator.
-        child: ListView.builder(
-          itemCount: _chatList.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              onLongPress: () {
-                showPopup();
-              },
-              onTap: () async {
-                final ref = FirebaseFirestore.instance
-                    .collection('chats').doc(_chatList[index][1].toString());
-
-                final user = FirebaseAuth.instance.currentUser;
-
-                int max = 0;
-                int now = 0;
-                List<dynamic> users = [];
-
-                await ref.get().then((DocumentSnapshot ds){
-                  max = ds.get('maxPersonnel');
-                  now = ds.get('nowPersonnel');
-                  users = ds.get('users');
-                });
-
-
-                if(users.contains(user!.uid)){
-                  if(!mounted) return;
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ChatScreen(ref);
-                  })).then((value) {
-                    loadChatList();
-                  });
-                }
-
-                else if(max <= now){
-                  if(!mounted) return;
-                  showTopSnackBar(
-                    context,
-                    const CustomSnackBar.error(message: '방이 가득찼어요'),
-                    animationDuration: const Duration(milliseconds: 1200),
-                    displayDuration: const Duration(milliseconds: 0),
-                    reverseAnimationDuration: const Duration(milliseconds: 800),
-                  );
-                }
-                else{
-                  users.add(user.uid);
-                  await ref.update({'nowPersonnel': now + 1});
-                  await ref.update({'users': users});
-                  if(!mounted) return;
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ChatScreen(ref);
-                  })).then((value) {
-                    loadChatList();
-                  });
-                }
-              },
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(_chatList[index][0]['roomName']),
-                    Text('${_chatList[index][0]['nowPersonnel']}/${_chatList[index][0]['maxPersonnel']}')
-                  ]),
-            );
+            return Future<void>.delayed(const Duration(seconds: 1));
           },
+          // Pull from top to show refresh indicator.
+          child: ListView.builder(
+            itemCount: _chatList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                onLongPress: () {
+                  showPopup();
+                },
+                onTap: () async {
+                  final ref = FirebaseFirestore.instance
+                      .collection('chats').doc(_chatList[index][1].toString());
+
+                  final user = FirebaseAuth.instance.currentUser;
+
+                  int max = 0;
+                  int now = 0;
+                  List<dynamic> users = [];
+
+                  await ref.get().then((DocumentSnapshot ds){
+                    max = ds.get('maxPersonnel');
+                    now = ds.get('nowPersonnel');
+                    users = ds.get('users');
+                  });
+
+
+                  if(users.contains(user!.uid)){
+                    if(!mounted) return;
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return ChatScreen(ref);
+                    })).then((value) {
+                      loadChatList();
+                    });
+                  }
+
+                  else if(max <= now){
+                    if(!mounted) return;
+                    showTopSnackBar(
+                      context,
+                      const CustomSnackBar.error(message: '방이 가득찼어요'),
+                      animationDuration: const Duration(milliseconds: 1200),
+                      displayDuration: const Duration(milliseconds: 0),
+                      reverseAnimationDuration: const Duration(milliseconds: 800),
+                    );
+                  }
+                  else{
+                    users.add(user.uid);
+                    await ref.update({'nowPersonnel': now + 1});
+                    await ref.update({'users': users});
+                    if(!mounted) return;
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return ChatScreen(ref);
+                    })).then((value) {
+                      loadChatList();
+                    });
+                  }
+                },
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(_chatList[index][0]['roomName']),
+                      Text('${_chatList[index][0]['nowPersonnel']}/${_chatList[index][0]['maxPersonnel']}')
+                    ]),
+              );
+            },
+          ),
         ),
-      ),
 
 
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,

@@ -1,5 +1,6 @@
 import 'package:bobfriend/chatting/chat/new_message.dart';
 import 'package:bobfriend/config/palette.dart';
+import 'package:bobfriend/screen/login_signup.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,25 +16,12 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final _authentication = FirebaseAuth.instance;
-  User? loggedUser;
   String roomName = '';
   late int now;
   List<dynamic> users = [];
   List<dynamic> usersNickname = [];
   late String owner;
   late final bool isOwner;
-
-  void getCurrentUser() {
-    try {
-      final user = _authentication.currentUser;
-      if (user != null) {
-        loggedUser = user;
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
 
   Future<void> getRoomInfo() async {
     await widget.ref.get().then((DocumentSnapshot ds) {
@@ -47,11 +35,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
     for (var e in users) {
       var userData = await FirebaseFirestore.instance.collection('user').doc(e.toString()).get();
-      usersNickname.add(userData.data()!['userNickname']);
+      usersNickname.add(userData.data()!['nickname']);
     }
     setState(() {
       usersNickname = usersNickname;
-      if(owner.compareTo(loggedUser!.uid) == 0){
+      if(owner.compareTo(currentUser!.user!.uid) == 0){
         isOwner = true;
       }
       else{
@@ -96,7 +84,7 @@ class _ChatScreenState extends State<ChatScreen> {
               TextButton(
                 child: Text('나가기'),
                 onPressed: () {
-                  users.remove(loggedUser!.uid);
+                  users.remove(currentUser!.user!.uid);
                   widget.ref.update({'nowPersonnel': now - 1});
                   widget.ref.update({'users': users});
 
@@ -145,9 +133,7 @@ class _ChatScreenState extends State<ChatScreen> {
               TextButton(
                 child: Text('삭제'),
                 onPressed: () {
-                  users.remove(loggedUser!.uid);
-                  widget.ref.update({'nowPersonnel': now - 1});
-                  widget.ref.update({'users': users});
+                  widget.ref.delete();
 
                   Navigator.pop(context);
                   Navigator.pop(context);
@@ -159,6 +145,57 @@ class _ChatScreenState extends State<ChatScreen> {
         });
   }
 
+  void showDeletePopup(){
+    showDialog(
+        context: context,
+        //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            //Dialog Main Title
+            title: Column(
+              children: <Widget>[
+                Text('알림'),
+              ],
+            ),
+            //
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  '방을 삭제하시겠습니까?',
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('취소'),
+                onPressed: () {
+
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                child: Text('삭제'),
+                onPressed: () {
+                  users.remove(currentUser!.user!.uid);
+                  widget.ref.update({'nowPersonnel': now - 1});
+                  widget.ref.update({'users': users});
+
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+
+                },
+              ),
+            ],
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -221,7 +258,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       children: [
                         IconButton(
                             onPressed: () {
-                              showOutPopup();
                             },
                             icon: Icon(
                               Icons.settings,
@@ -273,8 +309,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getCurrentUser();
     getRoomInfo();
-
   }
 }
+

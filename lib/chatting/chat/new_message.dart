@@ -1,3 +1,4 @@
+import 'package:bobfriend/screen/login_signup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,14 +17,13 @@ class _NewMessageState extends State<NewMessage> {
   var _userEnterMessage = '';
 
   void _sendMessage() async {
-    final user = FirebaseAuth.instance.currentUser;
-    final userData = await FirebaseFirestore.instance.collection('user').doc(user!.uid).get();
+    final userData = await FirebaseFirestore.instance.collection('user').doc(currentUser!.user!.uid).get();
 
     (widget.ref).collection('chat').add({
       'text': _userEnterMessage,
       'time': Timestamp.now(),
-      'userId': user.uid,
-      'userNickname': userData.data()!['userNickname'],
+      'userId': currentUser!.user!.uid,
+      'nickname': userData.data()!['nickname'],
     });
 
     setState(() {

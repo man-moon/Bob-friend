@@ -3,14 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../screen/login_signup.dart';
+
 class Message extends StatelessWidget {
   const Message(this.ref, {Key? key}) : super(key: key);
 
   final dynamic ref;
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-
     return StreamBuilder(
       stream: ref.collection('chat').orderBy('time', descending: true).snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot){
@@ -29,8 +29,8 @@ class Message extends StatelessWidget {
           itemBuilder: (context, index) {
             return ChatBubbles(
                 chatDocs[index]['text'],
-                chatDocs[index]['userId'].toString() == user!.uid,
-                chatDocs[index]['userNickname']
+                chatDocs[index]['userId'].toString() == currentUser!.user!.uid,
+                chatDocs[index]['nickname']
             );
           },
         );

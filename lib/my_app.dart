@@ -1,5 +1,3 @@
-import 'package:bobfriend/screen/chat.dart';
-import 'package:bobfriend/screen/chat_list.dart';
 import 'package:bobfriend/screen/home.dart';
 import 'package:bobfriend/screen/login_signup.dart';
 import 'package:flutter/material.dart';
@@ -36,21 +34,12 @@ class MyApp extends StatelessWidget {
         home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot){
-            //session이 유지되어 있으면 홈스크린으로
             if(snapshot.hasData) {
-              //return ChatScreen();
               return HomeScreen();
             }
-            //아니면 로그인 스크린으로
-            print('==test==');
-            print('LoginSignUpScreen');
-            return LoginSignUpScreen();
+            return LoginSignupScreen();
           },
         ),
       );
   }
-
-
-
-
 }

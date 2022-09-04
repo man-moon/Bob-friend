@@ -220,7 +220,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                             'text': '채팅방을 생성하였습니다! 새로운 친구가 오면 알려드릴게요!',
                             'time': Timestamp.now(),
                             'userId': 'admin',
-                            'userNickname': '귀요미',
+                            'nickname': '귀요미',
                           });
 
                           Navigator.pop(context);
