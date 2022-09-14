@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
+import 'package:bobfriend/config/validator.dart';
 
 //현재 접속중인 유저 정보를 전역에서 관리
 late UserCredential? currentUser;
@@ -39,13 +40,13 @@ class LoginSignupScreen extends StatelessWidget {
   }
 
   Future<String?> _signupUser(SignupData data) {
-    debugPrint('Signup Name: ${data.name}, Password: ${data.password}');
+    debugPrint('이메일: ${data.name}, 비밀번호: ${data.password}');
     bool noError = true;
     return Future.delayed(loginTime).then((_) async {
       try{
         currentUser = await _authentication.createUserWithEmailAndPassword(
-            email: data.name,
-            password: data.password
+            email: data.name ?? '',
+            password: data.password ?? ''
         );
 
       } on FirebaseAuthException catch(e){
@@ -95,9 +96,10 @@ class LoginSignupScreen extends StatelessWidget {
       },
       child: FlutterLogin(
         title: '밥친구',
-        //logo: AssetImage('assets/images/ecorp-lightblue.png'),
         onLogin: _authUser,
         onSignup: _signupUser,
+        userValidator: emailValidator,
+        passwordValidator: passwordValidator,
         onSubmitAnimationCompleted: () {
           Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => HomeScreen(),
@@ -115,16 +117,22 @@ class LoginSignupScreen extends StatelessWidget {
           recoverPasswordIntro: '학교 이메일을 입력해주세요',
           recoverPasswordButton: '임시 비밀번호 발급',
           goBackButton: '돌아가기',
-          recoverPasswordDescription: '해당 이메일로 임시 비밀번호가 발급됩니다',
+          recoverPasswordDescription: '해당 이메일로 임시 비밀번호가  발급됩니다',
           recoverPasswordSuccess: '해당 이메일로 임시 비밀번호가 발급되었습니다',
           confirmPasswordHint: '비밀번호 확인',
+          additionalSignUpSubmitButton: '제출',
+          additionalSignUpFormDescription: '닉네임을 입력해주세요',
+          confirmPasswordError: '비밀번호가 일치하지 않습니다',
+          signUpSuccess: '회원가입 성공!',
+          flushbarTitleSuccess: '환영합니다',
+          flushbarTitleError: '오류',
         ),
         additionalSignupFields: [
           UserFormField(
             keyName: 'nickname',
             displayName: '닉네임',
             icon: Icon(Icons.abc_rounded),
-            //fieldValidator: ,
+            fieldValidator: nicknameValidator,
           )
         ],
       ),
