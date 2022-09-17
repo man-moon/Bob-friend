@@ -8,7 +8,6 @@ import 'package:bobfriend/screen/chat.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
-//지역 변경시에 다시 로드되어야하므로 stateful
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({Key? key}) : super(key: key);
 

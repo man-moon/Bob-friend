@@ -2,6 +2,7 @@ import 'package:bobfriend/screen/login_signup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:bobfriend/my_app.dart';
 
 class NewMessage extends StatefulWidget {
   const NewMessage(this.ref, {Key? key}) : super(key: key);
@@ -17,12 +18,12 @@ class _NewMessageState extends State<NewMessage> {
   var _userEnterMessage = '';
 
   void _sendMessage() async {
-    final userData = await FirebaseFirestore.instance.collection('user').doc(currentUser!.user!.uid).get();
+    final userData = await FirebaseFirestore.instance.collection('user').doc(currentUser!.uid).get();
 
     (widget.ref).collection('chat').add({
       'text': _userEnterMessage,
       'time': Timestamp.now(),
-      'userId': currentUser!.user!.uid,
+      'userId': currentUser!.uid,
       'nickname': userData.data()!['nickname'],
     });
 

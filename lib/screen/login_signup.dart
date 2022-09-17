@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:bobfriend/screen/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,8 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:bobfriend/config/validator.dart';
 
+import '../my_app.dart';
+
 //현재 접속중인 유저 정보를 전역에서 관리
-late UserCredential? currentUser;
 
 class LoginSignupScreen extends StatelessWidget {
   Duration get loginTime => Duration(milliseconds: 2250);
@@ -18,10 +21,11 @@ class LoginSignupScreen extends StatelessWidget {
 
     return Future.delayed(loginTime).then((_) async {
       try{
-        currentUser = await _authentication.signInWithEmailAndPassword(
+        await _authentication.signInWithEmailAndPassword(
           email: data.name,
           password: data.password,
         );
+        currentUser = FirebaseAuth.instance.currentUser;
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
           debugPrint('user-not-found');
@@ -44,10 +48,12 @@ class LoginSignupScreen extends StatelessWidget {
     bool noError = true;
     return Future.delayed(loginTime).then((_) async {
       try{
-        currentUser = await _authentication.createUserWithEmailAndPassword(
+        await _authentication.createUserWithEmailAndPassword(
             email: data.name ?? '',
             password: data.password ?? ''
         );
+
+        User? currentUser = FirebaseAuth.instance.currentUser;
 
       } on FirebaseAuthException catch(e){
         if(e.code == 'email-already-in-use'){
@@ -63,10 +69,11 @@ class LoginSignupScreen extends StatelessWidget {
 
         FirebaseFirestore.instance
             .collection('user')
-            .doc(currentUser!.user!.uid)
+            .doc(currentUser!.uid)
             .set({
           'nickname': data.additionalSignupData!['nickname'],
           'email': data.name,
+          'profile_image': '',
         });
 
         // //회원가입, 로그인시 사용자 영속

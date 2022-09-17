@@ -2,6 +2,7 @@ import 'package:bobfriend/chatting/chat/chat_bubble.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:bobfriend/my_app.dart';
 
 import '../../screen/login_signup.dart';
 
@@ -29,7 +30,7 @@ class Message extends StatelessWidget {
           itemBuilder: (context, index) {
             return ChatBubbles(
                 chatDocs[index]['text'],
-                chatDocs[index]['userId'].toString() == currentUser!.user!.uid,
+                chatDocs[index]['userId'].toString() == currentUser!.uid,
                 chatDocs[index]['nickname']
             );
           },
