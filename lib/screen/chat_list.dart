@@ -1,3 +1,4 @@
+import 'package:bobfriend/dto/user.dart';
 import 'package:bobfriend/screen/create_room_form.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:bobfriend/screen/chat.dart';
+import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
@@ -16,12 +18,8 @@ class ChatListScreen extends StatefulWidget {
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
-  //provider 사용
 
-
-  //로그인된 계정의 univ = 'ajou' -> _value = 1
-  //            univ = 'inha' -> _value = 2
-  Object _value = '1';
+  late Object _value;
   var _chatList = [];
   bool showSpinner = true;
 
@@ -106,11 +104,19 @@ class _ChatListScreenState extends State<ChatListScreen> {
   @override
   void initState() {
     super.initState();
+    _value = context.read<UserProvider>().univ == 'ajou' ? '1' : '2';
     loadChatList();
   }
 
   @override
   Widget build(BuildContext context) {
+    //provider 사용
+
+
+    //로그인된 계정의 univ = 'ajou' -> _value = 1
+    //            univ = 'inha' -> _value = 2
+
+
 
     return Scaffold(
       appBar: AppBar(

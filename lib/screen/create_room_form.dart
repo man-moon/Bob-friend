@@ -75,7 +75,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                       },
                       // valueTransformer: (text) => num.tryParse(text),
                       validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(),
+                        FormBuilderValidators.required(errorText: '방 제목 입력은 필수에요'),
                         //FormBuilderValidators.numeric(),
                         FormBuilderValidators.maxLength(16, errorText: '제목 수는 16글자까지 작성 가능해요'),
                       ]),

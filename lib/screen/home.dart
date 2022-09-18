@@ -53,5 +53,6 @@ class _HomeScreenState extends State<HomeScreen> {
     userProvider.nickname = userInfo.data()!['nickname'];
     userProvider.email = userInfo.data()!['email'];
     userProvider.profileImageLink = userInfo.data()!['profile_image'];
+    userProvider.univ = userInfo.data()!['univ'];
   }
 }

@@ -4,10 +4,12 @@ class UserProvider extends ChangeNotifier{
   String? _nickname;
   String? _email;
   String? _profileImageLink;
+  String? _univ;
 
   String? get nickname => _nickname;
   String? get email => _email;
   String? get profileImageLink => _profileImageLink;
+  String? get univ => _univ;
 
   set nickname(String? value) {
     _nickname = value;
@@ -19,6 +21,10 @@ class UserProvider extends ChangeNotifier{
   }
   set email(String? value) {
     _email = value;
+    notifyListeners();
+  }
+  set univ(String? value) {
+    _univ = value;
     notifyListeners();
   }
 }
