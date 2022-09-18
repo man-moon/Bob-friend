@@ -16,7 +16,7 @@ class ChatListScreen extends StatefulWidget {
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
-  //provider
+  //provider 사용
 
 
   //로그인된 계정의 univ = 'ajou' -> _value = 1
