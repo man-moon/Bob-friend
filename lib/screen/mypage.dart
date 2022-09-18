@@ -1,21 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:bobfriend/my_app.dart';
-
+import '../dto/user.dart';
 import 'login_signup.dart';
 
-
-
-/*
-* provider로 관리해야하는 상태
-* image.url,
-* */
+import 'package:bobfriend/dto/user.dart';
 
 class MyPageScreen extends StatefulWidget {
   const MyPageScreen({Key? key}) : super(key: key);
@@ -29,17 +25,20 @@ class _MyPageScreenState extends State<MyPageScreen> {
 
   void updateProfileImage(XFile? pickedImage) async {
     File image = File(pickedImage!.path);
-    final ref = FirebaseStorage.instance.ref().child('profile_image').child('${currentUser!.uid}.jpg');
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('profile_image')
+        .child('${FirebaseAuth.instance.currentUser!.uid}.jpg');
     try {
       await ref.putFile(image);
 
       String profileUrl = await ref.getDownloadURL();
-      await FirebaseFirestore.instance.collection('user').
-      doc(currentUser!.uid).update(
-          {'profile_image': profileUrl}
-      ).whenComplete(
+      await FirebaseFirestore.instance
+          .collection('user')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({'profile_image': profileUrl}).whenComplete(
               () => applyProfileImage());
-    } catch(e){
+    } catch (e) {
       debugPrint('이미지 업로드 중, 오류가 발생하였습니다');
     }
   }
@@ -53,15 +52,13 @@ class _MyPageScreenState extends State<MyPageScreen> {
     updateProfileImage(pickedImage);
   }
 
-  void showImagePicker(BuildContext context){
+  void showImagePicker(BuildContext context) {
     showDialog(
         context: context,
-        builder: (context){
+        builder: (context) {
           return AlertDialog(
-            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
-            //Dialog Main Title
             title: Column(
               children: <Widget>[
                 Text('프로필 변경'),
@@ -93,12 +90,10 @@ class _MyPageScreenState extends State<MyPageScreen> {
               ),
             ],
           );
-        }
-    );
+        });
   }
 
-  void applyProfileImage(){
-  }
+  void applyProfileImage() {}
 
   @override
   Widget build(BuildContext context) {
@@ -113,46 +108,57 @@ class _MyPageScreenState extends State<MyPageScreen> {
         ),
         body: Stack(
           children: <Widget>[
-            GestureDetector(
-              child: Container(
-                alignment: Alignment.topCenter,
-                padding: EdgeInsets.only(top: 30),
-                child: CircleAvatar(
-                  radius: 70,
-                  backgroundColor: Colors.grey,
-                  backgroundImage: AssetImage('image/person.png'),
-                    // image.url == '' ?
-                    //   AssetImage('image/person.png') : CachedNetworkImageProvider(image.url),
-                )
-              ),
-              onTap: () {
-                showImagePicker(context);
+            Container(
+              color: Colors.grey,
+              width: MediaQuery.of(context).size.width - 50,
+              alignment: Alignment.center,
+
+              child: Column(children: [
+                GestureDetector(
+                  child: Container(
+                      alignment: Alignment.topCenter,
+                      padding: EdgeInsets.only(top: 30),
+                      child: CircleAvatar(
+                        radius: 70,
+                        backgroundColor: Colors.grey,
+                        backgroundImage: AssetImage('image/person.png'),
+                        // image.url == '' ?
+                        //   AssetImage('image/person.png') : CachedNetworkImageProvider(image.url),
+                      )),
+                  onTap: () {
+                    showImagePicker(context);
+                  },
+                ),
+
+              ]),
+            ),
+            TextButton(
+              onPressed: () {
+                debugPrint('testing');
               },
+              child: Selector<UserProvider, String?>(
+                selector: (context, user) => user.nickname,
+                builder: (context, user, child) => Text(
+                  Provider.of<UserProvider>(context).nickname.toString(),
+                ),
+              ),
             ),
             SlidingUpPanel(
               panel: Center(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      const Text(
-                        '로그아웃',
-                        //style: TextStyle(color: Palette.textColor1),
-                      ),
-                      IconButton(
-                          onPressed: () {
-                            currentUser = null;
-                            _authentication.signOut();
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                              builder: (context) => LoginSignupScreen(),
-                            ));
-                          },
-                          icon: Icon(
-                            Icons.logout_rounded,
-                            //color: Palette.textColor1,
-                          )
-                      ),
-                    ]
-                ),
+                child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                  const Text(
+                    '로그아웃',
+                    //style: TextStyle(color: Palette.textColor1),
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        _authentication.signOut();
+                      },
+                      icon: Icon(
+                        Icons.logout_rounded,
+                        //color: Palette.textColor1,
+                      )),
+                ]),
               ),
               collapsed:
                   Center(child: Icon(Icons.keyboard_double_arrow_up_rounded)),
@@ -160,32 +166,4 @@ class _MyPageScreenState extends State<MyPageScreen> {
           ],
         ));
   }
-// @override
-// Widget build(BuildContext context) {
-//   return Container(
-//     margin: EdgeInsets.only(bottom: 10),
-//     child: Row(
-//         mainAxisAlignment: MainAxisAlignment.end,
-//         children: [
-//           const Text(
-//             '로그아웃',
-//             //style: TextStyle(color: Palette.textColor1),
-//           ),
-//           IconButton(
-//               onPressed: () {
-//                 currentUser = null;
-//                 _authentication.signOut();
-//                 Navigator.of(context).pushReplacement(MaterialPageRoute(
-//                   builder: (context) => LoginSignupScreen(),
-//                 ));
-//               },
-//               icon: Icon(
-//                 Icons.logout_rounded,
-//                 //color: Palette.textColor1,
-//               )
-//           ),
-//         ]
-//     ),
-//   );
-// }
 }

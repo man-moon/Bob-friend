@@ -30,7 +30,7 @@ class Message extends StatelessWidget {
           itemBuilder: (context, index) {
             return ChatBubbles(
                 chatDocs[index]['text'],
-                chatDocs[index]['userId'].toString() == currentUser!.uid,
+                chatDocs[index]['userId'].toString() == FirebaseAuth.instance.currentUser!.uid,
                 chatDocs[index]['nickname']
             );
           },

@@ -1,5 +1,6 @@
 import 'package:bobfriend/chatting/chat/new_message.dart';
 import 'package:bobfriend/config/palette.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bobfriend/chatting/chat/message.dart';
@@ -21,6 +22,7 @@ class _ChatScreenState extends State<ChatScreen> {
   List<dynamic> usersNickname = [];
   late String owner;
   late final bool isOwner;
+  final userUid = FirebaseAuth.instance.currentUser!.uid;
 
   Future<void> getRoomInfo() async {
     await widget.ref.get().then((DocumentSnapshot ds) {
@@ -38,7 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
     setState(() {
       usersNickname = usersNickname;
-      if(owner.compareTo(currentUser!.uid) == 0){
+      if(owner.compareTo(userUid) == 0){
         isOwner = true;
       }
       else{
@@ -83,7 +85,7 @@ class _ChatScreenState extends State<ChatScreen> {
               TextButton(
                 child: Text('나가기'),
                 onPressed: () {
-                  users.remove(currentUser!.uid);
+                  users.remove(userUid);
                   widget.ref.update({'nowPersonnel': now - 1});
                   widget.ref.update({'users': users});
 
@@ -180,7 +182,7 @@ class _ChatScreenState extends State<ChatScreen> {
               TextButton(
                 child: Text('삭제'),
                 onPressed: () {
-                  users.remove(currentUser!.uid);
+                  users.remove(userUid);
                   widget.ref.update({'nowPersonnel': now - 1});
                   widget.ref.update({'users': users});
 

@@ -39,7 +39,7 @@ dependencies:
   form_builder_validators: ^8.3.0
   top_snackbar_flutter: ^2.1.1
   sliding_up_panel: ^2.0.0+1
-  cached_network_image: ^3.2.2
+  cached_network_image: ^3.2.1
   flutter_map: ^2.2.0
   provider: ^6.0.3
   flutter_login: ^4.0.0

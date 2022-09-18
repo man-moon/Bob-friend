@@ -16,6 +16,11 @@ class ChatListScreen extends StatefulWidget {
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
+  //provider
+
+
+  //로그인된 계정의 univ = 'ajou' -> _value = 1
+  //            univ = 'inha' -> _value = 2
   Object _value = '1';
   var _chatList = [];
   bool showSpinner = true;
@@ -38,10 +43,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
         }
       })
     });
-
-    // await tmpRef.then((snapshot) {
-    //   _chatListCount = snapshot.docs.length;
-    // });
 
     setState(() {
       showSpinner = false;

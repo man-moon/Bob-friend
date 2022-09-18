@@ -1,19 +1,12 @@
-import 'dart:ffi';
-
-import 'package:bobfriend/screen/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:bobfriend/config/validator.dart';
-
 import '../my_app.dart';
-
-//현재 접속중인 유저 정보를 전역에서 관리
 
 class LoginSignupScreen extends StatelessWidget {
   Duration get loginTime => Duration(milliseconds: 2250);
-
   final _authentication = FirebaseAuth.instance;
 
   Future<String?> _authUser(LoginData data) {
@@ -25,7 +18,7 @@ class LoginSignupScreen extends StatelessWidget {
           email: data.name,
           password: data.password,
         );
-        currentUser = FirebaseAuth.instance.currentUser;
+
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
           debugPrint('user-not-found');
@@ -53,8 +46,6 @@ class LoginSignupScreen extends StatelessWidget {
             password: data.password ?? ''
         );
 
-        User? currentUser = FirebaseAuth.instance.currentUser;
-
       } on FirebaseAuthException catch(e){
         if(e.code == 'email-already-in-use'){
           debugPrint('email-already-exits');
@@ -63,18 +54,34 @@ class LoginSignupScreen extends StatelessWidget {
         }
       }
       if(noError){
-        debugPrint(FirebaseAuth.instance.currentUser.toString());
         FirebaseAuth.instance.currentUser!.sendEmailVerification();
-        debugPrint('인증 메일 전송');
+
+        List<String?> parsedEmail = data.name!.split('@');
+        String? emailDomain = parsedEmail[1];
+        late final String univ;
+
+        if(emailDomain != null){
+          if(emailDomain.compareTo('inha.edu.kr') == 0){
+            univ = 'inha';
+          }
+          else if(emailDomain.compareTo('ajou.ac.kr') == 0){
+            univ = 'ajou';
+          }
+        }
+        else{
+          return '올바른 학교 이메일을 입력해주세요';
+        }
+
 
         FirebaseFirestore.instance
             .collection('user')
-            .doc(currentUser!.uid)
+            .doc(FirebaseAuth.instance.currentUser!.uid)
             .set({
-          'nickname': data.additionalSignupData!['nickname'],
-          'email': data.name,
-          'profile_image': '',
-        });
+              'nickname': data.additionalSignupData!['nickname'],
+              'email': data.name,
+              'profile_image': '',
+              'univ': univ,
+            });
 
         // //회원가입, 로그인시 사용자 영속
         // void authPersistence() async{
@@ -107,11 +114,15 @@ class LoginSignupScreen extends StatelessWidget {
         onSignup: _signupUser,
         userValidator: emailValidator,
         passwordValidator: passwordValidator,
+/*
         onSubmitAnimationCompleted: () {
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
             builder: (context) => HomeScreen(),
           ));
         },
+*/
+
+
         onRecoverPassword: _recoverPassword,
         navigateBackAfterRecovery: true,
         userType: LoginUserType.email,

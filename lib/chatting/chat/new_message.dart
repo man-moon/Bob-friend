@@ -18,12 +18,12 @@ class _NewMessageState extends State<NewMessage> {
   var _userEnterMessage = '';
 
   void _sendMessage() async {
-    final userData = await FirebaseFirestore.instance.collection('user').doc(currentUser!.uid).get();
+    final userData = await FirebaseFirestore.instance.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).get();
 
     (widget.ref).collection('chat').add({
       'text': _userEnterMessage,
       'time': Timestamp.now(),
-      'userId': currentUser!.uid,
+      'userId': FirebaseAuth.instance.currentUser!.uid,
       'nickname': userData.data()!['nickname'],
     });
 
