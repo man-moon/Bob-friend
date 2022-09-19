@@ -77,11 +77,11 @@ class LoginSignupScreen extends StatelessWidget {
             .collection('user')
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .set({
-              'nickname': data.additionalSignupData!['nickname'],
-              'email': data.name,
-              'profile_image': '',
-              'univ': univ,
-            });
+          'nickname': data.additionalSignupData!['nickname'],
+          'email': data.name,
+          'profile_image': '',
+          'univ': univ,
+        });
 
         // //회원가입, 로그인시 사용자 영속
         // void authPersistence() async{
