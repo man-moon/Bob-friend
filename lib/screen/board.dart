@@ -72,10 +72,11 @@ class _BoardListScreenState extends State<BoardListScreen>{
         onPressed: (){
           Navigator.push(
               context,
-              MaterialPageRoute(builder: (context){
-                return BoardWriteScreen();}
-              )
-          );
+              MaterialPageRoute(builder: (context) => BoardWriteScreen()))
+              .then((value){
+            setState(() {
+            });
+          });
         },
         child: Text('글쓰기'),
       ),
