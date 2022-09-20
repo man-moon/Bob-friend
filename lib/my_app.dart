@@ -1,3 +1,5 @@
+import 'package:bobfriend/dto/chat.dart';
+import 'package:bobfriend/dto/joined_chatrooms_list.dart';
 import 'package:bobfriend/dto/user.dart';
 import 'package:bobfriend/screen/home.dart';
 import 'package:bobfriend/screen/login_signup.dart';
@@ -12,38 +14,38 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
-        title: 'BobFriend',
-        supportedLocales: const<Locale>[
-          Locale('ko'),
-          Locale('en')
-        ],
-        localizationsDelegates: const [
-          FormBuilderLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-        ],
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSwatch().copyWith(
-            brightness: Brightness.light,
-            primary: Colors.lightBlueAccent,
-            secondary: Colors.lightBlueAccent,
-          ),
-          fontFamily: 'BM',
+      title: 'BobFriend',
+      supportedLocales: const <Locale>[Locale('ko'), Locale('en')],
+      localizationsDelegates: const [
+        FormBuilderLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+      ],
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          brightness: Brightness.light,
+          primary: Colors.lightBlueAccent,
+          secondary: Colors.lightBlueAccent,
         ),
-        home: ChangeNotifierProvider(
-          create: (_) => UserProvider(),
-          child: StreamBuilder(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
-              if(snapshot.hasData) {
-                return const HomeScreen();
-              }
-              return LoginSignupScreen();
-            },
-          ),
+        fontFamily: 'BM',
+      ),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => UserProvider()),
+          ChangeNotifierProvider(create: (_) => JoinedChatRoomListProvider()),
+          ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ],
+        child: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return const HomeScreen();
+            }
+            return LoginSignupScreen();
+          },
         ),
-      );
+      ),
+    );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:bobfriend/dto/chat.dart';
 import 'package:bobfriend/dto/user.dart';
 import 'package:bobfriend/screen/create_room_form.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -113,11 +114,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
     //provider 사용
 
 
-    //로그인된 계정의 univ = 'ajou' -> _value = 1
-    //            univ = 'inha' -> _value = 2
-
-
-
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -171,69 +167,95 @@ class _ChatListScreenState extends State<ChatListScreen> {
             return Future<void>.delayed(const Duration(seconds: 1));
           },
           // Pull from top to show refresh indicator.
-          child: ListView.builder(
-            itemCount: _chatList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                onLongPress: () {
-                  showPopup();
-                },
-                onTap: () async {
-                  final ref = FirebaseFirestore.instance
-                      .collection('chats').doc(_chatList[index][1].toString());
+          child: ChangeNotifierProvider(
+            create: (_) => ChatProvider(),
+            child: ListView.builder(
+              itemCount: _chatList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  onLongPress: () {
+                    showPopup();
+                  },
+                  onTap: () async {
+                    final chatRef = FirebaseFirestore.instance
+                        .collection('chats').doc(_chatList[index][1].toString());
 
-                  final user = FirebaseAuth.instance.currentUser;
+                    debugPrint(chatRef.toString());
+                    //ChatProvider chatProvider = Provider.of<ChatProvider>(context, listen: false);
 
-                  int max = 0;
-                  int now = 0;
-                  List<dynamic> users = [];
+                    final user = FirebaseAuth.instance.currentUser;
 
-                  await ref.get().then((DocumentSnapshot ds){
-                    max = ds.get('maxPersonnel');
-                    now = ds.get('nowPersonnel');
-                    users = ds.get('users');
-                  });
+                    int max = 0;
+                    int now = 0;
+                    List<dynamic> users = [];
 
+                    final ref = FirebaseFirestore.instance
+                        .collection('chats').doc(_chatList[index][1].toString());
 
-                  if(users.contains(user!.uid)){
-                    if(!mounted) return;
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return ChatScreen(ref);
-                    })).then((value) {
-                      loadChatList();
+                    await ref.get().then((DocumentSnapshot ds){
+
+                      //최적화 필요
+                      //chatProvider.docId = ds.get();
+                      // chatProvider.date = ds.get('date');
+                      // chatProvider.foodType = ds.get('foodType');
+                      // chatProvider.gender = ds.get('gender');
+                      // chatProvider.maxPersonnel = ds.get('maxPersonnel');
+                      // chatProvider.nowPersonnel = ds.get('nowPersonnel');
+                      // chatProvider.owner = ds.get('owner');
+                      // chatProvider.univ = ds.get('univ');
+
+                      max = ds.get('maxPersonnel');
+                      now = ds.get('nowPersonnel');
+                      users = ds.get('users');
+
                     });
-                  }
 
-                  else if(max <= now){
-                    if(!mounted) return;
-                    showTopSnackBar(
-                      context,
-                      const CustomSnackBar.error(message: '방이 가득찼어요'),
-                      animationDuration: const Duration(milliseconds: 1200),
-                      displayDuration: const Duration(milliseconds: 0),
-                      reverseAnimationDuration: const Duration(milliseconds: 800),
-                    );
-                  }
-                  else{
-                    users.add(user.uid);
-                    await ref.update({'nowPersonnel': now + 1});
-                    await ref.update({'users': users});
-                    if(!mounted) return;
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return ChatScreen(ref);
-                    })).then((value) {
-                      loadChatList();
-                    });
-                  }
-                },
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(_chatList[index][0]['roomName']),
-                      Text('${_chatList[index][0]['nowPersonnel']}/${_chatList[index][0]['maxPersonnel']}')
-                    ]),
-              );
-            },
+
+
+                    //* case1: already joined*/
+                    if(users.contains(user!.uid)){
+                      if(!mounted) return;
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return ChatScreen(ref);
+                      })).then((value) {
+                        loadChatList();
+                      });
+                    }
+
+                    //* case2: not joined, overcapacity*/
+                    else if(max <= now){
+                      if(!mounted) return;
+                      showTopSnackBar(
+                        context,
+                        const CustomSnackBar.error(message: '방이 가득찼어요'),
+                        animationDuration: const Duration(milliseconds: 1200),
+                        displayDuration: const Duration(milliseconds: 0),
+                        reverseAnimationDuration: const Duration(milliseconds: 800),
+                      );
+                    }
+
+                    //* case3: joining */
+                    else{
+                      users.add(user.uid);
+                      await ref.update({'nowPersonnel': now + 1});
+                      await ref.update({'users': users});
+                      if(!mounted) return;
+                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        return ChatScreen(ref);
+                      })).then((value) {
+                        loadChatList();
+                      });
+                    }
+                  },
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(_chatList[index][0]['roomName']),
+                        Text('${_chatList[index][0]['nowPersonnel']}/${_chatList[index][0]['maxPersonnel']}')
+                      ]),
+                );
+              },
+            ),
           ),
         ),
 

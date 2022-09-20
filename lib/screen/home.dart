@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initUserInfo() async {
     UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
     final userInfo = await FirebaseFirestore.instance.collection('user').
-    doc(FirebaseAuth.instance.currentUser!.uid).get();
+                            doc(FirebaseAuth.instance.currentUser!.uid).get();
 
     userProvider.nickname = userInfo.data()!['nickname'];
     userProvider.email = userInfo.data()!['email'];
