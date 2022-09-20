@@ -4,6 +4,7 @@ import 'package:bobfriend/widget/bottom_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:bobfriend/screen/board.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     initUserInfo();
     initializeDateFormatting(Localizations.localeOf(context).languageCode);
 
-    return const DefaultTabController(
+    return DefaultTabController(
         length: 4,
         child: Scaffold(
           body: TabBarView(
@@ -33,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               //Chat, Community, Friends, My Page로 대체
               ChatListScreen(),
-              Center(child: Text('Community'),),
+              BoardListScreen(),
               Center(child: Text('Friends'),),
               //MyPage
               Center(
