@@ -1,5 +1,5 @@
-import 'package:bobfriend/dto/chat.dart';
-import 'package:bobfriend/dto/user.dart';
+import 'package:bobfriend/provider/chat.dart';
+import 'package:bobfriend/provider/user.dart';
 import 'package:bobfriend/screen/create_room_form.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +11,11 @@ import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
+///채팅방 목록 스크린
+///
+/// + 참여중인 채팅방 구분 탭, 기존의 채팅목록에 표시
+///
+
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({Key? key}) : super(key: key);
 
@@ -20,6 +25,7 @@ class ChatListScreen extends StatefulWidget {
 
 class _ChatListScreenState extends State<ChatListScreen> {
 
+  late ChatProvider chatProvider;
   late Object _value;
   var _chatList = [];
   bool showSpinner = true;
@@ -48,7 +54,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
       _chatList = _chatList;
     });
   }
-
   void showPopup() {
     showDialog(
         context: context,
@@ -62,7 +67,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 borderRadius: BorderRadius.circular(10.0)),
             //Dialog Main Title
             title: Column(
-              children: <Widget>[
+              children: const <Widget>[
                 Text('채팅방 설정'),
               ],
             ),
@@ -72,7 +77,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 children: [
                   Expanded(
                     child: TextButton(
-                      child: Text('취소'),
+                      child: const Text('취소'),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -85,7 +90,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 children: [
                   Expanded(
                     child: TextButton(
-                      child: Text('나가기'),
+                      child: const Text('나가기'),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -98,6 +103,76 @@ class _ChatListScreenState extends State<ChatListScreen> {
         }
       );
   }
+  Future<DocumentReference<Map<String, dynamic>>> getChatInfo(int index) async{
+    final chatRef = FirebaseFirestore.instance
+        .collection('chats').doc(_chatList[index][1].toString());
+
+    chatProvider = Provider.of<ChatProvider>(context, listen: false);
+
+    await chatRef.get().then((DocumentSnapshot ds){
+      chatProvider.users = ds.get('users');
+      chatProvider.docId = _chatList[index][1].toString();
+      chatProvider.date = ds.get('date');
+      chatProvider.foodType = ds.get('foodType');
+      chatProvider.gender = ds.get('gender');
+      chatProvider.maxPersonnel = ds.get('maxPersonnel');
+      chatProvider.nowPersonnel = ds.get('nowPersonnel');
+      chatProvider.owner = ds.get('owner');
+      chatProvider.univ = ds.get('univ');
+    });
+
+    return chatRef;
+  }
+  void tryJoin(dynamic chatRef, int index) async{
+    final maxPersonnel = context.read<ChatProvider>().maxPersonnel;
+    final nowPersonnel = context.read<ChatProvider>().nowPersonnel;
+    final users = context.read<ChatProvider>().users;
+
+    //* case1: already joined*/
+    if(users.contains(FirebaseAuth.instance.currentUser!.uid)){
+      //if(!mounted) return;
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ChatScreen(chatRef)
+          )
+      ).then((value) {
+        loadChatList();
+      });
+    }
+
+    //* case2: not joined, overcapacity*/
+    else if(maxPersonnel! <= nowPersonnel!){
+      //if(!mounted) return;
+      showTopSnackBar(
+        context,
+        const CustomSnackBar.error(message: '방이 가득찼어요'),
+        animationDuration: const Duration(milliseconds: 1200),
+        displayDuration: const Duration(milliseconds: 0),
+        reverseAnimationDuration: const Duration(milliseconds: 800),
+      );
+    }
+
+    //* case3: joining */
+    else{
+      updateChatRoom(chatRef, users, nowPersonnel, maxPersonnel);
+      //if(!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChatScreen(chatRef)
+        )
+      ).then((value) {
+        loadChatList();
+      });
+    }
+  }
+  void updateChatRoom(
+      final chatRef, final users, final nowPersonnel, final maxPersonnel) async{
+    users.add(FirebaseAuth.instance.currentUser!.uid);
+    await chatRef.update({'nowPersonnel': nowPersonnel + 1});
+    await chatRef.update({'users': users});
+  }
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
   GlobalKey<RefreshIndicatorState>();
@@ -105,15 +180,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
   @override
   void initState() {
     super.initState();
-    _value = context.read<UserProvider>().univ == 'ajou' ? '1' : '2';
     loadChatList();
+    _value = (context.read<UserProvider>().univ == 'ajou') ? '1' : '2';
   }
 
   @override
   Widget build(BuildContext context) {
-    //provider 사용
-
-
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -157,7 +229,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           RefreshIndicator(
           key: _refreshIndicatorKey,
           color: Colors.white,
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.orangeAccent,
           strokeWidth: 4.0,
           onRefresh: () async {
             // Replace this delay with the code to be executed during refresh
@@ -172,87 +244,24 @@ class _ChatListScreenState extends State<ChatListScreen> {
             child: ListView.builder(
               itemCount: _chatList.length,
               itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  onLongPress: () {
-                    showPopup();
-                  },
-                  onTap: () async {
-                    final chatRef = FirebaseFirestore.instance
-                        .collection('chats').doc(_chatList[index][1].toString());
-
-                    debugPrint(chatRef.toString());
-                    //ChatProvider chatProvider = Provider.of<ChatProvider>(context, listen: false);
-
-                    final user = FirebaseAuth.instance.currentUser;
-
-                    int max = 0;
-                    int now = 0;
-                    List<dynamic> users = [];
-
-                    final ref = FirebaseFirestore.instance
-                        .collection('chats').doc(_chatList[index][1].toString());
-
-                    await ref.get().then((DocumentSnapshot ds){
-
-                      //최적화 필요
-                      //chatProvider.docId = ds.get();
-                      // chatProvider.date = ds.get('date');
-                      // chatProvider.foodType = ds.get('foodType');
-                      // chatProvider.gender = ds.get('gender');
-                      // chatProvider.maxPersonnel = ds.get('maxPersonnel');
-                      // chatProvider.nowPersonnel = ds.get('nowPersonnel');
-                      // chatProvider.owner = ds.get('owner');
-                      // chatProvider.univ = ds.get('univ');
-
-                      max = ds.get('maxPersonnel');
-                      now = ds.get('nowPersonnel');
-                      users = ds.get('users');
-
-                    });
-
-
-
-                    //* case1: already joined*/
-                    if(users.contains(user!.uid)){
-                      if(!mounted) return;
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return ChatScreen(ref);
-                      })).then((value) {
-                        loadChatList();
+                return Card(
+                  child: ListTile(
+                    onLongPress: () {
+                      showPopup();
+                    },
+                    onTap: () async {
+                      await getChatInfo(index).then((chatRef){
+                        tryJoin(chatRef, index);
                       });
-                    }
 
-                    //* case2: not joined, overcapacity*/
-                    else if(max <= now){
-                      if(!mounted) return;
-                      showTopSnackBar(
-                        context,
-                        const CustomSnackBar.error(message: '방이 가득찼어요'),
-                        animationDuration: const Duration(milliseconds: 1200),
-                        displayDuration: const Duration(milliseconds: 0),
-                        reverseAnimationDuration: const Duration(milliseconds: 800),
-                      );
-                    }
-
-                    //* case3: joining */
-                    else{
-                      users.add(user.uid);
-                      await ref.update({'nowPersonnel': now + 1});
-                      await ref.update({'users': users});
-                      if(!mounted) return;
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return ChatScreen(ref);
-                      })).then((value) {
-                        loadChatList();
-                      });
-                    }
-                  },
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(_chatList[index][0]['roomName']),
-                        Text('${_chatList[index][0]['nowPersonnel']}/${_chatList[index][0]['maxPersonnel']}')
-                      ]),
+                    },
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(_chatList[index][0]['roomName']),
+                          Text('${_chatList[index][0]['nowPersonnel']}/${_chatList[index][0]['maxPersonnel']}')
+                        ]),
+                  ),
                 );
               },
             ),
@@ -273,7 +282,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
               loadChatList();
           });
         },
-        backgroundColor: Colors.lightBlueAccent[150],
+        backgroundColor: Colors.orangeAccent[150],
         child: const Icon(Icons.add),
       ),
     );

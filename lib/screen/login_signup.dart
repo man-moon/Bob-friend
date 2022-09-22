@@ -1,12 +1,17 @@
+import 'package:bobfriend/screen/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
-import 'package:bobfriend/config/validator.dart';
+import 'package:bobfriend/validator/validator.dart';
+import 'package:flutter_login/theme.dart';
 import '../my_app.dart';
 
 class LoginSignupScreen extends StatelessWidget {
-  Duration get loginTime => Duration(milliseconds: 2250);
+  LoginSignupScreen({super.key});
+
+  Duration get loginTime => const Duration(milliseconds: 2250);
   final _authentication = FirebaseAuth.instance;
 
   Future<String?> _authUser(LoginData data) {
@@ -35,7 +40,6 @@ class LoginSignupScreen extends StatelessWidget {
       // }
     });
   }
-
   Future<String?> _signupUser(SignupData data) {
     debugPrint('이메일: ${data.name}, 비밀번호: ${data.password}');
     bool noError = true;
@@ -72,6 +76,11 @@ class LoginSignupScreen extends StatelessWidget {
           return '올바른 학교 이메일을 입력해주세요';
         }
 
+        final profileRef = FirebaseStorage.instance
+            .ref().child('profile_image')
+            .child('basic.jpeg');
+
+        String profileUrl = await profileRef.getDownloadURL();
 
         FirebaseFirestore.instance
             .collection('user')
@@ -79,7 +88,7 @@ class LoginSignupScreen extends StatelessWidget {
             .set({
           'nickname': data.additionalSignupData!['nickname'],
           'email': data.name,
-          'profile_image': '',
+          'profile_image': profileUrl,
           'univ': univ,
         });
 
@@ -91,7 +100,6 @@ class LoginSignupScreen extends StatelessWidget {
       return null;
     });
   }
-
   Future<String?> _recoverPassword(String name) {
     debugPrint('Name: $name');
     return Future.delayed(loginTime).then((_) async {
@@ -109,18 +117,28 @@ class LoginSignupScreen extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: FlutterLogin(
+        theme: LoginTheme(
+          primaryColor: Colors.orangeAccent,
+          accentColor: Colors.white,
+          errorColor: Colors.red
+        ),
         title: '밥친구',
         onLogin: _authUser,
         onSignup: _signupUser,
         userValidator: emailValidator,
         passwordValidator: passwordValidator,
-/*
+
         onSubmitAnimationCompleted: () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (context) => HomeScreen(),
-          ));
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context){
+                return const HomeScreen();
+              })
+          );
         },
-*/
+        logoTag: '이동',
+        titleTag: '가즈아',
+
 
 
         onRecoverPassword: _recoverPassword,
@@ -145,7 +163,7 @@ class LoginSignupScreen extends StatelessWidget {
           flushbarTitleSuccess: '환영합니다',
           flushbarTitleError: '오류',
         ),
-        additionalSignupFields: [
+        additionalSignupFields: const [
           UserFormField(
             keyName: 'nickname',
             displayName: '닉네임',

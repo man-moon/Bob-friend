@@ -1,6 +1,6 @@
-import 'package:bobfriend/dto/chat.dart';
-import 'package:bobfriend/dto/joined_chatrooms_list.dart';
-import 'package:bobfriend/dto/user.dart';
+import 'package:bobfriend/provider/chat.dart';
+import 'package:bobfriend/provider/joined_chatrooms_list.dart';
+import 'package:bobfriend/provider/user.dart';
 import 'package:bobfriend/screen/home.dart';
 import 'package:bobfriend/screen/login_signup.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +25,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch().copyWith(
           brightness: Brightness.light,
-          primary: Colors.lightBlueAccent,
-          secondary: Colors.lightBlueAccent,
+          primary: Colors.orangeAccent,
+          secondary: Colors.orangeAccent,
         ),
         fontFamily: 'BM',
       ),

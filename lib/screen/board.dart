@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bobfriend/chatting/chat/message.dart';
-import 'package:bobfriend/dto/board.dart';
+import 'package:bobfriend/provider/board.dart';
 
 class FireService{
   static final FireService _fireService = FireService._internal();

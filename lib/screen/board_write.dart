@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bobfriend/chatting/chat/message.dart';
 import 'package:form_builder_validators/localization/intl/messages_ar.dart';
-import 'package:bobfriend/dto/board.dart';
+import 'package:bobfriend/provider/board.dart';
 
 class FireService{
   //싱글톤 패턴

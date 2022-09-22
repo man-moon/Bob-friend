@@ -27,7 +27,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
 
   var genderOptions = ['남자만 있었으면 좋겠어요', '여자만 있었으면 좋겠어요', '혼성도 괜찮아요'];
 
-  void _onChanged(dynamic val) => debugPrint(val.toString());
+  //void _onChanged(dynamic val) => debugPrint(val.toString());
 
   @override
   Widget build(BuildContext context) {
@@ -146,9 +146,8 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                           style: const TextStyle(
                               fontWeight: FontWeight.bold),
                         ),
-                      ))
-                          .toList(),
-                      onChanged: _onChanged,
+                      )).toList(),
+                      //onChanged: _onChanged,
                     ),
 
                     FormBuilderFilterChip<String>(
@@ -156,7 +155,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                       decoration: const InputDecoration(
                           labelText: '뭐 먹을까요?'),
                       name: 'foodType',
-                      selectedColor: Colors.lightBlueAccent,
+                      selectedColor: Colors.orangeAccent,
                       options: const [
                         FormBuilderChipOption(
                           value: '한식',
@@ -179,7 +178,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                           avatar: CircleAvatar(backgroundImage: AssetImage('image/burger.png')),
                         ),
                       ],
-                      onChanged: _onChanged,
+                      //onChanged: _onChanged,
                       validator: FormBuilderValidators.compose([
                         FormBuilderValidators.minLength(1, errorText: '한 개 이상의 카테고리를 골라주세요'),
                         //FormBuilderValidators.maxLength(3),

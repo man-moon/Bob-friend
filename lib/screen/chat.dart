@@ -1,10 +1,20 @@
 import 'package:bobfriend/chatting/chat/new_message.dart';
 import 'package:bobfriend/config/palette.dart';
+import 'package:bobfriend/provider/chat.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bobfriend/chatting/chat/message.dart';
 import 'package:bobfriend/my_app.dart';
+import 'package:provider/provider.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
+
+import '../provider/user.dart';
+
+/// 채팅방 스크린
+
+enum Menu { report }
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen(this.ref, {Key? key}) : super(key: key);
@@ -23,6 +33,8 @@ class _ChatScreenState extends State<ChatScreen> {
   late String owner;
   late final bool isOwner;
   final userUid = FirebaseAuth.instance.currentUser!.uid;
+  String selectedActions = '';
+
 
   Future<void> getRoomInfo() async {
     await widget.ref.get().then((DocumentSnapshot ds) {
@@ -33,22 +45,22 @@ class _ChatScreenState extends State<ChatScreen> {
         owner = ds.get('owner');
       });
     });
-
     for (var e in users) {
-      var userData = await FirebaseFirestore.instance.collection('user').doc(e.toString()).get();
+      var userData = await FirebaseFirestore.instance
+          .collection('user')
+          .doc(e.toString())
+          .get();
       usersNickname.add(userData.data()!['nickname']);
     }
     setState(() {
       usersNickname = usersNickname;
-      if(owner.compareTo(userUid) == 0){
+      if (owner.compareTo(userUid) == 0) {
         isOwner = true;
-      }
-      else{
+      } else {
         isOwner = false;
       }
     });
   }
-
   void showOutPopup() {
     showDialog(
         context: context,
@@ -61,7 +73,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 borderRadius: BorderRadius.circular(10.0)),
             //Dialog Main Title
             title: Column(
-              children: <Widget>[
+              children: const <Widget>[
                 Text('알림'),
               ],
             ),
@@ -69,7 +81,7 @@ class _ChatScreenState extends State<ChatScreen> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: const <Widget>[
                 Text(
                   '정말로 나가시겠습니까?',
                 ),
@@ -77,13 +89,13 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('취소'),
+                child: const Text('취소'),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               TextButton(
-                child: Text('나가기'),
+                child: const Text('나가기'),
                 onPressed: () {
                   users.remove(userUid);
                   widget.ref.update({'nowPersonnel': now - 1});
@@ -101,16 +113,14 @@ class _ChatScreenState extends State<ChatScreen> {
   void showOwnerOutPopup() {
     showDialog(
         context: context,
-        //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
             //Dialog Main Title
             title: Column(
-              children: <Widget>[
+              children: const <Widget>[
                 Text('알림'),
               ],
             ),
@@ -118,7 +128,7 @@ class _ChatScreenState extends State<ChatScreen> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: const <Widget>[
                 Text(
                   '방장은 퇴장할 수 없습니다. 방을 삭제하시겠습니까?',
                 ),
@@ -145,7 +155,7 @@ class _ChatScreenState extends State<ChatScreen> {
           );
         });
   }
-  void showDeletePopup(){
+  void showDeletePopup() {
     showDialog(
         context: context,
         //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
@@ -157,7 +167,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 borderRadius: BorderRadius.circular(10.0)),
             //Dialog Main Title
             title: Column(
-              children: <Widget>[
+              children: const <Widget>[
                 Text('알림'),
               ],
             ),
@@ -165,7 +175,7 @@ class _ChatScreenState extends State<ChatScreen> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: const <Widget>[
                 Text(
                   '방을 삭제하시겠습니까?',
                 ),
@@ -173,14 +183,13 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('취소'),
+                child: const Text('취소'),
                 onPressed: () {
-
                   Navigator.pop(context);
                 },
               ),
               TextButton(
-                child: Text('삭제'),
+                child: const Text('삭제'),
                 onPressed: () {
                   users.remove(userUid);
                   widget.ref.update({'nowPersonnel': now - 1});
@@ -189,7 +198,54 @@ class _ChatScreenState extends State<ChatScreen> {
                   Navigator.pop(context);
                   Navigator.pop(context);
                   Navigator.pop(context);
-
+                },
+              ),
+            ],
+          );
+        });
+  }
+  void showReportPopup() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            //Dialog Main Title
+            title: Column(
+              children: const <Widget>[
+                Text('신고'),
+              ],
+            ),
+            //
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const <Widget>[
+                Text(
+                  '신고 내용 업데이트 필요',
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('취소'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                child: const Text('신고'),
+                onPressed: () {
+                  showTopSnackBar(
+                    context,
+                    const CustomSnackBar.success(message: '신고가 접수되었어요'),
+                    animationDuration: const Duration(milliseconds: 1200),
+                    displayDuration: const Duration(milliseconds: 0),
+                    reverseAnimationDuration: const Duration(milliseconds: 800),
+                  );
+                  Navigator.pop(context);
                 },
               ),
             ],
@@ -201,17 +257,15 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(roomName),
-          leading:
-            IconButton(
+            title: Text(roomName),
+            leading: IconButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.arrow_back_rounded,
                   color: Colors.white,
-                ))
-        ),
+                ))),
         endDrawer: Drawer(
           backgroundColor: Colors.white,
           child: Column(
@@ -220,35 +274,67 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
-                    DrawerHeader(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.lightBlueAccent,
-                              Colors.white,
-                            ]),
-                        color: Colors.blue,
-                      ),
-                      child: Text(
-                        '$roomName',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
+                    /** 서랍 헤더 */
+                    const SizedBox(
+                      height: 85,
+                      child: DrawerHeader(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: Colors.orangeAccent,
+                        ),
+                        child: Text(
+                          '채팅방 서랍',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                          ),
                         ),
                       ),
                     ),
+                    /** 참여자 */
+                    const SizedBox(
+                      height: 20,
+                      child: Padding(
+                          padding: EdgeInsets.only(left: 18),
+                          child: Text(
+                            '참여자',
+                            style: TextStyle(fontSize: 15),
+                          )),
+                    ),
+                    /** 참여자 목록 */
                     for (int i = 0; i < usersNickname.length; i++)
                       ListTile(
-                        leading: Icon(Icons.account_circle),
+                        //팔로우중이면 이름 옆에 하트 표시
+                        leading: const Icon(Icons.account_circle),
                         title: Text(usersNickname[i]),
-                      )
+                        onTap: () {
+                          //상대방 프로필 페이지 전환
+                        },
+                        trailing: PopupMenuButton<Menu>(
+                            // Callback that sets the selected popup menu item.
+                            onSelected: (Menu item) {
+                              showReportPopup();
+                              setState(() {
+                                selectedActions = item.name;
+                              });
+                            },
+                            itemBuilder: (BuildContext context) =>
+                                <PopupMenuEntry<Menu>>[
+                                  const PopupMenuItem<Menu>(
+                                    value: Menu.report,
+                                    child: Text('신고'),
+                                  ),
+                                ]),
+                      ),
+                    const Divider(),
                   ],
                 ),
               ),
+              /**
+               * drawer 하단
+               */
               Container(
-                color: Palette.textColor1,
+                color: Colors.white,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -256,36 +342,42 @@ class _ChatScreenState extends State<ChatScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
                       children: [
+                        /**
+                         * 채팅방 설정
+                         */
                         IconButton(
                             onPressed: () {
+                              //설정
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.settings,
-                              color: Colors.white,
-                            )
-                        )
+                              color: Colors.black,
+                            ))
                       ],
                     ),
+
+                    /**
+                     * 채팅방 퇴장
+                     */
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         //Text('방 나가기'),
                         IconButton(
-                          onPressed: () {
-                            if(!isOwner) {
-                              showOutPopup();
-                            }
+                            onPressed: () {
+                              if (!isOwner) {
+                                showOutPopup();
+                              }
 
-                            if(isOwner) {
-                              showOwnerOutPopup();
-                            }
-                          },
-                          icon: Icon(
-                            Icons.exit_to_app_rounded,
-                            color: Colors.white,
-                          )
-                        ),
+                              if (isOwner) {
+                                showOwnerOutPopup();
+                              }
+                            },
+                            icon: const Icon(
+                              Icons.exit_to_app_rounded,
+                              color: Colors.black,
+                            )),
                       ],
                     ),
                   ],
@@ -312,4 +404,3 @@ class _ChatScreenState extends State<ChatScreen> {
     getRoomInfo();
   }
 }
-

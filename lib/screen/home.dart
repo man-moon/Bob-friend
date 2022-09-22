@@ -1,4 +1,4 @@
-import 'package:bobfriend/screen/mypage.dart';
+import 'package:bobfriend/screen/profile.dart';
 import 'package:bobfriend/screen/chat_list.dart';
 import 'package:bobfriend/widget/bottom_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +8,7 @@ import 'package:bobfriend/screen/board.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
-import '../dto/user.dart';
+import '../provider/user.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -30,19 +30,17 @@ class _HomeScreenState extends State<HomeScreen> {
         length: 4,
         child: Scaffold(
           body: TabBarView(
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             children: [
               //Chat, Community, Friends, My Page로 대체
-              ChatListScreen(),
+              const ChatListScreen(),
               BoardListScreen(),
-              Center(child: Text('Friends'),),
-              //MyPage
-              Center(
-                child: MyPageScreen(),
-              )
+              const Center(child: Text('Friends'),),
+              //Profile
+              const ProfileScreen(),
             ],
           ),
-          bottomNavigationBar: BottomBar(),
+          bottomNavigationBar: const BottomBar(),
         ),
     );
   }
