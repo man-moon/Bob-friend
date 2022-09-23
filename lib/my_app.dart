@@ -25,18 +25,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch().copyWith(
           brightness: Brightness.light,
-          primary: Colors.orangeAccent,
-          secondary: Colors.orangeAccent,
+          primary: Colors.deepOrangeAccent,
+          secondary: Colors.deepOrangeAccent,
         ),
         fontFamily: 'BM',
       ),
-      home: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => UserProvider()),
-          ChangeNotifierProvider(create: (_) => JoinedChatRoomListProvider()),
-          ChangeNotifierProvider(create: (_) => ChatProvider()),
-        ],
-        child: StreamBuilder(
+      home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
@@ -45,7 +39,6 @@ class MyApp extends StatelessWidget {
             return LoginSignupScreen();
           },
         ),
-      ),
     );
   }
 }

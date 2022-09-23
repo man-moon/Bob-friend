@@ -118,7 +118,7 @@ class LoginSignupScreen extends StatelessWidget {
       },
       child: FlutterLogin(
         theme: LoginTheme(
-          primaryColor: Colors.orangeAccent,
+          primaryColor: Colors.deepOrangeAccent,
           accentColor: Colors.white,
           errorColor: Colors.red
         ),
@@ -153,7 +153,7 @@ class LoginSignupScreen extends StatelessWidget {
           recoverPasswordIntro: '학교 이메일을 입력해주세요',
           recoverPasswordButton: '임시 비밀번호 발급',
           goBackButton: '돌아가기',
-          recoverPasswordDescription: '해당 이메일로 임시 비밀번호가  발급됩니다',
+          recoverPasswordDescription: '해당 이메일로 임시 비밀번호가 발급됩니다',
           recoverPasswordSuccess: '해당 이메일로 임시 비밀번호가 발급되었습니다',
           confirmPasswordHint: '비밀번호 확인',
           additionalSignUpSubmitButton: '제출',

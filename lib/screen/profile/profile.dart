@@ -1,3 +1,4 @@
+import 'package:bobfriend/validator/validator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +9,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:bobfriend/my_app.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import '../../provider/user.dart';
 import '../login/login_signup.dart';
 
@@ -43,13 +46,16 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final _authentication = FirebaseAuth.instance;
+  final _formKey = GlobalKey<FormState>();
+  final _nicknameController = TextEditingController();
 
   //db 업데이트, user provider 업데이트
   void updateProfileImage(XFile? pickedImage) async {
     File image = File(pickedImage!.path);
     final ref = FirebaseStorage.instance
-                    .ref().child('profile_image')
-                    .child('${FirebaseAuth.instance.currentUser!.uid}.jpg');
+        .ref()
+        .child('profile_image')
+        .child('${FirebaseAuth.instance.currentUser!.uid}.jpg');
     try {
       await ref.putFile(image);
 
@@ -114,11 +120,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
   }
 
-  void applyProfileImage(String url){
+  void applyProfileImage(String url) {
     context.read<UserProvider>().profileImageLink = url;
   }
 
-  void showChangeNicknamePopup(){
+  void showChangeNicknamePopup() {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -136,8 +142,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const <Widget>[
-                TextField(),
+              children: <Widget>[
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.abc_rounded),
+                      labelText: '닉네임',
+                    ),
+                    autofocus: true,
+                    maxLength: 12,
+                    validator: nicknameValidator,
+                    controller: _nicknameController,
+                  ),
+                ),
               ],
             ),
             actions: <Widget>[
@@ -148,18 +166,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               TextButton(
-                child: const Text('확인'),
-                onPressed: () {
-                  Navigator.pop(context);
+                child: const Text('변경'),
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    debugPrint('processing');
+                  }
+                  String changeNickname = _nicknameController.text;
+                  context.read<UserProvider>().nickname = changeNickname;
+                  await FirebaseFirestore.instance
+                      .collection('user')
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .update({'nickname': changeNickname})
+                      .whenComplete(() => showTopSnackBar(
+                            context,
+                            const CustomSnackBar.success(message: '닉네임 변경이 완료되었어요'),
+                            animationDuration:
+                                const Duration(milliseconds: 1200),
+                            displayDuration: const Duration(milliseconds: 0),
+                            reverseAnimationDuration:
+                                const Duration(milliseconds: 800),
+                          ))
+                      .onError((error, stackTrace) => showTopSnackBar(
+                            context,
+                            const CustomSnackBar.error(
+                                message: '닉네임 변경 도중 오류가 발생했어요. 다시 시도해주세요'),
+                            animationDuration:
+                                const Duration(milliseconds: 1200),
+                            displayDuration: const Duration(milliseconds: 0),
+                            reverseAnimationDuration:
+                                const Duration(milliseconds: 800),
+                          )).then((value) => Navigator.of(context).pop());
                 },
               ),
             ],
           );
         });
-    String changeNickname = 'changednickname';
-    context.read<UserProvider>().nickname = changeNickname;
-    FirebaseFirestore.instance.collection('user').
-    doc(FirebaseAuth.instance.currentUser!.uid).update({'nickname': changeNickname});
   }
 
   @override
@@ -179,59 +220,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: Colors.white,
               width: MediaQuery.of(context).size.width,
               alignment: Alignment.center,
-
-              child: Column(children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 15),
-                  child: GestureDetector(
-                    child: CachedNetworkImage(
-                      imageUrl: context.watch<UserProvider>().profileImageLink.toString(),
-                      imageBuilder: (context, imageProvider) => Container(
-                        width: 130.0,
-                        height: 130.0,
-                        decoration: BoxDecoration(
-                          boxShadow: const [
-                            BoxShadow(
-                            color: Colors.grey,
-                            blurRadius: 5,
-                            spreadRadius: 3,
-                            )
-                          ],
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.circular(30),
-                          image: DecorationImage(
-                              image: imageProvider, fit: BoxFit.cover,),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 15),
+                    child: GestureDetector(
+                      child: CachedNetworkImage(
+                        imageUrl: context
+                            .watch<UserProvider>()
+                            .profileImageLink
+                            .toString(),
+                        imageBuilder: (context, imageProvider) => Container(
+                          width: 130.0,
+                          height: 130.0,
+                          decoration: BoxDecoration(
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.grey,
+                                blurRadius: 5,
+                                spreadRadius: 3,
+                              )
+                            ],
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(30),
+                            image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
+                        //placeholder: (context, url) => CircularProgressIndicator(),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.person_rounded),
                       ),
-                      //placeholder: (context, url) => CircularProgressIndicator(),
-                      errorWidget: (context, url, error) => const Icon(Icons.person_rounded),
+                      onTap: () {
+                        showImagePicker(context);
+                      },
                     ),
-                    onTap: () {
-                      showImagePicker(context);
-                    },
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(context.select<UserProvider, String>((UserProvider user) => user.nickname.toString())),
-                      IconButton(
-                        iconSize: 15,
-                        onPressed: (){
-                          showChangeNicknamePopup();
-                        },
-                        icon: const Icon(Icons.edit_rounded)
-                      ),
-                    ]
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(context.select<UserProvider, String>(
+                              (UserProvider user) => user.nickname.toString())),
+                          IconButton(
+                              iconSize: 15,
+                              onPressed: () {
+                                showChangeNicknamePopup();
+                              },
+                              icon: const Icon(Icons.edit_rounded)),
+                        ]),
                   ),
-                ),
-              ],
-
+                ],
               ),
             ),
-
             SlidingUpPanel(
               panel: Center(
                 child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
@@ -249,10 +293,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       )),
                 ]),
               ),
-              collapsed:
-                  const Center(child: Icon(Icons.keyboard_double_arrow_up_rounded)),
+              collapsed: const Center(
+                  child: Icon(Icons.keyboard_double_arrow_up_rounded)),
             )
           ],
         ));
+  }
+
+  @override
+  void dispose() {
+    _nicknameController.dispose();
+    super.dispose();
   }
 }

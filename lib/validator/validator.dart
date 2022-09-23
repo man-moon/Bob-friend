@@ -21,5 +21,11 @@ String? nicknameValidator(value) {
   if(value!.isEmpty) {
     return '닉네임을 입력해주세요';
   }
+  if(value!.length < 2) {
+    return '닉네임은 2글자 이상입니다';
+  }
+  if(value!.length > 12) {
+    return '닉네임은 12글자 이하입니다';
+  }
   return null;
 }
