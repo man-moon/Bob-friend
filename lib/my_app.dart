@@ -2,7 +2,7 @@ import 'package:bobfriend/provider/chat.dart';
 import 'package:bobfriend/provider/joined_chatrooms_list.dart';
 import 'package:bobfriend/provider/user.dart';
 import 'package:bobfriend/screen/home.dart';
-import 'package:bobfriend/screen/login_signup.dart';
+import 'package:bobfriend/screen/login/login_signup.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

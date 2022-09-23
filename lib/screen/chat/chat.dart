@@ -1,16 +1,16 @@
-import 'package:bobfriend/chatting/chat/new_message.dart';
+import 'package:bobfriend/screen/chat/new_message.dart';
 import 'package:bobfriend/config/palette.dart';
 import 'package:bobfriend/provider/chat.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:bobfriend/chatting/chat/message.dart';
+import 'package:bobfriend/screen/chat/message.dart';
 import 'package:bobfriend/my_app.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
-import '../provider/user.dart';
+import '../../provider/user.dart';
 
 /// 채팅방 스크린
 

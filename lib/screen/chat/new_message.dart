@@ -1,4 +1,4 @@
-import 'package:bobfriend/screen/login_signup.dart';
+import 'package:bobfriend/screen/login/login_signup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';

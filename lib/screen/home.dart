@@ -1,10 +1,10 @@
-import 'package:bobfriend/screen/profile.dart';
-import 'package:bobfriend/screen/chat_list.dart';
+import 'package:bobfriend/screen/profile/profile.dart';
+import 'package:bobfriend/screen/chat/chat_list.dart';
 import 'package:bobfriend/widget/bottom_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:bobfriend/screen/board.dart';
+import 'package:bobfriend/screen/board/board.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 

@@ -1,5 +1,5 @@
 import 'package:bobfriend/config/palette.dart';
-import 'package:bobfriend/screen/chat.dart';
+import 'package:bobfriend/screen/chat/chat.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';

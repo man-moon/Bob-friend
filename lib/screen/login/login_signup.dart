@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:bobfriend/validator/validator.dart';
 import 'package:flutter_login/theme.dart';
-import '../my_app.dart';
+import '../../my_app.dart';
 
 class LoginSignupScreen extends StatelessWidget {
   LoginSignupScreen({super.key});

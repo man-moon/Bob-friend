@@ -8,13 +8,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:bobfriend/my_app.dart';
-import '../provider/user.dart';
-import 'login_signup.dart';
+import '../../provider/user.dart';
+import '../login/login_signup.dart';
 
 import 'package:bobfriend/provider/user.dart';
 
-/// 상대방 페이지일 경우에는 팔로우 표시 추가 필요
-///
 /// isMe == true
 /// + 프로필 변경 기능
 /// + 닉네임 변경 기능

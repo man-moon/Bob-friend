@@ -1,12 +1,12 @@
 import 'package:bobfriend/provider/chat.dart';
 import 'package:bobfriend/provider/user.dart';
-import 'package:bobfriend/screen/create_room_form.dart';
+import 'package:bobfriend/screen/chat/create_room_form.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:bobfriend/screen/chat.dart';
+import 'package:bobfriend/screen/chat/chat.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
