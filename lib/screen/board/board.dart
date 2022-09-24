@@ -21,11 +21,13 @@ class FireService{
   }
 }
 class BoardListScreen extends StatefulWidget{
+  const BoardListScreen({super.key});
+
   @override
-  _BoardListScreenState createState() => _BoardListScreenState();
+  BoardListScreenState createState() => BoardListScreenState();
 }
 
-class _BoardListScreenState extends State<BoardListScreen>{
+class BoardListScreenState extends State<BoardListScreen>{
 
   @override
   Widget build(BuildContext context){

@@ -34,7 +34,6 @@ class MyApp extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             return AnimatedSwitcher(
-
               duration: const Duration(seconds: 2),
               child: snapshot.hasData ? const HomeScreen() : LoginSignupScreen(),
             );

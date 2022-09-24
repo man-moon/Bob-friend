@@ -52,6 +52,7 @@ class _LoginSignupScreen extends State<LoginSignupScreen> {
   void authPersistence() async{
     await FirebaseAuth.instance.setPersistence(Persistence.NONE);
   }
+
   Future<String?> _authUser(LoginData data) {
     debugPrint('Name: ${data.name}, Password: ${data.password}');
 

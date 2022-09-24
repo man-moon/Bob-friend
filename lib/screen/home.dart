@@ -22,6 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('home screen');
+
     initializeDateFormatting(Localizations.localeOf(context).languageCode);
 
     return DefaultTabController(
@@ -41,18 +43,25 @@ class _HomeScreenState extends State<HomeScreen> {
           bottomNavigationBar: const BottomBar(),
         ),
     );
+
+
   }
 
 
-  // void initUserInfo() async {
-  //   UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
-  //   final userInfo = await FirebaseFirestore.instance.collection('user').
-  //                           doc(FirebaseAuth.instance.currentUser!.uid).get();
-  //
-  //   userProvider.nickname = userInfo.data()!['nickname'];
-  //   userProvider.email = userInfo.data()!['email'];
-  //   userProvider.profileImageLink = userInfo.data()!['profile_image'];
-  //   userProvider.univ = userInfo.data()!['univ'];
-  //   userProvider.temperature = userInfo.data()!['temperature'];
-  // }
+  @override
+  void initState() {
+    super.initState();
+    initUserInfo();
+  }
+
+  void initUserInfo() async {
+    UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userInfo = await FirebaseFirestore.instance.collection('user').
+                            doc(FirebaseAuth.instance.currentUser!.uid).get();
+    userProvider.nickname = userInfo.data()!['nickname'];
+    userProvider.email = userInfo.data()!['email'];
+    userProvider.profileImageLink = userInfo.data()!['profile_image'];
+    userProvider.univ = userInfo.data()!['univ'];
+    userProvider.temperature = userInfo.data()!['temperature'];
+  }
 }
