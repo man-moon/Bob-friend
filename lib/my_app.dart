@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSwatch().copyWith(
           brightness: Brightness.light,
-          primary: Colors.deepOrangeAccent,
+          primary: Colors.white,
           secondary: Colors.deepOrangeAccent,
         ),
         fontFamily: 'BM',

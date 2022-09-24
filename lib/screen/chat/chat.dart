@@ -14,6 +14,7 @@ import '../../provider/user.dart';
 
 /// 채팅방 스크린
 
+//drawer 메뉴
 enum Menu { report }
 
 class ChatScreen extends StatefulWidget {
@@ -64,11 +65,9 @@ class _ChatScreenState extends State<ChatScreen> {
   void showOutPopup() {
     showDialog(
         context: context,
-        //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
             //Dialog Main Title
@@ -136,13 +135,13 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('취소'),
+                child: const Text('취소'),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               TextButton(
-                child: Text('삭제'),
+                child: const Text('삭제'),
                 onPressed: () {
                   widget.ref.delete();
 
@@ -386,14 +385,12 @@ class _ChatScreenState extends State<ChatScreen> {
             ],
           ),
         ),
-        body: Container(
-          child: Column(
-            children: [
-              Expanded(child: Message(widget.ref)),
-              //SizedBox(height: 150,),
-              NewMessage(widget.ref),
-            ],
-          ),
+        body: Column(
+          children: [
+            Expanded(child: Message(widget.ref)),
+            //SizedBox(height: 150,),
+            NewMessage(widget.ref),
+          ],
         ));
   }
 

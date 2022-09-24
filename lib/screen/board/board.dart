@@ -34,7 +34,7 @@ class BoardListScreenState extends State<BoardListScreen>{
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("게시판"),
+        title: const Text("게시판", style: TextStyle(color: Colors.black),),
         centerTitle: true,
         elevation: 0.0,
         actions: [

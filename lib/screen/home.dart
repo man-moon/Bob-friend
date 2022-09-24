@@ -63,5 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
     userProvider.profileImageLink = userInfo.data()!['profile_image'];
     userProvider.univ = userInfo.data()!['univ'];
     userProvider.temperature = userInfo.data()!['temperature'];
+    userProvider.friends = userInfo.data()!['friends'];
   }
 }

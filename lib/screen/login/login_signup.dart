@@ -40,6 +40,7 @@ class _LoginSignupScreen extends State<LoginSignupScreen> {
       'profile_image': profileUrl,
       'univ': univ,
       'temperature': 36.5,
+      'friends': [],
     });
   }
 
@@ -119,11 +120,6 @@ class _LoginSignupScreen extends State<LoginSignupScreen> {
         await profileRef.getDownloadURL().then(
                 (value) => setUser(data, value, univ)
         );
-
-        // //회원가입, 로그인시 사용자 영속
-        // void authPersistence() async{
-        //   await FirebaseAuth.instance.setPersistence(Persistence.NONE);
-        // }
       }
       return null;
     });
@@ -133,7 +129,6 @@ class _LoginSignupScreen extends State<LoginSignupScreen> {
     return Future.delayed(loginTime).then((_) async {
       await FirebaseAuth.instance.setLanguageCode("kr");
       await FirebaseAuth.instance.sendPasswordResetEmail(email: name);
-      //return '존재하지 않는 사용자입니다';
       return null;
     });
   }
@@ -156,17 +151,6 @@ class _LoginSignupScreen extends State<LoginSignupScreen> {
         onSignup: _signupUser,
         userValidator: emailValidator,
         passwordValidator: passwordValidator,
-
-        // onSubmitAnimationCompleted: () {
-        //   Navigator.of(context).pushReplacement(MaterialPageRoute(
-        //     builder: (context) => const HomeScreen(),
-        //   ));
-        // },
-        logoTag: '이동',
-        titleTag: '가즈아',
-
-
-
         onRecoverPassword: _recoverPassword,
         navigateBackAfterRecovery: true,
         userType: LoginUserType.email,

@@ -23,7 +23,6 @@ import 'package:flutter_thermometer/thermometer.dart';
 import 'package:flutter_thermometer/thermometer_paint.dart';
 import 'package:flutter_thermometer/thermometer_widget.dart';
 
-
 import 'package:bobfriend/provider/user.dart';
 
 /// isMe == true
@@ -61,7 +60,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   late dynamic _nicknameController;
 
-
   @override
   void initState() {
     debugPrint('INIT!!');
@@ -76,10 +74,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void checkIsMe() {
-    if(widget.uid == null){
+    if (widget.uid == null) {
       isMe = false;
-    }
-    else{
+    } else {
       isMe = true;
     }
   }
@@ -214,7 +211,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       .update({'nickname': changeNickname})
                       .whenComplete(() => showTopSnackBar(
                             context,
-                            const CustomSnackBar.success(message: '닉네임 변경이 완료되었어요'),
+                            const CustomSnackBar.success(
+                                message: '닉네임 변경이 완료되었어요'),
                             animationDuration:
                                 const Duration(milliseconds: 1200),
                             displayDuration: const Duration(milliseconds: 0),
@@ -230,7 +228,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             displayDuration: const Duration(milliseconds: 0),
                             reverseAnimationDuration:
                                 const Duration(milliseconds: 800),
-                          )).then((value) => Navigator.of(context).pop());
+                          ))
+                      .then((value) => Navigator.of(context).pop());
                 },
               ),
             ],
@@ -240,7 +239,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _nicknameController = TextEditingController(text: context.select((UserProvider u) => u.nickname));
+    _nicknameController = TextEditingController(
+        text: context.select((UserProvider u) => u.nickname));
     return Scaffold(
         appBar: AppBar(
           title: const Center(
@@ -314,50 +314,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
 
                   //이메일
-                  if(isMe)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          context.select((UserProvider u) => u.email.toString()),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey
-                          ),
-                        )
-                      ],
+                  if (isMe)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            context
+                                .select((UserProvider u) => u.email.toString()),
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.grey),
+                          )
+                        ],
+                      ),
                     ),
+
+                  //온도
+                  Padding(
+                    padding: const EdgeInsets.only(top: 30),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.values[0],
+                        children: [
+                          SizedBox(
+                              width: 70,
+                              height: 130,
+                              child: Thermometer(
+                                outlineThickness: 4,
+                                radius: 20,
+                                barWidth: 20,
+                                outlineColor: Colors.grey,
+                                mercuryColor: context.select((UserProvider u) =>
+                                    u.temperature!.toDouble()) > 40 ? Colors.red : Colors.orangeAccent,
+                                value: context.select((UserProvider u) =>
+                                    u.temperature!.toDouble()),
+                                minValue: 0,
+                                maxValue: 100,
+                              )),
+                          Text(
+                            context.select(
+                                (UserProvider u) => u.temperature.toString()),
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.black),
+                          )
+                        ]),
                   ),
 
+                  //팔로우
+                  if (!isMe)
                   Padding(
-                    padding: const EdgeInsets.only(top: 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          context.select((UserProvider u) => u.temperature.toString()),
-                          style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.red
-                          ),
-                        )
-                      ],
+                    padding: const EdgeInsets.only(top: 10),
+                    child: context.select((UserProvider u) => u.friends.contains(widget.uid) ?
+                            const Icon(Icons.favorite_rounded) : const Icon(Icons.favorite_border_rounded),
                     ),
                   ),
-
-                  SizedBox(
-                      width: 10,
-                      height: 5,
-                      child: Thermometer(
-                          value: 10,
-                          minValue: 0,
-                          maxValue: 100
-                      )
-                  )
-
-
                 ],
               ),
             ),
