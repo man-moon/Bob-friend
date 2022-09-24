@@ -1,7 +1,9 @@
 import 'package:bobfriend/validator/validator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'dart:io';
@@ -38,16 +40,41 @@ import 'package:bobfriend/provider/user.dart';
 /// +
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({this.uid, Key? key}) : super(key: key);
+  final String? uid;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  late final bool isMe;
   final _authentication = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
-  final _nicknameController = TextEditingController();
+  late dynamic _nicknameController;
+
+
+  @override
+  void initState() {
+    debugPrint('INIT!!');
+    super.initState();
+    checkIsMe();
+  }
+
+  @override
+  void didChangeDependencies() {
+    debugPrint('didChangeDependencies!!');
+    super.didChangeDependencies();
+  }
+
+  void checkIsMe() {
+    if(widget.uid == null){
+      isMe = false;
+    }
+    else{
+      isMe = true;
+    }
+  }
 
   //db 업데이트, user provider 업데이트
   void updateProfileImage(XFile? pickedImage) async {
@@ -205,6 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _nicknameController = TextEditingController(text: context.select((UserProvider u) => u.nickname));
     return Scaffold(
         appBar: AppBar(
           title: const Center(
@@ -222,6 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               alignment: Alignment.center,
               child: Column(
                 children: [
+                  //프로필 이미지
                   Padding(
                     padding: const EdgeInsets.only(top: 15),
                     child: GestureDetector(
@@ -258,13 +287,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       },
                     ),
                   ),
+
+                  //닉네임
                   Padding(
-                    padding: const EdgeInsets.only(top: 10),
+                    padding: const EdgeInsets.only(top: 0),
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(context.select<UserProvider, String>(
-                              (UserProvider user) => user.nickname.toString())),
+                              (UserProvider u) => u.nickname.toString())),
                           IconButton(
                               iconSize: 15,
                               onPressed: () {
@@ -273,6 +304,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               icon: const Icon(Icons.edit_rounded)),
                         ]),
                   ),
+
+                  //이메일
+                  if(isMe)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          context.select((UserProvider u) => u.email.toString()),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.only(top: 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          context.select((UserProvider u) => u.temperature.toString()),
+                          style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.red
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+
+
                 ],
               ),
             ),
@@ -302,6 +369,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void dispose() {
+    debugPrint('DISPOSE!');
     _nicknameController.dispose();
     super.dispose();
   }

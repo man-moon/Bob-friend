@@ -6,14 +6,52 @@ import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:bobfriend/validator/validator.dart';
 import 'package:flutter_login/theme.dart';
+import 'package:provider/provider.dart';
 import '../../my_app.dart';
+import '../../provider/user.dart';
 
-class LoginSignupScreen extends StatelessWidget {
-  LoginSignupScreen({super.key});
+class LoginSignupScreen extends StatefulWidget {
+  const LoginSignupScreen({Key? key}) : super(key: key);
 
+  @override
+  State<LoginSignupScreen> createState() => _LoginSignupScreen();
+}
+
+class _LoginSignupScreen extends State<LoginSignupScreen> {
   Duration get loginTime => const Duration(milliseconds: 2250);
   final _authentication = FirebaseAuth.instance;
 
+  void updateUserProvider(final dynamic data, final dynamic profileUrl, final dynamic univ){
+    UserProvider u = Provider.of<UserProvider>(context, listen: false);
+    u.nickname = data.additionalSignupData!['nickname'];
+    u.email = data.name;
+    u.profileImageLink = profileUrl;
+    u.univ = univ;
+    u.temperature = 36.5;
+  }
+
+  void updateUserDatabase(final dynamic data, final dynamic profileUrl, final dynamic univ){
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .set({
+      'nickname': data.additionalSignupData!['nickname'],
+      'email': data.name,
+      'profile_image': profileUrl,
+      'univ': univ,
+      'temperature': 36.5,
+    });
+  }
+
+  void setUser(final dynamic data, final dynamic profileUrl, final dynamic univ){
+    updateUserProvider(data, profileUrl, univ);
+    updateUserDatabase(data, profileUrl, univ);
+  }
+  
+  //회원가입, 로그인시 사용자 영속
+  void authPersistence() async{
+    await FirebaseAuth.instance.setPersistence(Persistence.NONE);
+  }
   Future<String?> _authUser(LoginData data) {
     debugPrint('Name: ${data.name}, Password: ${data.password}');
 
@@ -34,10 +72,7 @@ class LoginSignupScreen extends StatelessWidget {
         }
         return null;
       }
-      // //회원가입, 로그인시 사용자 영속
-      // void authPersistence() async{
-      //   await FirebaseAuth.instance.setPersistence(Persistence.NONE);
-      // }
+
     });
   }
   Future<String?> _signupUser(SignupData data) {
@@ -80,17 +115,9 @@ class LoginSignupScreen extends StatelessWidget {
             .ref().child('profile_image')
             .child('basic.jpeg');
 
-        String profileUrl = await profileRef.getDownloadURL();
-
-        FirebaseFirestore.instance
-            .collection('user')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .set({
-          'nickname': data.additionalSignupData!['nickname'],
-          'email': data.name,
-          'profile_image': profileUrl,
-          'univ': univ,
-        });
+        await profileRef.getDownloadURL().then(
+                (value) => setUser(data, value, univ)
+        );
 
         // //회원가입, 로그인시 사용자 영속
         // void authPersistence() async{
@@ -112,15 +139,16 @@ class LoginSignupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       onTap: (){
         FocusScope.of(context).unfocus();
       },
       child: FlutterLogin(
         theme: LoginTheme(
-          primaryColor: Colors.deepOrangeAccent,
-          accentColor: Colors.white,
-          errorColor: Colors.red
+            primaryColor: Colors.deepOrangeAccent,
+            accentColor: Colors.white,
+            errorColor: Colors.red
         ),
         title: '밥친구',
         onLogin: _authUser,
@@ -128,14 +156,11 @@ class LoginSignupScreen extends StatelessWidget {
         userValidator: emailValidator,
         passwordValidator: passwordValidator,
 
-        onSubmitAnimationCompleted: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context){
-                return const HomeScreen();
-              })
-          );
-        },
+        // onSubmitAnimationCompleted: () {
+        //   Navigator.of(context).pushReplacement(MaterialPageRoute(
+        //     builder: (context) => const HomeScreen(),
+        //   ));
+        // },
         logoTag: '이동',
         titleTag: '가즈아',
 

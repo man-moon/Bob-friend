@@ -45,6 +45,7 @@ dependencies:
   flutter_login: ^4.0.0
   font_awesome_flutter: ^10.1.0
   firebase_storage: ^10.3.8
+  persistent_bottom_nav_bar: ^5.0.2
 
 
   # The following adds the Cupertino Icons font to your application.
