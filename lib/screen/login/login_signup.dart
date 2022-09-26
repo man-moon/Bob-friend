@@ -1,4 +1,5 @@
 import 'package:bobfriend/screen/home.dart';
+import 'package:bobfriend/screen/load/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -44,14 +45,38 @@ class _LoginSignupScreen extends State<LoginSignupScreen> {
     });
   }
 
-  void setUser(final dynamic data, final dynamic profileUrl, final dynamic univ){
+  void updateUser(final dynamic data, final dynamic profileUrl, final dynamic univ) {
     updateUserProvider(data, profileUrl, univ);
     updateUserDatabase(data, profileUrl, univ);
   }
-  
-  //회원가입, 로그인시 사용자 영속
-  void authPersistence() async{
-    await FirebaseAuth.instance.setPersistence(Persistence.NONE);
+
+  Future<String?> setUser(SignupData data) async {
+    FirebaseAuth.instance.currentUser!.sendEmailVerification();
+
+    List<String?> parsedEmail = data.name!.split('@');
+    String? emailDomain = parsedEmail[1];
+    late final String univ;
+
+    if(emailDomain != null){
+      if(emailDomain.compareTo('inha.edu.kr') == 0){
+        univ = 'inha';
+      }
+      else if(emailDomain.compareTo('ajou.ac.kr') == 0){
+        univ = 'ajou';
+      }
+    }
+    else{
+      return '올바른 학교 이메일을 입력해주세요';
+    }
+
+    final profileRef = FirebaseStorage.instance
+        .ref().child('profile_image')
+        .child('basic.jpeg');
+
+    await profileRef.getDownloadURL().then(
+            (value) => updateUser(data, value, univ)
+    );
+    return null;
   }
 
   Future<String?> _authUser(LoginData data) {
@@ -79,47 +104,18 @@ class _LoginSignupScreen extends State<LoginSignupScreen> {
   }
   Future<String?> _signupUser(SignupData data) {
     debugPrint('이메일: ${data.name}, 비밀번호: ${data.password}');
-    bool noError = true;
     return Future.delayed(loginTime).then((_) async {
       try{
         await _authentication.createUserWithEmailAndPassword(
             email: data.name ?? '',
             password: data.password ?? ''
-        );
+        ).then((value) => setUser(data));
 
       } on FirebaseAuthException catch(e){
         if(e.code == 'email-already-in-use'){
           debugPrint('email-already-exits');
-          noError = false;
           return '이미 가입된 이메일입니다';
         }
-      }
-      if(noError){
-        FirebaseAuth.instance.currentUser!.sendEmailVerification();
-
-        List<String?> parsedEmail = data.name!.split('@');
-        String? emailDomain = parsedEmail[1];
-        late final String univ;
-
-        if(emailDomain != null){
-          if(emailDomain.compareTo('inha.edu.kr') == 0){
-            univ = 'inha';
-          }
-          else if(emailDomain.compareTo('ajou.ac.kr') == 0){
-            univ = 'ajou';
-          }
-        }
-        else{
-          return '올바른 학교 이메일을 입력해주세요';
-        }
-
-        final profileRef = FirebaseStorage.instance
-            .ref().child('profile_image')
-            .child('basic.jpeg');
-
-        await profileRef.getDownloadURL().then(
-                (value) => setUser(data, value, univ)
-        );
       }
       return null;
     });
@@ -154,6 +150,11 @@ class _LoginSignupScreen extends State<LoginSignupScreen> {
         onRecoverPassword: _recoverPassword,
         navigateBackAfterRecovery: true,
         userType: LoginUserType.email,
+        onSubmitAnimationCompleted: (){
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => LoadingScreen(),
+          ));
+        },
         messages: LoginMessages(
           userHint: '이메일',
           passwordHint: '비밀번호',

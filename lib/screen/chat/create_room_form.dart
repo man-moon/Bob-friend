@@ -202,6 +202,9 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                               .doc();
 
                           final user = FirebaseAuth.instance.currentUser;
+                          final userRef = await FirebaseFirestore.instance.collection('user').doc(user!.uid).get();
+
+                          Map u = {user.uid: userRef.data()!['nickname']};
 
                           await ref.set({
                             'roomName': _formKey.currentState!.value['roomName'],
@@ -211,7 +214,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                             'foodType': _formKey.currentState!.value['foodType'],
                             'univ': widget.univ,
                             'nowPersonnel': 1,
-                            'users': [user!.uid],
+                            'users': [u],
                             'owner': user.uid,
                           });
 
@@ -224,10 +227,10 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
 
                           Navigator.pop(context);
                           Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                              //deliver doc ref
-                              return ChatScreen(ref);
-                            })
+                              MaterialPageRoute(builder: (context) {
+                                //deliver doc ref
+                                return ChatScreen(ref);
+                              })
                           );
 
 
@@ -251,14 +254,14 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
     );
   }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
-  //
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   initializeDateFormatting('ko_KR');
-  // }
+// @override
+// void initState() {
+//   super.initState();
+// }
+//
+// @override
+// void didChangeDependencies() {
+//   super.didChangeDependencies();
+//   initializeDateFormatting('ko_KR');
+// }
 }

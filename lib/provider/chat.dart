@@ -11,7 +11,7 @@ class ChatProvider extends ChangeNotifier{
   String? _owner;
   String? _roomName;
   String? _univ;
-  late List<dynamic> _users;
+  late List<Map<String, dynamic>> _users;
 
   String? get docId => _docId;
   Timestamp? get date => _date;
@@ -22,7 +22,7 @@ class ChatProvider extends ChangeNotifier{
   String? get owner => _owner;
   String? get roomName => _roomName;
   String? get univ => _univ;
-  List<dynamic> get users => _users;
+  List<Map<String, dynamic>> get users => _users;
 
   set docId(String? value) {
     _docId = value;
@@ -60,7 +60,7 @@ class ChatProvider extends ChangeNotifier{
     _univ = value;
     notifyListeners();
   }
-  set users(List<dynamic> value) {
+  set users(List<Map<String, dynamic>> value) {
     _users = value;
     notifyListeners();
   }

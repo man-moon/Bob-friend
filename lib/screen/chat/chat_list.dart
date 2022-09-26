@@ -57,12 +57,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
   void showPopup() {
     showDialog(
         context: context,
-        //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
             actionsAlignment: MainAxisAlignment.end,
-            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
             //Dialog Main Title
@@ -101,8 +99,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
             ],
           );
         }
-      );
+    );
   }
+
   Future<DocumentReference<Map<String, dynamic>>> getChatInfo(int index) async{
     final chatRef = FirebaseFirestore.instance
         .collection('chats').doc(_chatList[index][1].toString());
@@ -110,7 +109,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
     chatProvider = Provider.of<ChatProvider>(context, listen: false);
 
     await chatRef.get().then((DocumentSnapshot ds){
-      chatProvider.users = ds.get('users');
+      List<dynamic> tempUsersList = ds.get('users');
+      List<Map<String, dynamic>> usersList = [];
+      for (var u in tempUsersList) {
+        usersList.add(u);
+      }
+
+      chatProvider.users = usersList;
       chatProvider.docId = _chatList[index][1].toString();
       chatProvider.date = ds.get('date');
       chatProvider.foodType = ds.get('foodType');
@@ -124,58 +129,65 @@ class _ChatListScreenState extends State<ChatListScreen> {
     return chatRef;
   }
   void tryJoin(dynamic chatRef, int index) async{
-    final maxPersonnel = context.read<ChatProvider>().maxPersonnel;
-    final nowPersonnel = context.read<ChatProvider>().nowPersonnel;
-    final users = context.read<ChatProvider>().users;
+    chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    final maxPersonnel = chatProvider.maxPersonnel;
+    final nowPersonnel = chatProvider.nowPersonnel;
+    final users = chatProvider.users;
+
+    bool joined = false;
 
     //* case1: already joined*/
-    if(users.contains(FirebaseAuth.instance.currentUser!.uid)){
-      //if(!mounted) return;
-      Navigator.push(
+    for (var u in users) {
+      if(u.containsKey(FirebaseAuth.instance.currentUser!.uid) == true){
+        joined = true;
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatScreen(chatRef)
+            )
+        ).then((value) {
+          loadChatList();
+        });
+      }
+    }
+
+    if(joined == false){
+      //* case2: not joined, overcapacity*/
+      if(maxPersonnel! <= nowPersonnel!){
+        //if(!mounted) return;
+        showTopSnackBar(
           context,
-          MaterialPageRoute(
-              builder: (context) => ChatScreen(chatRef)
-          )
-      ).then((value) {
-        loadChatList();
-      });
-    }
+          const CustomSnackBar.error(message: '방이 가득찼어요'),
+          animationDuration: const Duration(milliseconds: 1200),
+          displayDuration: const Duration(milliseconds: 0),
+          reverseAnimationDuration: const Duration(milliseconds: 800),
+        );
+      }
 
-    //* case2: not joined, overcapacity*/
-    else if(maxPersonnel! <= nowPersonnel!){
-      //if(!mounted) return;
-      showTopSnackBar(
-        context,
-        const CustomSnackBar.error(message: '방이 가득찼어요'),
-        animationDuration: const Duration(milliseconds: 1200),
-        displayDuration: const Duration(milliseconds: 0),
-        reverseAnimationDuration: const Duration(milliseconds: 800),
-      );
-    }
-
-    //* case3: joining */
-    else{
-      updateChatRoom(chatRef, users, nowPersonnel, maxPersonnel);
-      //if(!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ChatScreen(chatRef)
-        )
-      ).then((value) {
-        loadChatList();
-      });
+      //* case3: joining */
+      else{
+        updateChatRoom(chatRef, users, nowPersonnel, maxPersonnel);
+        if(!mounted) return;
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatScreen(chatRef)
+            )
+        ).then((value) {
+          loadChatList();
+        });
+      }
     }
   }
-  void updateChatRoom(
-      final chatRef, final users, final nowPersonnel, final maxPersonnel) async{
-    users.add(FirebaseAuth.instance.currentUser!.uid);
+  void updateChatRoom(final chatRef, final users, final nowPersonnel, final maxPersonnel) async{
+    UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+    users.add({FirebaseAuth.instance.currentUser!.uid: userProvider.nickname});
     await chatRef.update({'nowPersonnel': nowPersonnel + 1});
     await chatRef.update({'users': users});
   }
 
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState>
+  _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -226,47 +238,42 @@ class _ChatListScreenState extends State<ChatListScreen> {
       ),
 
       body:
-          RefreshIndicator(
-          key: _refreshIndicatorKey,
-          color: Colors.white,
-          backgroundColor: Colors.orangeAccent,
-          strokeWidth: 4.0,
-          onRefresh: () async {
-            // Replace this delay with the code to be executed during refresh
-            // and return a Future when code finishs execution.
-            loadChatList();
+      RefreshIndicator(
+        key: _refreshIndicatorKey,
+        color: Colors.white,
+        backgroundColor: Colors.orangeAccent,
+        strokeWidth: 4.0,
+        onRefresh: () async {
+          // Replace this delay with the code to be executed during refresh
+          // and return a Future when code finishes execution.
+          loadChatList();
+          return Future<void>.delayed(const Duration(seconds: 1));
+        },
+          child: ListView.builder(
+            itemCount: _chatList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Card(
+                child: ListTile(
+                  onLongPress: () {
+                    showPopup();
+                  },
+                  onTap: () async {
+                    await getChatInfo(index).then((chatRef){
+                      tryJoin(chatRef, index);
+                    });
 
-            return Future<void>.delayed(const Duration(seconds: 1));
-          },
-          // Pull from top to show refresh indicator.
-          child: ChangeNotifierProvider(
-            create: (_) => ChatProvider(),
-            child: ListView.builder(
-              itemCount: _chatList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Card(
-                  child: ListTile(
-                    onLongPress: () {
-                      showPopup();
-                    },
-                    onTap: () async {
-                      await getChatInfo(index).then((chatRef){
-                        tryJoin(chatRef, index);
-                      });
-
-                    },
-                    title: Row(
+                  },
+                  title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(_chatList[index][0]['roomName']),
-                          Text('${_chatList[index][0]['nowPersonnel']}/${_chatList[index][0]['maxPersonnel']}')
-                        ]),
-                  ),
-                );
-              },
-            ),
+                      children: [
+                        Text(_chatList[index][0]['roomName']),
+                        Text('${_chatList[index][0]['nowPersonnel']}/${_chatList[index][0]['maxPersonnel']}')
+                      ]),
+                ),
+              );
+            },
           ),
-        ),
+      ),
 
 
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
@@ -279,7 +286,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 return CreateRoomFormScreen(univ: _value.toString(),);
               })
           ).then((value){
-              loadChatList();
+            loadChatList();
           });
         },
         backgroundColor: Colors.orangeAccent[150],

@@ -31,16 +31,23 @@ class MyApp extends StatelessWidget {
         ),
         fontFamily: 'BM',
       ),
-      home: StreamBuilder(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            // return AnimatedSwitcher(
-            //   duration: const Duration(seconds: 2),
-            //   child: snapshot.hasData ? const LoadingScreen() : const LoginSignupScreen(),
-            // );
-            return snapshot.hasData ? const LoadingScreen() : const LoginSignupScreen();
-          },
-        ),
+      home: Builder(
+        builder: (context) {
+          return (FirebaseAuth.instance.currentUser != null) ?
+            const LoadingScreen() : const LoginSignupScreen();
+        },
+      )
+
+      // StreamBuilder(
+      //     stream: FirebaseAuth.instance.authStateChanges(),
+      //     builder: (context, snapshot) {
+      //       // return AnimatedSwitcher(
+      //       //   duration: const Duration(seconds: 2),
+      //       //   child: snapshot.hasData ? const LoadingScreen() : const LoginSignupScreen(),
+      //       // );
+      //       return snapshot.hasData ? const LoadingScreen() : const LoginSignupScreen();
+      //     },
+      //   ),
     );
   }
 }

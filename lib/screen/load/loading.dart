@@ -37,16 +37,17 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   Widget build(BuildContext context) {
     userProvider = Provider.of<UserProvider>(context, listen: false);
-
-    FirebaseFirestore.instance.collection('user').
-    doc(FirebaseAuth.instance.currentUser!.uid).get().then(
-        (value) => initUserInfo(value)).then(
-            (value) =>
-                Navigator.pushAndRemoveUntil(context,
-                MaterialPageRoute(builder: (BuildContext context) =>
-                    const HomeScreen()), (route) => false
-            )
-        );
+    if(mounted){
+      FirebaseFirestore.instance.collection('user').
+      doc(FirebaseAuth.instance.currentUser!.uid).get().then(
+              (value) => initUserInfo(value)).then(
+              (value) =>
+              Navigator.pushAndRemoveUntil(context,
+                  MaterialPageRoute(builder: (BuildContext context) =>
+                  const HomeScreen()), (route) => false
+              )
+      );
+    }
 
     return Image.asset(
       'image/load.gif',

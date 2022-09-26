@@ -1,6 +1,7 @@
 import 'package:bobfriend/screen/chat/new_message.dart';
 import 'package:bobfriend/config/palette.dart';
 import 'package:bobfriend/provider/chat.dart';
+import 'package:bobfriend/screen/profile/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -37,12 +38,13 @@ class _ChatScreenState extends State<ChatScreen> {
   String selectedActions = '';
 
 
+
   Future<void> getRoomInfo() async {
     await widget.ref.get().then((DocumentSnapshot ds) {
       setState(() {
         roomName = ds.get('roomName');
         now = ds.get('nowPersonnel');
-        users = ds.get('users');
+        //users = ds.get('users');
         owner = ds.get('owner');
       });
     });
@@ -51,7 +53,7 @@ class _ChatScreenState extends State<ChatScreen> {
           .collection('user')
           .doc(e.toString())
           .get();
-      usersNickname.add(userData.data()!['nickname']);
+      usersNickname.add(userData.data()![0]['nickname']);
     }
     setState(() {
       usersNickname = usersNickname;
@@ -135,19 +137,13 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text(
-                  '취소',
-                  style: TextStyle(color: Colors.black),
-                ),
+                child: const Text('취소'),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               TextButton(
-                child: const Text(
-                  '삭제',
-                  style: TextStyle(color: Colors.black),
-                ),
+                child: const Text('삭제'),
                 onPressed: () {
                   widget.ref.delete();
 
@@ -262,9 +258,12 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          foregroundColor: Colors.black,
+            foregroundColor: Colors.black,
             title: Text(
               roomName,
+              style: const TextStyle(
+                color: Colors.black,
+              ),
             ),
             leading: IconButton(
                 onPressed: () {
@@ -272,6 +271,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 },
                 icon: const Icon(
                   Icons.arrow_back_rounded,
+                  color: Colors.black,
                 ))),
         endDrawer: Drawer(
           backgroundColor: Colors.white,
@@ -287,6 +287,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: DrawerHeader(
                         decoration: BoxDecoration(
                           shape: BoxShape.rectangle,
+                          color: Colors.orangeAccent,
                         ),
                         child: Text(
                           '채팅방 서랍',
@@ -308,30 +309,73 @@ class _ChatScreenState extends State<ChatScreen> {
                           )),
                     ),
                     /** 참여자 목록 */
-                    for (int i = 0; i < usersNickname.length; i++)
-                      ListTile(
-                        //팔로우중이면 이름 옆에 하트 표시
-                        leading: const Icon(Icons.account_circle),
-                        title: Text(usersNickname[i]),
-                        onTap: () {
-                          //상대방 프로필 페이지 전환
-                        },
-                        trailing: PopupMenuButton<Menu>(
-                            // Callback that sets the selected popup menu item.
-                            onSelected: (Menu item) {
-                              showReportPopup();
-                              setState(() {
-                                selectedActions = item.name;
-                              });
-                            },
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry<Menu>>[
-                                  const PopupMenuItem<Menu>(
-                                    value: Menu.report,
-                                    child: Text('신고'),
-                                  ),
-                                ]),
-                      ),
+                    StreamBuilder(
+                        stream: widget.ref.snapshots(),
+                        builder: (context, AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+                          if(snapshot!.connectionState == ConnectionState.waiting){
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          final docRef = snapshot.data!;
+
+                          return ListView.builder(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              itemCount: docRef.data()!['users'].length,
+                              itemBuilder: (BuildContext context, int index){
+                                String user = docRef.data()!['users'][index].values.toString();
+                                user = user.substring(1, user.length - 1);
+                                return ListTile(
+                                  title: Text(user),
+                                  leading: const Icon(Icons.account_circle_rounded),
+                                );
+                              }
+                          );
+                        }
+                    ),
+
+
+                    /** old version */
+                    // for (int i = 0; i < usersNickname.length; i++)
+                    //   ListTile(
+                    //     //팔로우중이면 이름 옆에 하트 표시
+                    //     //프로필 이미지
+                    //     leading: const Icon(Icons.account_circle),
+                    //     title: Text(usersNickname[i]),
+                    //     onTap: () {
+                    //       //상대방 프로필 페이지 전환
+                    //       if(userUid.compareTo(users[i].toString()) != 0){
+                    //         Navigator.push(context,
+                    //             MaterialPageRoute(builder: (context) {
+                    //               return ProfileScreen(uid: users[i]);
+                    //             })
+                    //         );
+                    //       }
+                    //       else{
+                    //         Navigator.push(context,
+                    //             MaterialPageRoute(builder: (context) {
+                    //               return const ProfileScreen();
+                    //             })
+                    //         );
+                    //       }
+                    //     },
+                    //     trailing: PopupMenuButton<Menu>(
+                    //         // Callback that sets the selected popup menu item.
+                    //         onSelected: (Menu item) {
+                    //           showReportPopup();
+                    //           setState(() {
+                    //             selectedActions = item.name;
+                    //           });
+                    //         },
+                    //         itemBuilder: (BuildContext context) =>
+                    //             <PopupMenuEntry<Menu>>[
+                    //               const PopupMenuItem<Menu>(
+                    //                 value: Menu.report,
+                    //                 child: Text('신고'),
+                    //               ),
+                    //             ]),
+                    //   ),
                     const Divider(),
                   ],
                 ),
@@ -406,5 +450,6 @@ class _ChatScreenState extends State<ChatScreen> {
     // TODO: implement initState
     super.initState();
     getRoomInfo();
+
   }
 }
