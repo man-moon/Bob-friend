@@ -135,13 +135,19 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text('취소'),
+                child: const Text(
+                  '취소',
+                  style: TextStyle(color: Colors.black),
+                ),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               TextButton(
-                child: const Text('삭제'),
+                child: const Text(
+                  '삭제',
+                  style: TextStyle(color: Colors.black),
+                ),
                 onPressed: () {
                   widget.ref.delete();
 
@@ -256,14 +262,16 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text(roomName),
+          foregroundColor: Colors.black,
+            title: Text(
+              roomName,
+            ),
             leading: IconButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
                 icon: const Icon(
                   Icons.arrow_back_rounded,
-                  color: Colors.white,
                 ))),
         endDrawer: Drawer(
           backgroundColor: Colors.white,
@@ -279,7 +287,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: DrawerHeader(
                         decoration: BoxDecoration(
                           shape: BoxShape.rectangle,
-                          color: Colors.orangeAccent,
                         ),
                         child: Text(
                           '채팅방 서랍',

@@ -381,6 +381,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   IconButton(
                       onPressed: () {
                         _authentication.signOut();
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (BuildContext context) =>
+                            const MyApp()), (route) => false);
+                        UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+                        userProvider.clear();
                       },
                       icon: const Icon(
                         Icons.logout_rounded,

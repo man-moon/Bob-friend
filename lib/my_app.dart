@@ -2,6 +2,7 @@ import 'package:bobfriend/provider/chat.dart';
 import 'package:bobfriend/provider/joined_chatrooms_list.dart';
 import 'package:bobfriend/provider/user.dart';
 import 'package:bobfriend/screen/home.dart';
+import 'package:bobfriend/screen/load/loading.dart';
 import 'package:bobfriend/screen/login/login_signup.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,10 +34,11 @@ class MyApp extends StatelessWidget {
       home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
-            return AnimatedSwitcher(
-              duration: const Duration(seconds: 2),
-              child: snapshot.hasData ? const HomeScreen() : LoginSignupScreen(),
-            );
+            // return AnimatedSwitcher(
+            //   duration: const Duration(seconds: 2),
+            //   child: snapshot.hasData ? const LoadingScreen() : const LoginSignupScreen(),
+            // );
+            return snapshot.hasData ? const LoadingScreen() : const LoginSignupScreen();
           },
         ),
     );

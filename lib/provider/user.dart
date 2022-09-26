@@ -5,14 +5,14 @@ class UserProvider extends ChangeNotifier{
   String? _email;
   String? _profileImageLink;
   String? _univ;
-  List<String> _friends = [];
+  List<dynamic> _friends = [];
   double? _temperature;
 
   String? get nickname => _nickname;
   String? get email => _email;
   String? get profileImageLink => _profileImageLink;
   String? get univ => _univ;
-  List<String> get friends => _friends;
+  List<dynamic> get friends => _friends;
   double? get temperature => _temperature;
 
   set nickname(String? value) {
@@ -31,16 +31,26 @@ class UserProvider extends ChangeNotifier{
     _univ = value;
     notifyListeners();
   }
-  void addFriends(String value) {
+  void addFriends(dynamic value) {
     friends.add(value);
     notifyListeners();
   }
-  set friends(List<String> value) {
+  set friends(List<dynamic> value) {
     _friends = value;
     notifyListeners();
   }
   set temperature(double? value) {
     _temperature = value;
     notifyListeners();
+  }
+
+  void clear() {
+    _nickname = null;
+    _email = null;
+    _profileImageLink = null;
+    _univ = null;
+    _friends = [];
+    _temperature = null;
+    debugPrint('User info Cleared!');
   }
 }
