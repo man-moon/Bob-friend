@@ -24,6 +24,20 @@ class MyApp extends StatelessWidget {
           primary: Colors.white,
           secondary: Colors.deepOrangeAccent,
         ),
+        appBarTheme: const AppBarTheme(
+          iconTheme: IconThemeData(
+            color: Colors.black,
+          ),
+          titleTextStyle: TextStyle(
+            color: Colors.black,
+            fontFamily: 'BM',
+            fontSize: 20,
+
+          )
+        ),
+        textSelectionTheme: const TextSelectionThemeData(
+            cursorColor: Colors.black
+        ),
         fontFamily: 'BM',
       ),
       home: Builder(

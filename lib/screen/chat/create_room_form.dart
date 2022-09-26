@@ -241,7 +241,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                       },
                       child: const Text(
                         '방 만들기',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                   ),

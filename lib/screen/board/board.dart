@@ -61,7 +61,7 @@ class BoardListScreenState extends State<BoardListScreen>{
                 });
           }
           else{
-            return const Center(child: CircularProgressIndicator(),);
+            return const Center(child: CircularProgressIndicator(color: Colors.black,),);
           }
         },
       ),
