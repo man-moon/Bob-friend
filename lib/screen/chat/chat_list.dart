@@ -101,7 +101,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
         }
     );
   }
-
   Future<DocumentReference<Map<String, dynamic>>> getChatInfo(int index) async{
     final chatRef = FirebaseFirestore.instance
         .collection('chats').doc(_chatList[index][1].toString());
@@ -258,10 +257,13 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     showPopup();
                   },
                   onTap: () async {
-                    await getChatInfo(index).then((chatRef){
-                      tryJoin(chatRef, index);
-                    });
-
+                    try{
+                      await getChatInfo(index).then((chatRef){
+                        tryJoin(chatRef, index);
+                      });
+                    } catch(e){
+                      debugPrint(e.toString());
+                    }
                   },
                   title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -269,6 +271,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         Text(_chatList[index][0]['roomName']),
                         Text('${_chatList[index][0]['nowPersonnel']}/${_chatList[index][0]['maxPersonnel']}')
                       ]),
+                  subtitle: Text(_chatList[index][0]['foodType'].toString()),
                 ),
               );
             },
