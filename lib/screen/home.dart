@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:bobfriend/screen/board/board.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
-
+import 'package:bobfriend/screen/friend/test.dart';
 import '../provider/user.dart';
 
 
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
               //Chat, Community, Friends, My Page로 대체
               const ChatListScreen(),
               BoardListScreen(),
-              const Center(child: Text('Friends'),),
+              Content(),
               //Profile
               ProfileScreen(uid: FirebaseAuth.instance.currentUser!.uid),
             ],
