@@ -297,4 +297,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    debugPrint('chatlist dispose');
+
+  }
 }

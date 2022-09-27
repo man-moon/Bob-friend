@@ -72,7 +72,6 @@ class _BoardWriteScreenState extends State<BoardWriteScreen> {
                     minLines: 1,
                     controller: inputController,
                     decoration: InputDecoration(
-
                         border: InputBorder.none,
                         focusedBorder: InputBorder.none,
                         hintText: '내용을 입력해주세요.'),

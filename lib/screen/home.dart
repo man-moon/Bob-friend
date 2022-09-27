@@ -26,21 +26,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
     initializeDateFormatting(Localizations.localeOf(context).languageCode);
 
-    return DefaultTabController(
+    return const DefaultTabController(
         length: 4,
         child: Scaffold(
           body: TabBarView(
-            physics: const NeverScrollableScrollPhysics(),
+            physics: NeverScrollableScrollPhysics(),
             children: [
               //Chat, Community, Friends, My Page로 대체
-              const ChatListScreen(),
+              ChatListScreen(),
               BoardListScreen(),
-              const Center(child: Text('Friends'),),
+              Center(child: Text('Friends'),),
               //Profile
-              ProfileScreen(uid: FirebaseAuth.instance.currentUser!.uid),
+              ProfileScreen(),
             ],
           ),
-          bottomNavigationBar: const BottomBar(),
+          bottomNavigationBar: BottomBar(),
         ),
     );
 

@@ -324,10 +324,26 @@ class _ChatScreenState extends State<ChatScreen> {
                               shrinkWrap: true,
                               itemCount: docRef.data()!['users'].length,
                               itemBuilder: (BuildContext context, int index){
-                                String user = docRef.data()!['users'][index].values.toString();
-                                user = user.substring(1, user.length - 1);
+                                String userNickname = docRef.data()!['users'][index].values.toString();
+                                String userUid = docRef.data()!['users'][index].keys.toString();
+                                userNickname = userNickname.substring(1, userNickname.length - 1);
+                                userUid = userUid.substring(1, userUid.length - 1);
                                 return ListTile(
-                                  title: Text(user),
+                                  onTap: () {
+                                    if(userUid == FirebaseAuth.instance.currentUser!.uid){
+                                      debugPrint('마이페이지');
+                                      Navigator.push(context,
+                                          MaterialPageRoute(
+                                              builder: (context) => const ProfileScreen()));
+                                    }
+                                    else{
+                                      debugPrint('다른사람페이지');
+                                      Navigator.push(context,
+                                          MaterialPageRoute(
+                                              builder: (context) => ProfileScreen(uid: userUid,)));
+                                    }
+                                  },
+                                  title: Text(userNickname),
                                   leading: const Icon(Icons.account_circle_rounded),
                                 );
                               }

@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'dart:io';
@@ -45,6 +47,9 @@ import 'package:bobfriend/provider/user.dart';
 /// + 주문수
 /// + 좋아하는 음식
 /// +
+///
+/// 친구페이지
+/// 친구와 함께 먹은 횟수
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({this.uid, Key? key}) : super(key: key);
@@ -56,15 +61,36 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late final bool isMe;
+  String othersNickname = '';
+  double othersTemperature = 0;
+  String othersProfileImageUrl = 'https://firebasestorage.googleapis.com/v0/b/bobfriend-7ffd5.appspot.com/o/profile_image%2Fbasic.jpeg?alt=media&token=b4018fb6-05ac-4e34-babd-04ee02ee2ce5';
+  String othersUniv = '';
+
   final _authentication = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
   late dynamic _nicknameController;
+
+  void follow(){
+
+  }
+
+  void getUserInfo() async {
+    final ref = await FirebaseFirestore.instance.collection('user').doc(widget.uid).get();
+    setState(() {
+      othersNickname = ref.data()!['nickname'];
+      othersTemperature = ref.data()!['temperature'];
+      othersProfileImageUrl = ref.data()!['profile_image'];
+      othersUniv = ref.data()!['univ'] == 'ajou' ? '아주대학교' : '인하대학교';
+    });
+  }
 
   @override
   void initState() {
     debugPrint('INIT!!');
     super.initState();
-    checkIsMe();
+    if(!checkIsMe()){
+      getUserInfo();
+    }
   }
 
   @override
@@ -73,12 +99,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.didChangeDependencies();
   }
 
-  void checkIsMe() {
-    if (widget.uid == null) {
-      isMe = false;
-    } else {
-      isMe = true;
-    }
+  bool checkIsMe() {
+    setState(() {
+      isMe = widget.uid == null ? true : false;
+    });
+    return isMe;
   }
 
   //db 업데이트, user provider 업데이트
@@ -135,13 +160,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text('취소'),
+                child: const Text('취소', style: TextStyle(color: Colors.black),),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               TextButton(
-                child: const Text('사진 선택'),
+                child: const Text('사진 선택', style: TextStyle(color: Colors.black),),
                 onPressed: () {
                   pickImage();
                   Navigator.pop(context);
@@ -180,6 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: TextFormField(
                     decoration: const InputDecoration(
                       icon: Icon(Icons.abc_rounded),
+                      iconColor: Colors.black,
                       labelText: '닉네임',
                     ),
                     autofocus: true,
@@ -192,13 +218,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text('취소'),
+                child: const Text('취소', style: TextStyle(color: Colors.black),),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               TextButton(
-                child: const Text('변경'),
+                child: const Text('변경', style: TextStyle(color: Colors.black),),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     debugPrint('processing');
@@ -243,11 +269,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         text: context.select((UserProvider u) => u.nickname));
     return Scaffold(
         appBar: AppBar(
-          title: const Center(
-            child: Text(
-              '마이페이지',
-              style: TextStyle(color: Colors.black),
-            ),
+          centerTitle: true,
+          title: Text(isMe? '마이페이지' : '$othersNickname님의 프로필',
+            style: const TextStyle(color: Colors.black),
           ),
         ),
         body: Stack(
@@ -259,6 +283,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 children: [
                   //프로필 이미지
+                  if(isMe)
                   Padding(
                     padding: const EdgeInsets.only(top: 15),
                     child: GestureDetector(
@@ -296,7 +321,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
 
+                  if(!isMe)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                        child: CachedNetworkImage(
+                          imageUrl: othersProfileImageUrl,
+                          imageBuilder: (context, imageProvider) => Container(
+                            width: 130.0,
+                            height: 130.0,
+                            decoration: BoxDecoration(
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius: 5,
+                                  spreadRadius: 3,
+                                )
+                              ],
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(30),
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          //placeholder: (context, url) => CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                          const Icon(Icons.person_rounded),
+                        ),
+                    ),
+
                   //닉네임
+                  if(isMe)
                   Padding(
                     padding: const EdgeInsets.only(top: 0),
                     child: Row(
@@ -312,17 +368,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               icon: const Icon(Icons.edit_rounded)),
                         ]),
                   ),
+                  if(!isMe)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(othersNickname),
+                      ]
+                    ),
+                  ),
 
                   //이메일
-                  if (isMe)
+                  if(isMe)
                     Padding(
                       padding: const EdgeInsets.only(top: 0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            context
-                                .select((UserProvider u) => u.email.toString()),
+                            context.select((UserProvider u) => u.email.toString()),
                             style: const TextStyle(
                                 fontSize: 12, color: Colors.grey),
                           )
@@ -330,44 +395,104 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
 
-                  //온도
-                  Padding(
-                    padding: const EdgeInsets.only(top: 30),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.values[0],
+                  if(!isMe)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(
-                              width: 70,
-                              height: 130,
-                              child: Thermometer(
-                                outlineThickness: 4,
-                                radius: 20,
-                                barWidth: 20,
-                                outlineColor: Colors.grey,
-                                mercuryColor: context.select((UserProvider u) =>
-                                    u.temperature!.toDouble()) > 40 ? Colors.red : Colors.orangeAccent,
-                                value: context.select((UserProvider u) =>
-                                    u.temperature!.toDouble()),
-                                minValue: 0,
-                                maxValue: 100,
-                              )),
                           Text(
-                            context.select(
-                                (UserProvider u) => u.temperature.toString()),
+                            othersUniv,
                             style: const TextStyle(
-                                fontSize: 12, color: Colors.black),
+                                fontSize: 12, color: Colors.grey),
                           )
-                        ]),
-                  ),
+                        ],
+                      ),
+                    ),
 
                   //팔로우
-                  if (!isMe)
+                  //if (!isMe)
+                  // Padding(
+                  //   padding: const EdgeInsets.only(top: 10),
+                  //   child: context.select((UserProvider u) => u.friends.contains(widget.uid) ?
+                  //           const Icon(Icons.favorite_rounded) : const Icon(Icons.favorite_border_rounded),
+                  //   ),
+                  // ),
+
+                  /**
+                   * 온도
+                   * */
+
                   Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: context.select((UserProvider u) => u.friends.contains(widget.uid) ?
-                            const Icon(Icons.favorite_rounded) : const Icon(Icons.favorite_border_rounded),
+                    padding: EdgeInsets.only(top: 30),
+                    child: Container(
+                      margin: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.08),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            '매너 온도',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          IconButton(
+                            onPressed: (){
+                              debugPrint('온도 설명 페이지');
+                            },
+                            icon: const Icon(Icons.info_rounded),
+                            iconSize: 16,
+                          ),
+                        ]
+                      ),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        LinearPercentIndicator(
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          lineHeight: 15.0,
+                          percent: isMe ?
+                            context.select((UserProvider u) => u.temperature!.toDouble()/100) :
+                              othersTemperature/100
+                          ,
+                          center: Text(
+                            isMe ?
+                              '${context.select((UserProvider u) => u.temperature.toString())}°C' :
+                                '$othersTemperature°C'
+                            ,
+                            style: GoogleFonts.lato(
+                              fontSize: 12
+                            ),
+                          ),
+                          backgroundColor: Colors.grey[340],
+                          progressColor: Colors.orangeAccent,
+                          animation: true,
+                          animationDuration: 1000,
+                          barRadius: const Radius.circular(15),
+                        ),
+                      ]
+                    ),
+                  ),
+
+                  /**
+                   * 좋아하는 음식
+                   */
+                  Padding(
+                    padding: EdgeInsets.only(top: 30),
+                    child: Container(
+                      margin: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.08),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text('선호하는 음식', style: TextStyle(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    )
+                  )
+
                 ],
               ),
             ),
@@ -407,4 +532,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _nicknameController.dispose();
     super.dispose();
   }
+
+
 }
