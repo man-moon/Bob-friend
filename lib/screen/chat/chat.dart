@@ -324,58 +324,32 @@ class _ChatScreenState extends State<ChatScreen> {
                               shrinkWrap: true,
                               itemCount: docRef.data()!['users'].length,
                               itemBuilder: (BuildContext context, int index){
-                                String user = docRef.data()!['users'][index].values.toString();
-                                user = user.substring(1, user.length - 1);
+                                String userNickname = docRef.data()!['users'][index].values.toString();
+                                String userUid = docRef.data()!['users'][index].keys.toString();
+                                userNickname = userNickname.substring(1, userNickname.length - 1);
+                                userUid = userUid.substring(1, userUid.length - 1);
                                 return ListTile(
-                                  title: Text(user),
+                                  onTap: () {
+                                    if(userUid == FirebaseAuth.instance.currentUser!.uid){
+                                      debugPrint('마이페이지');
+                                      Navigator.push(context,
+                                          MaterialPageRoute(
+                                              builder: (context) => const ProfileScreen()));
+                                    }
+                                    else{
+                                      debugPrint('다른사람페이지');
+                                      Navigator.push(context,
+                                          MaterialPageRoute(
+                                              builder: (context) => ProfileScreen(uid: userUid,)));
+                                    }
+                                  },
+                                  title: Text(userNickname),
                                   leading: const Icon(Icons.account_circle_rounded),
                                 );
                               }
                           );
                         }
                     ),
-
-
-                    /** old version */
-                    // for (int i = 0; i < usersNickname.length; i++)
-                    //   ListTile(
-                    //     //팔로우중이면 이름 옆에 하트 표시
-                    //     //프로필 이미지
-                    //     leading: const Icon(Icons.account_circle),
-                    //     title: Text(usersNickname[i]),
-                    //     onTap: () {
-                    //       //상대방 프로필 페이지 전환
-                    //       if(userUid.compareTo(users[i].toString()) != 0){
-                    //         Navigator.push(context,
-                    //             MaterialPageRoute(builder: (context) {
-                    //               return ProfileScreen(uid: users[i]);
-                    //             })
-                    //         );
-                    //       }
-                    //       else{
-                    //         Navigator.push(context,
-                    //             MaterialPageRoute(builder: (context) {
-                    //               return const ProfileScreen();
-                    //             })
-                    //         );
-                    //       }
-                    //     },
-                    //     trailing: PopupMenuButton<Menu>(
-                    //         // Callback that sets the selected popup menu item.
-                    //         onSelected: (Menu item) {
-                    //           showReportPopup();
-                    //           setState(() {
-                    //             selectedActions = item.name;
-                    //           });
-                    //         },
-                    //         itemBuilder: (BuildContext context) =>
-                    //             <PopupMenuEntry<Menu>>[
-                    //               const PopupMenuItem<Menu>(
-                    //                 value: Menu.report,
-                    //                 child: Text('신고'),
-                    //               ),
-                    //             ]),
-                    //   ),
                     const Divider(),
                   ],
                 ),
