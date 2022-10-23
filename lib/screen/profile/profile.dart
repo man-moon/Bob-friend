@@ -94,6 +94,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   @override
+  void dispose() {
+    debugPrint('DISPOSE!');
+    _nicknameController.dispose();
+    super.dispose();
+  }
+
+  @override
   void didChangeDependencies() {
     debugPrint('didChangeDependencies!!');
     super.didChangeDependencies();
@@ -106,7 +113,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return isMe;
   }
 
-  //db 업데이트, user provider 업데이트
   void updateProfileImage(XFile? pickedImage) async {
     File image = File(pickedImage!.path);
     final ref = FirebaseStorage.instance
@@ -320,9 +326,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       },
                     ),
                   ),
-
                   if(!isMe)
-                    Padding(
+                  Padding(
                       padding: const EdgeInsets.only(top: 15),
                         child: CachedNetworkImage(
                           imageUrl: othersProfileImageUrl,
@@ -394,7 +399,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
                     ),
-
                   if(!isMe)
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
@@ -419,10 +423,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   //   ),
                   // ),
 
-                  /**
-                   * 온도
-                   * */
-
+                  //온도
                   Padding(
                     padding: EdgeInsets.only(top: 30),
                     child: Container(
@@ -476,9 +477,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
 
-                  /**
-                   * 좋아하는 음식
-                   */
+                  //선호 음식
                   Padding(
                     padding: EdgeInsets.only(top: 30),
                     child: Container(
@@ -498,26 +497,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             SlidingUpPanel(
               panel: Center(
-                child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                  const Text(
-                    '로그아웃',
-                    //style: TextStyle(color: Palette.textColor1),
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        _authentication.signOut();
-                        UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
-                        userProvider.clear();
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (BuildContext context) =>
-                            const MyApp()), (route) => false);
-                      },
-                      icon: const Icon(
-                        Icons.logout_rounded,
-                        //color: Palette.textColor1,
-                      )),
-                ]),
+                child: Column(
+                  children: [
+                    // ListView.builder(
+                    //   itemBuilder: ,
+                    // )
+                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                    const Text(
+                      '로그아웃',
+                      //style: TextStyle(color: Palette.textColor1),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          _authentication.signOut();
+                          UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+                          userProvider.clear();
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (BuildContext context) =>
+                              const MyApp()), (route) => false);
+                        },
+                        icon: const Icon(
+                          Icons.logout_rounded,
+                          //color: Palette.textColor1,
+                        )),
+                  ]),
+                  ]
+                ),
               ),
               collapsed: const Center(
                   child: Icon(Icons.keyboard_double_arrow_up_rounded)),
@@ -525,13 +531,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ));
   }
-
-  @override
-  void dispose() {
-    debugPrint('DISPOSE!');
-    _nicknameController.dispose();
-    super.dispose();
-  }
-
-
 }

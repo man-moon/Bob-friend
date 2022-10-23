@@ -16,7 +16,7 @@ class ChatBubbles extends StatelessWidget {
         mainAxisAlignment:
             isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          if (isMe)
+          if(isMe)
             Padding(
               padding: EdgeInsets.fromLTRB(0, 0, 5, 0),
               child: ChatBubble(
@@ -49,31 +49,41 @@ class ChatBubbles extends StatelessWidget {
           if (!isMe)
             Padding(
               padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-              child: ChatBubble(
-                clipper: ChatBubbleClipper4(type: BubbleType.receiverBubble),
-                backGroundColor: Color(0xffE7E7ED),
-                margin: EdgeInsets.only(top: 20),
-                child: Container(
-                  constraints: BoxConstraints(
-                    maxWidth: MediaQuery.of(context).size.width * 0.6,
+              child: GestureDetector(
+                onTap: (){
+                  debugPrint('');
+                },
+                child: ChatBubble(
+                  clipper: ChatBubbleClipper4(type: BubbleType.receiverBubble),
+                  backGroundColor: Color(0xffE7E7ED),
+                  margin: EdgeInsets.only(top: 20),
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.6,
+                    ),
+                    child: Column(
+                        crossAxisAlignment: isMe
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            userNickname,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, color: Colors.black38),
+                          ),
+                          Text(
+                            message,
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          ElevatedButton(
+                              onPressed: (){
+                                debugPrint('elevated');
+                              },
+                              child: Text('가게 선정하기', style: TextStyle(color: Colors.black),))
+                        ]),
                   ),
-                  child: Column(
-                      crossAxisAlignment: isMe
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          userNickname,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.black38),
-                        ),
-                        Text(
-                          message,
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ]),
-                ),
-                ),
+                  ),
+              ),
               ),
         ]);
   }

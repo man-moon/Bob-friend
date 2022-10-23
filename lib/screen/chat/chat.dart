@@ -416,7 +416,78 @@ class _ChatScreenState extends State<ChatScreen> {
             //SizedBox(height: 150,),
             NewMessage(widget.ref),
           ],
-        ));
+        ),
+      bottomSheet: Visibility(
+          visible: false,
+          child: Container(
+            height: 230,
+            width: double.infinity,
+            color: Colors.grey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(child:
+                Row(
+                  children: [
+                    Expanded(
+                      child: IconButton(
+                          onPressed: () {}, icon: Icon(Icons.abc_rounded)),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.shop_2_rounded),
+                      ),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.shop_2_rounded),
+                      ),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        onPressed: () {
+                        },
+                        icon: Icon(Icons.shop_2_rounded),
+                      ),
+                    ),
+                  ],
+                ),),
+                Expanded(child:
+                Row(
+                  children: [
+                    Expanded(
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.shop_2_rounded),
+                      ),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.shop_2_rounded),
+                      ),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.shop_2_rounded),
+                      ),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.shop_2_rounded),
+                      ),
+                    ),
+                  ],
+                ),
+                ),
+              ],
+            ),
+          )),
+    );
   }
 
   @override

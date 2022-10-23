@@ -1,5 +1,6 @@
 import 'package:bobfriend/config/palette.dart';
 import 'package:bobfriend/screen/chat/chat.dart';
+import 'package:bobfriend/screen/chat/new_message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -222,7 +223,9 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                             'text': '채팅방을 생성하였습니다! 새로운 친구가 오면 알려드릴게요!',
                             'time': Timestamp.now(),
                             'userId': 'admin',
-                            'nickname': '귀요미',
+                            'nickname': '밥친구',
+                            'type': MessageType.normal,
+                            'action': MessageAction.none,
                           });
 
                           Navigator.pop(context);

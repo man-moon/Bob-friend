@@ -9,6 +9,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/user.dart';
+import 'friend/friend.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -35,8 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
               //Chat, Community, Friends, My Page로 대체
               ChatListScreen(),
               BoardListScreen(),
-              Center(child: Text('Friends'),),
-              //Profile
+              FriendScreen(),//Profile
               ProfileScreen(),
             ],
           ),
@@ -45,24 +45,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
 
-  }
-
-
-  @override
-  void initState() {
-    super.initState();
-    initUserInfo();
-  }
-
-  void initUserInfo() async {
-    UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
-    final userInfo = await FirebaseFirestore.instance.collection('user').
-                            doc(FirebaseAuth.instance.currentUser!.uid).get();
-    userProvider.nickname = userInfo.data()!['nickname'];
-    userProvider.email = userInfo.data()!['email'];
-    userProvider.profileImageLink = userInfo.data()!['profile_image'];
-    userProvider.univ = userInfo.data()!['univ'];
-    userProvider.temperature = userInfo.data()!['temperature'];
-    userProvider.friends = userInfo.data()!['friends'];
   }
 }

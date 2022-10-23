@@ -9,6 +9,11 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 late StreamSubscription<bool> keyboardSubscription;
 
+enum MessageType { normal, action, image }
+enum MessageAction{
+  none, selectRestaurant, selectMenu, calculatePrice,
+  uploadReceipt, selectMeetingPlace, notifyDeliveryCompletion, rate }
+
 class NewMessage extends StatefulWidget {
   const NewMessage(this.ref, {Key? key}) : super(key: key);
 
@@ -30,6 +35,8 @@ class _NewMessageState extends State<NewMessage> with WidgetsBindingObserver {
       'time': Timestamp.now(),
       'userId': FirebaseAuth.instance.currentUser!.uid,
       'nickname': userData.data()!['nickname'],
+      'type': MessageType.normal,
+      'action': MessageAction.none,
     });
 
     setState(() {
