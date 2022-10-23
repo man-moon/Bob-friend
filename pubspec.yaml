@@ -46,7 +46,6 @@ dependencies:
   font_awesome_flutter: ^10.1.0
   firebase_storage: ^10.3.8
   persistent_bottom_nav_bar: ^5.0.2
-  flutter_thermometer: ^1.0.0
   flutter_material_color_picker: ^1.1.0+2
   flutter_secure_storage: ^6.0.0
   page_transition: ^2.0.9

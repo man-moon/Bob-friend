@@ -18,12 +18,6 @@ import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import '../../provider/user.dart';
 import '../login/login_signup.dart';
 
-import 'package:flutter_thermometer/label.dart';
-import 'package:flutter_thermometer/scale.dart';
-import 'package:flutter_thermometer/setpoint.dart';
-import 'package:flutter_thermometer/thermometer.dart';
-import 'package:flutter_thermometer/thermometer_paint.dart';
-import 'package:flutter_thermometer/thermometer_widget.dart';
 
 import 'package:bobfriend/provider/user.dart';
 
