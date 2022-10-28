@@ -123,6 +123,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       chatProvider.nowPersonnel = ds.get('nowPersonnel');
       chatProvider.owner = ds.get('owner');
       chatProvider.univ = ds.get('univ');
+      chatProvider.state = ds.get('state');
     });
 
     return chatRef;

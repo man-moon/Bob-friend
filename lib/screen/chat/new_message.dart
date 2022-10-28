@@ -75,10 +75,12 @@ class _NewMessageState extends State<NewMessage> with WidgetsBindingObserver {
           ),
           Expanded(
             child: TextField(
+              cursorColor: Colors.black,
               focusNode: focusNode,
               maxLines: null,
               controller: _controller,
               decoration: const InputDecoration(
+                labelStyle: TextStyle(color: Colors.black),
                 labelText: '메세지 전송'
               ),
               onChanged: (value){

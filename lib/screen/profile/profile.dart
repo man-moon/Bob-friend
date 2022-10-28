@@ -484,19 +484,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
                     )
-                  )
+                  ),
 
-                ],
-              ),
-            ),
-            SlidingUpPanel(
-              panel: Center(
-                child: Column(
-                  children: [
-                    // ListView.builder(
-                    //   itemBuilder: ,
-                    // )
-                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                  Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                     const Text(
                       '로그아웃',
                       //style: TextStyle(color: Palette.textColor1),
@@ -513,15 +503,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         },
                         icon: const Icon(
                           Icons.logout_rounded,
-                          //color: Palette.textColor1,
                         )),
                   ]),
-                  ]
-                ),
+
+                ],
               ),
-              collapsed: const Center(
-                  child: Icon(Icons.keyboard_double_arrow_up_rounded)),
-            )
+            ),
           ],
         ));
   }

@@ -1,13 +1,15 @@
+import 'package:bobfriend/config/msg_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_4.dart';
 
 class ChatBubbles extends StatelessWidget {
-  ChatBubbles(this.message, this.isMe, this.userNickname, {Key? key})
+  ChatBubbles(this.message, this.isMe, this.userNickname, this.action, {Key? key})
       : super(key: key);
   final String message;
   final String userNickname;
+  final String action;
   bool isMe;
 
   @override
@@ -71,15 +73,26 @@ class ChatBubbles extends StatelessWidget {
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, color: Colors.black38),
                           ),
+                          SizedBox(height: 5,),
                           Text(
                             message,
                             style: TextStyle(color: Colors.black),
                           ),
+                          if(action.compareTo(MessageAction.selectRestaurant.toString()) == 0)
                           ElevatedButton(
                               onPressed: (){
-                                debugPrint('elevated');
+                                debugPrint('가게 보러가요');
                               },
-                              child: Text('가게 선정하기', style: TextStyle(color: Colors.black),))
+                              child: const Text('가게 보러가기', style: TextStyle(color: Colors.black),)
+                          ),
+                          if(action.compareTo(MessageAction.selectMenu.toString()) == 0)
+                            ElevatedButton(
+                                onPressed: (){
+                                  debugPrint('메뉴 선정');
+                                },
+                                child: const Text('메뉴 정하러 가기', style: TextStyle(color: Colors.black),)
+                            )
+
                         ]),
                   ),
                   ),

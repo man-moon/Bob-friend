@@ -11,14 +11,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return KeyboardDismissOnTap(
-      child: MaterialApp(
+      return MaterialApp(
           title: 'BobFriend',
           supportedLocales: const <Locale>[Locale('ko'), Locale('en')],
           localizationsDelegates: const [
             FormBuilderLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
           ],
           theme: ThemeData(
             colorScheme: ColorScheme.fromSwatch().copyWith(
@@ -48,7 +48,6 @@ class MyApp extends StatelessWidget {
                 const LoadingScreen() : const LoginSignupScreen();
             },
           )
-        ),
-    );
+        );
   }
 }

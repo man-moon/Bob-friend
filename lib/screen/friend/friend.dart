@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:eventsource/eventsource.dart';
@@ -15,7 +16,6 @@ class _FriendScreenState extends State<FriendScreen> {
   Widget build(BuildContext context) {
     return IconButton(
         onPressed: (){
-
         },
         icon: const Icon(Icons.add));
 

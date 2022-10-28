@@ -1,3 +1,4 @@
+import 'package:bobfriend/config/chat_config.dart';
 import 'package:bobfriend/config/palette.dart';
 import 'package:bobfriend/screen/chat/chat.dart';
 import 'package:bobfriend/screen/chat/new_message.dart';
@@ -219,6 +220,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                             'nowPersonnel': 1,
                             'users': [u],
                             'owner': user.uid,
+                            'state': ChatState.none.toString(),
                           });
 
                           await ref.collection("chat").doc("WelcomeMessage").set({

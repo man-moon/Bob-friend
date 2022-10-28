@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bobfriend/screen/chat/chat_bubble.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,26 +20,29 @@ class Message extends StatelessWidget {
       stream: ref.collection('chat').orderBy('time', descending: true).snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot){
         if(snapshot.connectionState == ConnectionState.waiting){
+          debugPrint('====================WAITING=======================');
           return const Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(color: Colors.black,),
           );
         }
 
-        final chatDocs = snapshot.data!.docs;
-
-        return
-          ListView.builder(
-            padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
-            reverse: true,
-            itemCount: chatDocs.length,
-            itemBuilder: (context, index) {
-              return ChatBubbles(
-                  chatDocs[index]['text'],
-                  chatDocs[index]['userId'].toString() == FirebaseAuth.instance.currentUser!.uid,
-                  chatDocs[index]['nickname']
-              );
-            },
-          );
+        else{
+          final chatDocs = snapshot.data!.docs;
+          return
+            ListView.builder(
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+              reverse: true,
+              itemCount: chatDocs.length,
+              itemBuilder: (context, index) {
+                return ChatBubbles(
+                    chatDocs[index]['text'],
+                    chatDocs[index]['userId'].toString() == FirebaseAuth.instance.currentUser!.uid,
+                    chatDocs[index]['nickname'],
+                    chatDocs[index]['action'],
+                );
+              },
+            );
+        }
       },
     );
   }
