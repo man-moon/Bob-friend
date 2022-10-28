@@ -2,7 +2,9 @@ import 'package:bobfriend/screen/board/board_write.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bobfriend/provider/board.dart';
-
+import 'package:bobfriend/screen/board/board_view.dart';
+import 'package:intl/intl.dart';
+//firebase data get
 class FireService{
   static final FireService _fireService = FireService._internal();
   factory FireService() => _fireService;
@@ -11,7 +13,7 @@ class FireService{
     CollectionReference<Map<String, dynamic>> _collectionReference =
     FirebaseFirestore.instance.collection('board');
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
-    await _collectionReference.orderBy('date').get();
+    await _collectionReference.orderBy('date', descending: true).get();
     List<BoardModel> list = [];
     for(var doc in querySnapshot.docs){
       BoardModel boardModel = BoardModel.fromQuerySnapshot(doc);
@@ -20,13 +22,29 @@ class FireService{
     return list;
   }
 }
+//push board view argument
+class Arguments {
+  final String? author;
+  var date;
+  final String? content;
+  Arguments(this.author, this.date, this.content);
+}
+//timestamp format
+//몇시간전, 몇분전으로 나타내기
+String formatTimestamp(DateTime timestamp){
+  DateTime now = DateTime.now();
+  DateFormat formatter = DateFormat('yyyy-MM-dd');
+  String strNow = formatter.format(now);
+  String strBoard = formatter.format(timestamp);
+  return strBoard;
+}
 class BoardListScreen extends StatefulWidget{
   const BoardListScreen({super.key});
 
   @override
   BoardListScreenState createState() => BoardListScreenState();
 }
-
+//board list
 class BoardListScreenState extends State<BoardListScreen>{
 
   @override
@@ -55,9 +73,15 @@ class BoardListScreenState extends State<BoardListScreen>{
                   return Card(
                       child: ListTile(
                         title: Text("${data.author}"),
-                        trailing: Text("${(data.date)!.toDate()}"),
+                        trailing: Text("${formatTimestamp((data.date)!.toDate())}"),
                         subtitle: Text("${data.content}"),
-                      ));
+                        onTap: ()=> Navigator.pushNamed(
+                          context,
+                          BoardView.routeName,
+                          arguments: Arguments(data.author, (data.date)!.toDate(), data.content),
+                          ),
+                        ),
+                      );
                 });
           }
           else{
