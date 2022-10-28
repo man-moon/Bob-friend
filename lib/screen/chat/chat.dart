@@ -312,6 +312,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    var doc = FirebaseFirestore.instance.collection('chats').doc(chatProvider.docId);
 
     return Scaffold(
       appBar: AppBar(
@@ -488,8 +489,10 @@ class _ChatScreenState extends State<ChatScreen> {
           Container(
               decoration: BoxDecoration(
                 color: Colors.grey[300],
-                borderRadius: BorderRadius.all(
-                  Radius.circular(40),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40),
+                  topRight: Radius.circular(40),
+                  //Radius.circular(40),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -551,6 +554,15 @@ class _ChatScreenState extends State<ChatScreen> {
                             .collection('chats')
                             .doc(chatProvider.docId)
                             .update({'state': ChatState.selectMenu.toString()});
+
+                        doc.collection('chat').doc('selectMenu').set({
+                          'text': '각자 먹고싶은 메뉴를 골라주세요!\n',
+                          'time': Timestamp.now(),
+                          'userId': 'admin',
+                          'nickname': '밥친구',
+                          'type': MessageType.action.toString(),
+                          'action': MessageAction.selectMenu.toString(),
+                        });
                       }
                       else if (chatProvider.state ==
                           ChatState.selectMenu.toString()) {
