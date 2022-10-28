@@ -9,6 +9,8 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../config/msg_config.dart';
+
 
 class CreateRoomFormScreen extends StatefulWidget {
   const CreateRoomFormScreen({required this.univ, Key? key}) : super(key: key);
@@ -224,8 +226,8 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                             'time': Timestamp.now(),
                             'userId': 'admin',
                             'nickname': '밥친구',
-                            'type': MessageType.normal,
-                            'action': MessageAction.none,
+                            'type': MessageType.normal.toString(),
+                            'action': MessageAction.none.toString(),
                           });
 
                           Navigator.pop(context);

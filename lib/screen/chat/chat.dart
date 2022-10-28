@@ -15,8 +15,6 @@ import '../../provider/user.dart';
 
 /// 채팅방 스크린
 
-//drawer 메뉴
-enum Menu { report }
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen(this.ref, {Key? key}) : super(key: key);
@@ -414,7 +412,18 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Expanded(child: Message(widget.ref)),
             //SizedBox(height: 150,),
-            NewMessage(widget.ref),
+            Container(child: Column(children: [
+              TextButton(
+                onPressed: (){
+                  debugPrint("test");
+                },
+                child: Text(
+                  '테스트',
+                  style: TextStyle(color: Colors.black),
+                )
+            ),
+              NewMessage(widget.ref),
+            ])),
           ],
         ),
       bottomSheet: Visibility(
