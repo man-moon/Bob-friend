@@ -116,6 +116,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
       chatProvider.users = usersList;
       chatProvider.docId = _chatList[index][1].toString();
+      chatProvider.roomName = ds.get('roomName');
       chatProvider.date = ds.get('date');
       chatProvider.foodType = ds.get('foodType');
       chatProvider.gender = ds.get('gender');
@@ -123,6 +124,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       chatProvider.nowPersonnel = ds.get('nowPersonnel');
       chatProvider.owner = ds.get('owner');
       chatProvider.univ = ds.get('univ');
+      chatProvider.state = ds.get('state');
     });
 
     return chatRef;
