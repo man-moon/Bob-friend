@@ -301,6 +301,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     'nickname': '밥친구',
                     'type': MessageType.action.toString(),
                     'action': MessageAction.selectRestaurant.toString(),
+                    'restaurant': '',
                   });
                 },
               ),
@@ -562,6 +563,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           'nickname': '밥친구',
                           'type': MessageType.action.toString(),
                           'action': MessageAction.selectMenu.toString(),
+                          'restaurant': '',
                         });
                       }
                       else if (chatProvider.state ==

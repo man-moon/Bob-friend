@@ -35,6 +35,7 @@ class _NewMessageState extends State<NewMessage> with WidgetsBindingObserver {
       'nickname': userData.data()!['nickname'],
       'type': MessageType.normal.toString(),
       'action': MessageAction.none.toString(),
+      'restaurant': '',
     });
 
     setState(() {

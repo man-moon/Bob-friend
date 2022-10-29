@@ -39,6 +39,7 @@ class Message extends StatelessWidget {
                     chatDocs[index]['userId'].toString() == FirebaseAuth.instance.currentUser!.uid,
                     chatDocs[index]['nickname'],
                     chatDocs[index]['action'],
+                    chatDocs[index]['restaurant'],
                 );
               },
             );

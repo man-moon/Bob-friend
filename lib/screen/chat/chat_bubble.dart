@@ -1,15 +1,17 @@
 import 'package:bobfriend/config/msg_config.dart';
+import 'package:bobfriend/screen/chat/chat_addition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_4.dart';
 
 class ChatBubbles extends StatelessWidget {
-  ChatBubbles(this.message, this.isMe, this.userNickname, this.action, {Key? key})
+  ChatBubbles(this.message, this.isMe, this.userNickname, this.action, this.restaurant ,{Key? key})
       : super(key: key);
   final String message;
   final String userNickname;
   final String action;
+  final String restaurant;
   bool isMe;
 
   @override
@@ -45,6 +47,15 @@ class ChatBubbles extends StatelessWidget {
                           message,
                           style: TextStyle(color: Colors.white),
                         ),
+                        if(action.compareTo(MessageAction.share.toString()) == 0)
+                          ElevatedButton(
+                              onPressed: (){
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => DetailScreen(name: restaurant)));
+                              },
+                              child: const Text('가게 보러가기', style: TextStyle(color: Colors.black),)
+                          ),
                       ]),
                 ),
               ),
@@ -82,14 +93,27 @@ class ChatBubbles extends StatelessWidget {
                           if(action.compareTo(MessageAction.selectRestaurant.toString()) == 0)
                           ElevatedButton(
                               onPressed: (){
-                                debugPrint('가게 보러가요');
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const AdditionalChatScreen()));
                               },
                               child: const Text('가게 보러가기', style: TextStyle(color: Colors.black),)
                           ),
+                          if(action.compareTo(MessageAction.share.toString()) == 0)
+                            ElevatedButton(
+                                onPressed: (){
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => DetailScreen(name: restaurant)));
+                                },
+                                child: const Text('가게 보러가기', style: TextStyle(color: Colors.black),)
+                            ),
                           if(action.compareTo(MessageAction.selectMenu.toString()) == 0)
                             ElevatedButton(
                                 onPressed: (){
-                                  debugPrint('메뉴 선정');
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => DetailScreen(name: restaurant)));
                                 },
                                 child: const Text('메뉴 정하러 가기', style: TextStyle(color: Colors.black),)
                             )

@@ -10,6 +10,7 @@ import 'package:bobfriend/my_app.dart';
 import 'package:provider/provider.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
+import '../../config/msg_config.dart';
 import '../../provider/user.dart';
 import 'package:bobfriend/provider/restaurant.dart';
 
@@ -35,14 +36,14 @@ class FireService {
   }
 }
 
-class chataddition extends StatefulWidget {
-  const chataddition({super.key});
+class AdditionalChatScreen extends StatefulWidget {
+  const AdditionalChatScreen({super.key});
 
   @override
-  chatadditionState createState() => chatadditionState();
+  AdditionalChatScreenState createState() => AdditionalChatScreenState();
 }
 
-class chatadditionState extends State<chataddition> {
+class AdditionalChatScreenState extends State<AdditionalChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,11 +100,15 @@ class chatadditionState extends State<chataddition> {
 
 class DetailScreen extends StatelessWidget {
   final String name;
+  late final ChatProvider chatProvider;
+  late final UserProvider userProvider;
 
   DetailScreen({super.key, required this.name});
 
   @override
   Widget build(BuildContext context) {
+    chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    userProvider = Provider.of<UserProvider>(context, listen: false);
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -112,11 +117,23 @@ class DetailScreen extends StatelessWidget {
             },
             icon: const Icon(Icons.close),
           ),
-          title: Text('${name}'),
+          title: Text('$name'),
           actions: [
             TextButton(
-                onPressed: () {},
-                child: Text(
+                onPressed: () {
+                  FirebaseFirestore.instance.collection('chats').doc(chatProvider.docId).collection('chat').doc().set({
+                  'text': '이 가게 어때요?\n"$name"',
+                  'time': Timestamp.now(),
+                  'userId': FirebaseAuth.instance.currentUser!.uid,
+                  'nickname': userProvider.nickname,
+                  'type': MessageType.action.toString(),
+                  'action': MessageAction.share.toString(),
+                  'restaurant': name,
+                  });
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
                   '공유하기',
                   style: TextStyle(color: Colors.black),
                 )),
