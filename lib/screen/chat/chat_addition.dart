@@ -18,10 +18,10 @@ class FireService {
 
   Future<List<RestaurantModel>> getDocs() async {
     QuerySnapshot querySnapshot =
-    await FirebaseFirestore.instance.collection('food').get();
+        await FirebaseFirestore.instance.collection('food').get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
-      var Middle_datainfo = querySnapshot.docs[i].data() as Map<String,
-          dynamic>;
+      var Middle_datainfo =
+          querySnapshot.docs[i].data() as Map<String, dynamic>;
       String name = '';
       List<dynamic> menu = [];
       List<dynamic> price = [];
@@ -40,7 +40,6 @@ class chataddition extends StatefulWidget {
 
   @override
   chatadditionState createState() => chatadditionState();
-
 }
 
 class chatadditionState extends State<chataddition> {
@@ -48,26 +47,21 @@ class chatadditionState extends State<chataddition> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading:
-        IconButton(
+        leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
           icon: const Icon(Icons.close),
         ),
         title: const TextField(
-          decoration:
-          InputDecoration(
+          decoration: InputDecoration(
             border: InputBorder.none,
             hintText: "음식점 및 메뉴 검색",
           ),
         ),
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search))
-        ],
+        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.search))],
       ),
-      body:
-      FutureBuilder<List<RestaurantModel>>(
+      body: FutureBuilder<List<RestaurantModel>>(
         future: FireService().getDocs(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -84,61 +78,95 @@ class chatadditionState extends State<chataddition> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  DetailScreen(restaurantModel: data)
-                          ),
+                                  DetailScreen(name: '${data.name}')),
                         );
                       },
                     ),
                   );
                 });
-          }
-          else {
+          } else {
             return const Center(
-              child: CircularProgressIndicator(color: Colors.black,),);
+              child: CircularProgressIndicator(
+                color: Colors.black,
+              ),
+            );
           }
         },
       ),
-
     );
   }
 }
 
 class DetailScreen extends StatelessWidget {
-  final RestaurantModel restaurantModel;
+  final String name;
 
-  DetailScreen({super.key, required this.restaurantModel});
+  DetailScreen({super.key, required this.name});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading:
-        IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.close),
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.close),
+          ),
+          title: Text('${name}'),
+          actions: [
+            TextButton(
+                onPressed: () {},
+                child: Text(
+                  '공유하기',
+                  style: TextStyle(color: Colors.black),
+                )),
+          ],
         ),
-        title: Text('${restaurantModel.name}'),
-        actions: [
-          TextButton(onPressed: () {},
-              child: Text('공유하기', style: TextStyle(color: Colors.black),)),
-        ],
-      ),
-      body: ListView.separated(
-        itemCount: 5,
-        itemBuilder: (BuildContext ctx, int idx) {
-          return Card(
-              child: ListTile(
-              title: Text("${restaurantModel.menu?[idx]}"),
-                trailing: Text("${restaurantModel.price?[idx]}"),
-              )
-          );
-        },
-        separatorBuilder: (BuildContext ctx, int idx) {
-          return Divider();
-        },
-      ),
-    );
+        body: FutureBuilder<List<RestaurantModel>>(
+            future: FireService().getDocs(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<RestaurantModel> datas = snapshot.data!;
+                for (int i = 0; i < datas.length; i++) {
+                  if (datas[i].name == name) {
+                    return ListView.separated(
+                        itemCount: 5,
+                        itemBuilder: (BuildContext ctx, int idx) {
+                          return Card(
+                              child: ListTile(
+                            title: Text("${datas[i].menu?[idx]}"),
+                            trailing: Text("${datas[i].price?[idx]}"),
+                          ));
+                        },
+                        separatorBuilder: (BuildContext ctx, int idx) {
+                          return Divider();
+                        });
+                  }
+                }
+              }
+              return Container(
+                width: 0,
+                height: 0,
+              );
+            }
+
+            ));
   }
 }
+
+/*
+    ListView.separated(
+    itemCount: 5,
+    itemBuilder: (BuildContext ctx, int idx) {
+    return Card(
+    child: ListTile(
+    title: Text("${restaurantModel.menu?[idx]}"),
+    trailing: Text("${restaurantModel.price?[idx]}"),
+    )
+    );
+    },
+    separatorBuilder: (BuildContext ctx, int idx) {
+    return Divider();
+    },
+    ),
+    );*/
