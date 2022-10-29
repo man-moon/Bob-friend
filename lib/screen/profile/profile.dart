@@ -486,6 +486,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     )
                   ),
 
+
+                  if(isMe)
                   Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                     const Text(
                       '로그아웃',
