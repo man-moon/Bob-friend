@@ -390,18 +390,18 @@ class _ChatScreenState extends State<ChatScreen> {
                                   .data()!['users'][index]
                                   .values
                                   .toString();
-                              String userUid = docRef
+                              String tmpUid = docRef
                                   .data()!['users'][index]
                                   .keys
                                   .toString();
                               userNickname = userNickname.substring(
                                   1, userNickname.length - 1);
-                              userUid =
-                                  userUid.substring(1, userUid.length - 1);
+                              tmpUid =
+                                  tmpUid.substring(1, tmpUid.length - 1);
                               return ListTile(
                                 onTap: () {
                                   if (userUid ==
-                                      userUid) {
+                                      tmpUid) {
                                     debugPrint('마이페이지');
                                     Navigator.push(
                                         context,
@@ -414,7 +414,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => ProfileScreen(
-                                                  uid: userUid,
+                                                  uid: tmpUid,
                                                 )));
                                   }
                                 },
