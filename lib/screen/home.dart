@@ -1,3 +1,4 @@
+import 'package:bobfriend/screen/chat/chat_addition.dart';
 import 'package:bobfriend/screen/profile/profile.dart';
 import 'package:bobfriend/screen/chat/chat_list.dart';
 import 'package:bobfriend/widget/bottom_bar.dart';
@@ -36,7 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
               //Chat, Community, Friends, My Page로 대체
               ChatListScreen(),
               BoardListScreen(),
-              FriendScreen(),//Profile
+              chataddition(),
+              //FriendScreen(),//Profile
               ProfileScreen(),
             ],
           ),
