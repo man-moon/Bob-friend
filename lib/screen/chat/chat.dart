@@ -1,3 +1,4 @@
+import 'package:bobfriend/screen/chat/chat_addition/additional_chat.dart';
 import 'package:bobfriend/screen/chat/new_message.dart';
 import 'package:bobfriend/config/palette.dart';
 import 'package:bobfriend/provider/chat.dart';
@@ -551,20 +552,22 @@ class _ChatScreenState extends State<ChatScreen> {
                       }
                       else if (chatProvider.state ==
                           ChatState.selectRestaurant.toString()) {
+
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                const AdditionalChatScreen(type: 'confirm',)));
+
+
+                        //set chatroom state
                         FirebaseFirestore.instance
                             .collection('chats')
                             .doc(chatProvider.docId)
                             .update({'state': ChatState.selectMenu.toString()});
 
-                        doc.collection('chat').doc('selectMenu').set({
-                          'text': '각자 먹고싶은 메뉴를 골라주세요!\n',
-                          'time': Timestamp.now(),
-                          'userId': 'admin',
-                          'nickname': '밥친구',
-                          'type': MessageType.action.toString(),
-                          'action': MessageAction.selectMenu.toString(),
-                          'restaurant': '',
-                        });
+                        //send message for menu
+
                       }
                       else if (chatProvider.state ==
                           ChatState.selectMenu.toString()) {

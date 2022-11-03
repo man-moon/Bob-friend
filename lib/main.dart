@@ -1,5 +1,5 @@
 import 'package:bobfriend/provider/chat.dart';
-import 'package:bobfriend/provider/joined_chatrooms_list.dart';
+import 'package:bobfriend/provider/my_catalog.dart';
 import 'package:bobfriend/provider/user.dart';
 import 'package:flutter/material.dart';
 import 'package:bobfriend/my_app.dart';
@@ -14,8 +14,8 @@ void main() async{
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => JoinedChatRoomListProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => MyCatalogProvider()),
       ],
       child: const MyApp(),
     )

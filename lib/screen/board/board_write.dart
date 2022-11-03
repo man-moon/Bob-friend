@@ -2,7 +2,7 @@ import 'package:bobfriend/screen/board/board.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:bobfriend/provider/board.dart';
+import 'package:bobfriend/Model/board.dart';
 
 class FireService{
   //싱글톤 패턴

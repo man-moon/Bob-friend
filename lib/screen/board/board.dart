@@ -1,7 +1,7 @@
 import 'package:bobfriend/screen/board/board_write.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:bobfriend/provider/board.dart';
+import 'package:bobfriend/Model/board.dart';
 import 'package:bobfriend/screen/board/board_view.dart';
 import 'package:intl/intl.dart';
 //firebase data get
