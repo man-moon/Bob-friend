@@ -507,7 +507,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Icons.logout_rounded,
                         )),
                   ]),
-
+                  if(!isMe)
+                    Row(mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                      OutlinedButton(
+                          onPressed: () {
+                            final addFriend = FirebaseFirestore.instance.collection('user');
+                            addFriend.doc(FirebaseAuth.instance.currentUser!.uid).update({'friends': FieldValue.arrayUnion([othersNickname])});
+                          },
+                        child: const Text("팔로우",style: TextStyle(color: Colors.black),),
+                      ),
+                    ]),
                 ],
               ),
             ),

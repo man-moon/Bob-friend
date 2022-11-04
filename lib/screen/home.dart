@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
               //Chat, Community, Friends, My Page로 대체
               ChatListScreen(),
               BoardListScreen(),
-              Center(child: Text('friends'),),
+              FriendScreen(),
               //FriendScreen(),//Profile
               ProfileScreen(),
             ],
