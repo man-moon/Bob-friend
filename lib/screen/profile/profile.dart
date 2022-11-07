@@ -18,7 +18,6 @@ import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import '../../provider/user.dart';
 import '../login/login_signup.dart';
 
-
 import 'package:bobfriend/provider/user.dart';
 
 /// isMe == true
@@ -57,19 +56,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late final bool isMe;
   String othersNickname = '';
   double othersTemperature = 0;
-  String othersProfileImageUrl = 'https://firebasestorage.googleapis.com/v0/b/bobfriend-7ffd5.appspot.com/o/profile_image%2Fbasic.jpeg?alt=media&token=b4018fb6-05ac-4e34-babd-04ee02ee2ce5';
+  String othersProfileImageUrl =
+      'https://firebasestorage.googleapis.com/v0/b/bobfriend-7ffd5.appspot.com/o/profile_image%2Fbasic.jpeg?alt=media&token=b4018fb6-05ac-4e34-babd-04ee02ee2ce5';
   String othersUniv = '';
 
   final _authentication = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
   late dynamic _nicknameController;
 
-  void follow(){
-
-  }
+  void follow() {}
 
   void getUserInfo() async {
-    final ref = await FirebaseFirestore.instance.collection('user').doc(widget.uid).get();
+    final ref = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(widget.uid)
+        .get();
     setState(() {
       othersNickname = ref.data()!['nickname'];
       othersTemperature = ref.data()!['temperature'];
@@ -82,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     debugPrint('INIT!!');
     super.initState();
-    if(!checkIsMe()){
+    if (!checkIsMe()) {
       getUserInfo();
     }
   }
@@ -160,13 +161,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text('취소', style: TextStyle(color: Colors.black),),
+                child: const Text(
+                  '취소',
+                  style: TextStyle(color: Colors.black),
+                ),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               TextButton(
-                child: const Text('사진 선택', style: TextStyle(color: Colors.black),),
+                child: const Text(
+                  '사진 선택',
+                  style: TextStyle(color: Colors.black),
+                ),
                 onPressed: () {
                   pickImage();
                   Navigator.pop(context);
@@ -218,13 +225,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text('취소', style: TextStyle(color: Colors.black),),
+                child: const Text(
+                  '취소',
+                  style: TextStyle(color: Colors.black),
+                ),
                 onPressed: () {
                   Navigator.pop(context);
                 },
               ),
               TextButton(
-                child: const Text('변경', style: TextStyle(color: Colors.black),),
+                child: const Text(
+                  '변경',
+                  style: TextStyle(color: Colors.black),
+                ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     debugPrint('processing');
@@ -263,6 +276,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
   }
 
+  void addFriendDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            title: const Text(
+              "친구추가 완료!",
+              style: TextStyle(color: Colors.black),
+            ),
+            actions: [
+              OutlinedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "확인",
+                    style: TextStyle(color: Colors.black),
+                  ))
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     _nicknameController = TextEditingController(
@@ -270,7 +308,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text(isMe? '마이페이지' : '$othersNickname님의 프로필',
+          title: Text(
+            isMe ? '마이페이지' : '$othersNickname님의 프로필',
             style: const TextStyle(color: Colors.black),
           ),
         ),
@@ -283,15 +322,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 children: [
                   //프로필 이미지
-                  if(isMe)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 15),
-                    child: GestureDetector(
+                  if (isMe)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: GestureDetector(
+                        child: CachedNetworkImage(
+                          imageUrl: context
+                              .watch<UserProvider>()
+                              .profileImageLink
+                              .toString(),
+                          imageBuilder: (context, imageProvider) => Container(
+                            width: 130.0,
+                            height: 130.0,
+                            decoration: BoxDecoration(
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius: 5,
+                                  spreadRadius: 3,
+                                )
+                              ],
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(30),
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          //placeholder: (context, url) => CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.person_rounded),
+                        ),
+                        onTap: () {
+                          showImagePicker(context);
+                        },
+                      ),
+                    ),
+                  if (!isMe)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15),
                       child: CachedNetworkImage(
-                        imageUrl: context
-                            .watch<UserProvider>()
-                            .profileImageLink
-                            .toString(),
+                        imageUrl: othersProfileImageUrl,
                         imageBuilder: (context, imageProvider) => Container(
                           width: 130.0,
                           height: 130.0,
@@ -315,85 +387,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         errorWidget: (context, url, error) =>
                             const Icon(Icons.person_rounded),
                       ),
-                      onTap: () {
-                        showImagePicker(context);
-                      },
-                    ),
-                  ),
-                  if(!isMe)
-                  Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                        child: CachedNetworkImage(
-                          imageUrl: othersProfileImageUrl,
-                          imageBuilder: (context, imageProvider) => Container(
-                            width: 130.0,
-                            height: 130.0,
-                            decoration: BoxDecoration(
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.grey,
-                                  blurRadius: 5,
-                                  spreadRadius: 3,
-                                )
-                              ],
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.circular(30),
-                              image: DecorationImage(
-                                image: imageProvider,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          //placeholder: (context, url) => CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                          const Icon(Icons.person_rounded),
-                        ),
                     ),
 
                   //닉네임
-                  if(isMe)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 0),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(context.select<UserProvider, String>(
-                              (UserProvider u) => u.nickname.toString())),
-                          IconButton(
-                              iconSize: 15,
-                              onPressed: () {
-                                showChangeNicknamePopup();
-                              },
-                              icon: const Icon(Icons.edit_rounded)),
-                        ]),
-                  ),
-                  if(!isMe)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(othersNickname),
-                      ]
+                  if (isMe)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 0),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(context.select<UserProvider, String>(
+                                (UserProvider u) => u.nickname.toString())),
+                            IconButton(
+                                iconSize: 15,
+                                onPressed: () {
+                                  showChangeNicknamePopup();
+                                },
+                                icon: const Icon(Icons.edit_rounded)),
+                          ]),
                     ),
-                  ),
+                  if (!isMe)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(othersNickname),
+                          ]),
+                    ),
 
                   //이메일
-                  if(isMe)
+                  if (isMe)
                     Padding(
                       padding: const EdgeInsets.only(top: 0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            context.select((UserProvider u) => u.email.toString()),
+                            context
+                                .select((UserProvider u) => u.email.toString()),
                             style: const TextStyle(
                                 fontSize: 12, color: Colors.grey),
                           )
                         ],
                       ),
                     ),
-                  if(!isMe)
+                  if (!isMe)
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Row(
@@ -421,101 +460,110 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Padding(
                     padding: EdgeInsets.only(top: 30),
                     child: Container(
-                      margin: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.08),
+                      margin: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width * 0.08),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            '매너 온도',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          IconButton(
-                            onPressed: (){
-                              debugPrint('온도 설명 페이지');
-                            },
-                            icon: const Icon(Icons.info_rounded),
-                            iconSize: 16,
-                          ),
-                        ]
-                      ),
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              '매너 온도',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                debugPrint('온도 설명 페이지');
+                              },
+                              icon: const Icon(Icons.info_rounded),
+                              iconSize: 16,
+                            ),
+                          ]),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 0),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        LinearPercentIndicator(
-                          width: MediaQuery.of(context).size.width * 0.9,
-                          lineHeight: 15.0,
-                          percent: isMe ?
-                            context.select((UserProvider u) => u.temperature!.toDouble()/100) :
-                              othersTemperature/100
-                          ,
-                          center: Text(
-                            isMe ?
-                              '${context.select((UserProvider u) => u.temperature.toString())}°C' :
-                                '$othersTemperature°C'
-                            ,
-                            style: GoogleFonts.lato(
-                              fontSize: 12
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          LinearPercentIndicator(
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            lineHeight: 15.0,
+                            percent: isMe
+                                ? context.select((UserProvider u) =>
+                                    u.temperature!.toDouble() / 100)
+                                : othersTemperature / 100,
+                            center: Text(
+                              isMe
+                                  ? '${context.select((UserProvider u) => u.temperature.toString())}°C'
+                                  : '$othersTemperature°C',
+                              style: GoogleFonts.lato(fontSize: 12),
                             ),
+                            backgroundColor: Colors.grey[340],
+                            progressColor: Colors.orangeAccent,
+                            animation: true,
+                            animationDuration: 1000,
+                            barRadius: const Radius.circular(15),
                           ),
-                          backgroundColor: Colors.grey[340],
-                          progressColor: Colors.orangeAccent,
-                          animation: true,
-                          animationDuration: 1000,
-                          barRadius: const Radius.circular(15),
-                        ),
-                      ]
-                    ),
+                        ]),
                   ),
 
                   //선호 음식
                   Padding(
-                    padding: EdgeInsets.only(top: 30),
-                    child: Container(
-                      margin: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.08),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text('선호하는 음식', style: TextStyle(fontSize: 16),
-                          ),
-                        ],
+                      padding: EdgeInsets.only(top: 30),
+                      child: Container(
+                        margin: EdgeInsets.only(
+                            left: MediaQuery.of(context).size.width * 0.08),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              '선호하는 음식',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      )),
+
+                  if (isMe)
+                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                      const Text(
+                        '로그아웃',
+                        //style: TextStyle(color: Palette.textColor1),
                       ),
-                    )
-                  ),
-
-
-                  if(isMe)
-                  Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                    const Text(
-                      '로그아웃',
-                      //style: TextStyle(color: Palette.textColor1),
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          _authentication.signOut();
-                          UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
-                          userProvider.clear();
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(builder: (BuildContext context) =>
-                              const LoginSignupScreen()), (route) => false);
-                        },
-                        icon: const Icon(
-                          Icons.logout_rounded,
-                        )),
-                  ]),
-                  if(!isMe)
-                    Row(mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                      OutlinedButton(
+                      IconButton(
                           onPressed: () {
-                            final addFriend = FirebaseFirestore.instance.collection('user');
-                            addFriend.doc(FirebaseAuth.instance.currentUser!.uid).update({'friends': FieldValue.arrayUnion([othersNickname])});
+                            _authentication.signOut();
+                            UserProvider userProvider =
+                                Provider.of<UserProvider>(context,
+                                    listen: false);
+                            userProvider.clear();
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        const LoginSignupScreen()),
+                                (route) => false);
                           },
-                        child: const Text("팔로우",style: TextStyle(color: Colors.black),),
+                          icon: const Icon(
+                            Icons.logout_rounded,
+                          )),
+                    ]),
+                  if (!isMe)
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      OutlinedButton(
+                        onPressed: () {
+                          final addFriend =
+                              FirebaseFirestore.instance.collection('user');
+                          addFriend
+                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                              .update({
+                            'friends': FieldValue.arrayUnion([widget.uid])
+                          });
+                          addFriendDialog();
+                        },
+                        child: const Text(
+                          "친구추가",
+                          style: TextStyle(color: Colors.black),
+                        ),
                       ),
                     ]),
                 ],
