@@ -1,4 +1,5 @@
 import 'package:bobfriend/Model/board.dart';
+import 'package:bobfriend/Model/dm.dart';
 import 'package:bobfriend/provider/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:eventsource/eventsource.dart';
 import 'package:provider/provider.dart';
-
+import 'package:intl/intl.dart';
 import '../profile/profile.dart';
 
 class FriendScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class _FriendScreenState extends State<FriendScreen>
   String? myNickname='';
   List<dynamic> friendsList = [];
   List<dynamic> friendsIdList = [];
+  List<dmListModel> dmList=[];
   void getFriendInfo() async {
     final userRef = await FirebaseFirestore.instance.collection('user').doc(curUid).get();
     setState(() {
@@ -36,13 +38,40 @@ class _FriendScreenState extends State<FriendScreen>
       friendsList=friendsList;
     });
   }
-
+  void getDmInfo() async{
+    var dmRef = await FirebaseFirestore.instance.collection('dm').where('userID1',isEqualTo: curUid).get();
+    debugPrint(dmRef.size.toString());
+    for(int i=0;i<dmRef.size;i++){
+      dmListModel tmpModel= new dmListModel();
+      if(dmRef.docs[i]['userID1']!=curUid) {
+        tmpModel.opponent=dmRef.docs[i]['userID1'];
+      }
+      else{
+        tmpModel.opponent=dmRef.docs[i]['userID2'];
+      }
+      var latestDm = await dmRef.docs[i].reference.collection('message').orderBy('time',descending: true).get();
+      tmpModel.date = latestDm.docs[0].data()!['time'];
+      tmpModel.recentDm = latestDm.docs[0].data()!['text'];
+      dmList.add(tmpModel);
+    }
+    setState(() {
+      dmList = dmList;
+    });
+    //debugPrint(dmRef.docs[0]['userID2']);
+    //debugPrint(dmRef.docs[1].data()!['sender']);
+  }
   void removeFriend(String othersUid) async {
     await FirebaseFirestore.instance.collection('user').doc(curUid).update({
       'friends': FieldValue.arrayRemove([othersUid])
     });
   }
-
+  String formatTimestamp(DateTime timestamp){
+    DateTime now = DateTime.now();
+    DateFormat formatter = DateFormat('yyyy-MM-dd');
+    String strNow = formatter.format(now);
+    String strTime = formatter.format(timestamp);
+    return strTime;
+  }
   @override
   void initState() {
     userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -52,6 +81,7 @@ class _FriendScreenState extends State<FriendScreen>
       length: 2,
       vsync: this,
     );
+    getDmInfo();
     super.initState();
   }
 
@@ -131,10 +161,19 @@ class _FriendScreenState extends State<FriendScreen>
                     }),
               ),
               Container(
-                child: const Text(
-                  '팔로워 창',
-                  style: TextStyle(color: Colors.black),
-                ),
+                child: ListView.builder(
+                    itemCount: dmList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Card(
+                        child: ListTile(
+                          onTap: () {
+                          },
+                            title: Text(dmList[index].recentDm!,style: TextStyle(color: Colors.black),),
+                            leading: Text(dmList[index].opponent!,style: TextStyle(color: Colors.black),),
+                            trailing: Text(formatTimestamp(dmList[index].date!.toDate()),style: TextStyle(color: Colors.black,fontSize: 10),)
+                        ),
+                      );
+                    }),
               ),
             ],
           ))
