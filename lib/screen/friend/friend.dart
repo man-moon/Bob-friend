@@ -1,6 +1,7 @@
 import 'package:bobfriend/Model/board.dart';
 import 'package:bobfriend/Model/dm.dart';
 import 'package:bobfriend/provider/user.dart';
+import 'package:bobfriend/screen/friend/post_message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,6 @@ class _FriendScreenState extends State<FriendScreen>
   }
   void getDmInfo() async{
     var dmRef = await FirebaseFirestore.instance.collection('dm').where('userID1',isEqualTo: curUid).get();
-    debugPrint(dmRef.size.toString());
     for(int i=0;i<dmRef.size;i++){
       dmListModel tmpModel= new dmListModel();
       if(dmRef.docs[i]['userID1']!=curUid) {
@@ -52,12 +52,13 @@ class _FriendScreenState extends State<FriendScreen>
       var latestDm = await dmRef.docs[i].reference.collection('message').orderBy('time',descending: true).get();
       tmpModel.date = latestDm.docs[0].data()!['time'];
       tmpModel.recentDm = latestDm.docs[0].data()!['text'];
+      tmpModel.ref = dmRef.docs[i].reference;
       dmList.add(tmpModel);
     }
     setState(() {
       dmList = dmList;
     });
-    //debugPrint(dmRef.docs[0]['userID2']);
+    //debugPrint(dmRef);
     //debugPrint(dmRef.docs[1].data()!['sender']);
   }
   void removeFriend(String othersUid) async {
@@ -113,7 +114,7 @@ class _FriendScreenState extends State<FriendScreen>
                 height: 40,
                 alignment: Alignment.center,
                 child: const Text(
-                  '쪽지',
+                  '쪽지함',
                   style: TextStyle(color: Colors.black),
                 ),
               ),
@@ -153,8 +154,13 @@ class _FriendScreenState extends State<FriendScreen>
                               icon: const Icon(Icons.person_remove),
                             ),
                             IconButton(
-                                onPressed: () {},
-                                icon: const Icon(Icons.message_sharp))
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context)
+                                      => postMessage(dmList[index].ref, dmList[index].opponent)));
+                                },
+                                icon: const Icon(Icons.send))
                           ]),
                         ),
                       );
@@ -167,6 +173,10 @@ class _FriendScreenState extends State<FriendScreen>
                       return Card(
                         child: ListTile(
                           onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context)
+                            => postMessage(dmList[index].ref, dmList[index].opponent)));
                           },
                             title: Text(dmList[index].recentDm!,style: TextStyle(color: Colors.black),),
                             leading: Text(dmList[index].opponent!,style: TextStyle(color: Colors.black),),
@@ -180,7 +190,6 @@ class _FriendScreenState extends State<FriendScreen>
         ],
       ),
     );
-
     //EventSource eventSource = EventSource.connect('http://192.168.136.150:8080/test');
 
     // return StreamBuilder(
