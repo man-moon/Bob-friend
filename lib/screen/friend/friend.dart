@@ -1,7 +1,9 @@
 import 'package:bobfriend/Model/board.dart';
 import 'package:bobfriend/Model/dm.dart';
 import 'package:bobfriend/provider/user.dart';
+import 'package:bobfriend/screen/friend/pm_write.dart';
 import 'package:bobfriend/screen/friend/post_message.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ import '../profile/profile.dart';
 
 class FriendScreen extends StatefulWidget {
   const FriendScreen({Key? key}) : super(key: key);
+
   @override
   State<FriendScreen> createState() => _FriendScreenState();
 }
@@ -21,39 +24,117 @@ class _FriendScreenState extends State<FriendScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
   late UserProvider userProvider;
-  String curUid=FirebaseAuth.instance.currentUser!.uid;
-  String? myNickname='';
-  List<dynamic> friendsList = [];
+  String curUid = FirebaseAuth.instance.currentUser!.uid;
+  String? myNickname = '';
+  List<dmListModel> friendsList = [];
   List<dynamic> friendsIdList = [];
-  List<dmListModel> dmList=[];
+  List<dmListModel> dmList = [];
+
   void getFriendInfo() async {
-    final userRef = await FirebaseFirestore.instance.collection('user').doc(curUid).get();
+    final userRef =
+        await FirebaseFirestore.instance.collection('user').doc(curUid).get();
     setState(() {
       friendsIdList = userRef.data()!['friends'];
     });
-    for(var i=0; i<friendsIdList.length;i++){
-      var tmpRef = await FirebaseFirestore.instance.collection('user').doc(friendsIdList[i]).get();
-      friendsList.add(tmpRef.data()!['nickname']);
+    for (var i = 0; i < friendsIdList.length; i++) {
+      dmListModel tmpMd = new dmListModel();
+      var tmpRef = await FirebaseFirestore.instance
+          .collection('user')
+          .doc(friendsIdList[i])
+          .get();
+      tmpMd.opponent = tmpRef.data()!['nickname'];
+      tmpMd.profileImageLink = tmpRef.data()!['profile_image'];
+      //debugPrint(tmpMd.profileImageLink);
+      var checkPost1 = await FirebaseFirestore.instance
+          .collection('dm')
+          .where('userID1', isEqualTo: friendsIdList[i])
+          .where('userID2', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .get();
+      var checkPost2 = await FirebaseFirestore.instance
+          .collection('dm')
+          .where('userID2', isEqualTo: friendsIdList[i])
+          .where('userID1', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .get();
+      if (checkPost1.docs.isNotEmpty) {
+        tmpMd.ref = checkPost1.docs[0].reference;
+      }
+      if (checkPost2.docs.isNotEmpty) {
+        tmpMd.ref = checkPost2.docs[0].reference;
+      }
+      debugPrint(tmpMd.ref.toString());
+      friendsList.add(tmpMd);
     }
     setState(() {
-      friendsList=friendsList;
+      friendsList = friendsList;
     });
   }
-  void getDmInfo() async{
-    var dmRef = await FirebaseFirestore.instance.collection('dm').where('userID1',isEqualTo: curUid).get();
-    for(int i=0;i<dmRef.size;i++){
-      dmListModel tmpModel= new dmListModel();
-      if(dmRef.docs[i]['userID1']!=curUid) {
-        tmpModel.opponent=dmRef.docs[i]['userID1'];
+
+  void getDmInfo() async {
+    dmList.clear();
+    var checkPost1 = await FirebaseFirestore.instance
+        .collection('dm')
+        .where('userID1', isEqualTo: curUid)
+        .get();
+    var checkPost2 = await FirebaseFirestore.instance
+        .collection('dm')
+        .where('userID2', isEqualTo: curUid)
+        .get();
+    if (checkPost1.docs.isNotEmpty) {
+      for (int i = 0; i < checkPost1.size; i++) {
+        dmListModel tmpModel = new dmListModel();
+        if (checkPost1.docs[i]['userID1'] != curUid) {
+          var tmpId = checkPost1.docs[i]['userID1'];
+          var tmpRef = await FirebaseFirestore.instance
+              .collection('user')
+              .doc(tmpId)
+              .get();
+          tmpModel.opponent = tmpRef.data()!['nickname'];
+        } else {
+          tmpModel.opponent = checkPost1.docs[i]['userID2'];
+          var tmpId = checkPost1.docs[i]['userID2'];
+          var tmpRef = await FirebaseFirestore.instance
+              .collection('user')
+              .doc(tmpId)
+              .get();
+          tmpModel.opponent = tmpRef.data()!['nickname'];
+        }
+        tmpModel.ref = checkPost1.docs[i].reference;
+        var latestDm = await checkPost1.docs[i].reference
+            .collection('message')
+            .orderBy('date', descending: true)
+            .get();
+        tmpModel.date = latestDm.docs[0].data()!['date'];
+        tmpModel.recentDm = latestDm.docs[0].data()!['text'];
+        dmList.add(tmpModel);
       }
-      else{
-        tmpModel.opponent=dmRef.docs[i]['userID2'];
+    }
+    if (checkPost2.docs.isNotEmpty) {
+      for (int i = 0; i < checkPost2.size; i++) {
+        dmListModel tmpModel = new dmListModel();
+        if (checkPost2.docs[i]['userID1'] != curUid) {
+          var tmpId = checkPost2.docs[i]['userID1'];
+          var tmpRef = await FirebaseFirestore.instance
+              .collection('user')
+              .doc(tmpId)
+              .get();
+          tmpModel.opponent = tmpRef.data()!['nickname'];
+        } else {
+          var tmpId = checkPost2.docs[i]['userID2'];
+          var tmpRef = await FirebaseFirestore.instance
+              .collection('user')
+              .doc(tmpId)
+              .get();
+          tmpModel.opponent = tmpRef.data()!['nickname'];
+        }
+        tmpModel.ref = checkPost2.docs[i].reference;
+        var latestDm = await checkPost2.docs[i].reference
+            .collection('message')
+            .orderBy('date', descending: true)
+            .get();
+        tmpModel.date = latestDm.docs[0].data()!['date'];
+        tmpModel.recentDm = latestDm.docs[0].data()!['text'];
+        dmList.add(tmpModel);
       }
-      var latestDm = await dmRef.docs[i].reference.collection('message').orderBy('time',descending: true).get();
-      tmpModel.date = latestDm.docs[0].data()!['time'];
-      tmpModel.recentDm = latestDm.docs[0].data()!['text'];
-      tmpModel.ref = dmRef.docs[i].reference;
-      dmList.add(tmpModel);
     }
     setState(() {
       dmList = dmList;
@@ -61,20 +142,26 @@ class _FriendScreenState extends State<FriendScreen>
     //debugPrint(dmRef);
     //debugPrint(dmRef.docs[1].data()!['sender']);
   }
+
   void removeFriend(String othersUid) async {
     await FirebaseFirestore.instance.collection('user').doc(curUid).update({
       'friends': FieldValue.arrayRemove([othersUid])
     });
   }
-  String formatTimestamp(DateTime timestamp){
+
+  String formatTimestamp(DateTime timestamp) {
     DateTime now = DateTime.now();
     DateFormat formatter = DateFormat('yyyy-MM-dd');
     String strNow = formatter.format(now);
     String strTime = formatter.format(timestamp);
     return strTime;
   }
+
   @override
   void initState() {
+    dmList.clear();
+    friendsList.clear();
+    friendsIdList.clear();
     userProvider = Provider.of<UserProvider>(context, listen: false);
     myNickname = userProvider.nickname;
     getFriendInfo();
@@ -135,20 +222,48 @@ class _FriendScreenState extends State<FriendScreen>
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ProfileScreen(
-                                      uid: friendsIdList[index],
-                                    )));
+                                          uid: friendsIdList[index],
+                                        )));
                           },
-                          title: Text(friendsList[index]),
+                          title: Row(
+                            children: [
+                              CachedNetworkImage(
+                                imageUrl: friendsList[index].profileImageLink!,
+                                imageBuilder: (context, imageProvider) => Container(
+                                  width: 30,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.grey,
+                                        blurRadius: 1,
+                                        spreadRadius: 1,
+                                      )
+                                    ],
+                                    shape: BoxShape.rectangle,
+                                    borderRadius: BorderRadius.circular(1),
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                const Icon(Icons.person_rounded),
+                              ),
+                              Container(
+                                margin: EdgeInsets.all(15),
+                                child: Text(friendsList[index].opponent!),
+                              )
+                            ],
+                          ),
                           trailing:
-                          Row(mainAxisSize: MainAxisSize.min, children: [
+                              Row(mainAxisSize: MainAxisSize.min, children: [
                             IconButton(
                               onPressed: () {
                                 removeFriend(friendsIdList[index]);
                                 setState(() {
-                                  getFriendInfo();
-                                  friendsList.removeAt(index);
-                                  friendsIdList.removeAt(index);
-                                  friendsList.length;
+                                  initState();
                                 });
                               },
                               icon: const Icon(Icons.person_remove),
@@ -157,8 +272,14 @@ class _FriendScreenState extends State<FriendScreen>
                                 onPressed: () {
                                   Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context)
-                                      => postMessage(dmList[index].ref, dmList[index].opponent)));
+                                      MaterialPageRoute(
+                                          builder: (context) => pmWriteScreen(
+                                              friendsList[index].ref))).then(
+                                      (value) {
+                                    setState(() {
+                                      initState();
+                                    });
+                                  });
                                 },
                                 icon: const Icon(Icons.send))
                           ]),
@@ -172,16 +293,32 @@ class _FriendScreenState extends State<FriendScreen>
                     itemBuilder: (BuildContext context, int index) {
                       return Card(
                         child: ListTile(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context)
-                            => postMessage(dmList[index].ref, dmList[index].opponent)));
-                          },
-                            title: Text(dmList[index].recentDm!,style: TextStyle(color: Colors.black),),
-                            leading: Text(dmList[index].opponent!,style: TextStyle(color: Colors.black),),
-                            trailing: Text(formatTimestamp(dmList[index].date!.toDate()),style: TextStyle(color: Colors.black,fontSize: 10),)
-                        ),
+                            onTap: () {
+                              Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => postMessage(
+                                              dmList[index].ref,
+                                              dmList[index].opponent)))
+                                  .then((value) {
+                                setState(() {
+                                  initState();
+                                });
+                              });
+                            },
+                            title: Text(
+                              dmList[index].recentDm!,
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            leading: Text(
+                              dmList[index].opponent!,
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            trailing: Text(
+                              formatTimestamp(dmList[index].date!.toDate()),
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 10),
+                            )),
                       );
                     }),
               ),

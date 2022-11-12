@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:bobfriend/screen/friend/pm_write.dart';
 import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_4.dart';
@@ -21,11 +22,12 @@ class postMessage extends StatefulWidget {
 class _postMessageState extends State<postMessage>{
   List<postModel> postList=[];
   void getDm() async {
-    var tmpRef = await (widget.ref).collection('message').orderBy('time',descending: true).get();
+    postList.clear();
+    var tmpRef = await (widget.ref).collection('message').orderBy('date',descending: true).get();
     for(int i=0;i<tmpRef.size;i++){
       postModel tmpModel = new postModel();
       tmpModel.sender = tmpRef.docs[i].data()!['sender'];
-      tmpModel.date = tmpRef.docs[i].data()!['time'];
+      tmpModel.date = tmpRef.docs[i].data()!['date'];
       tmpModel.text = tmpRef.docs[i].data()!['text'];
       postList.add(tmpModel);
     }
@@ -60,7 +62,17 @@ class _postMessageState extends State<postMessage>{
         ),
         title: Text(widget.opponent!),
         actions: [
-          IconButton(onPressed: (){},
+          IconButton(onPressed: (){
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => pmWriteScreen(
+                        widget.ref))).then((value){
+              setState(() {
+                initState();
+              });
+            });
+          },
               icon: const Icon(Icons.send)
           )
         ],

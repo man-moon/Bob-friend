@@ -59,11 +59,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String othersProfileImageUrl =
       'https://firebasestorage.googleapis.com/v0/b/bobfriend-7ffd5.appspot.com/o/profile_image%2Fbasic.jpeg?alt=media&token=b4018fb6-05ac-4e34-babd-04ee02ee2ce5';
   String othersUniv = '';
-
+  late bool isFriend=false;
   final _authentication = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
   late dynamic _nicknameController;
-
   void follow() {}
 
   void getUserInfo() async {
@@ -82,10 +81,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     debugPrint('INIT!!');
-    super.initState();
+    friendCheck();
     if (!checkIsMe()) {
       getUserInfo();
     }
+    super.initState();
   }
 
   @override
@@ -275,32 +275,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
           );
         });
   }
-
-  void addFriendDialog() {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0)),
-            title: const Text(
-              "친구추가 완료!",
-              style: TextStyle(color: Colors.black),
-            ),
-            actions: [
-              OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    "확인",
-                    style: TextStyle(color: Colors.black),
-                  ))
-            ],
-          );
-        });
+  void friendCheck() async {
+    var dmRef = await FirebaseFirestore.instance.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).get();
+    List<dynamic> tmpList = dmRef.data()!['friends'];
+    if(tmpList.contains(widget.uid)==true){
+      isFriend=true;
+    }
+    else {
+      isFriend=false;
+    }
   }
+  void dmCheck() async {
+    bool isDm=true;
+    var checkPost1 = await FirebaseFirestore.instance.collection('dm').where('userID1', isEqualTo: widget.uid)
+    .where('userID2', isEqualTo: FirebaseAuth.instance.currentUser!.uid).get();
+    var checkPost2 = await FirebaseFirestore.instance.collection('dm').where('userID2', isEqualTo: widget.uid)
+        .where('userID1', isEqualTo: FirebaseAuth.instance.currentUser!.uid).get();
 
+    if(checkPost1.docs.isNotEmpty){
+      isDm=false;
+    }
+    if(checkPost2.docs.isNotEmpty){
+      isDm=false;
+    }
+    if(isDm){
+      FirebaseFirestore.instance.collection('dm').add({
+        'userID1': FirebaseAuth.instance.currentUser!.uid,
+        'userID2': widget.uid
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     _nicknameController = TextEditingController(
@@ -547,7 +551,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Icons.logout_rounded,
                           )),
                     ]),
-                  if (!isMe)
+                  if (!isMe && !isFriend)
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       OutlinedButton(
                         onPressed: () {
@@ -558,7 +562,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               .update({
                             'friends': FieldValue.arrayUnion([widget.uid])
                           });
-                          addFriendDialog();
+                          dmCheck();
+                          this.setState(() {
+                            isFriend = true;
+                          });
                         },
                         child: const Text(
                           "친구추가",
@@ -566,6 +573,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ]),
+                    if(!isMe&&isFriend)
+                      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                        OutlinedButton(
+                          onPressed: () {
+                            FirebaseFirestore.instance.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).update({
+                              'friends': FieldValue.arrayRemove([widget.uid])
+                            });
+                            this.setState(() {
+                              isFriend=false;
+                            });
+                          },
+                          child: const Text(
+                            "친구끊기",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          style:OutlinedButton.styleFrom(backgroundColor: Colors.blueAccent),
+                        ),
+                      ]),
                 ],
               ),
             ),
