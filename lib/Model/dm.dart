@@ -5,12 +5,14 @@ class dmListModel{
   String? recentDm;
   String? profileImageLink;
   DocumentReference<Map<String,dynamic>>? ref;
+  String? opponentId;
   dmListModel({
     this.opponent,
     this.recentDm,
     this.date,
     this.profileImageLink,
-    this.ref
+    this.ref,
+    this.opponentId
   });
 }
 class postModel{

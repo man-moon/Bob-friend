@@ -1,4 +1,3 @@
-import 'package:bobfriend/Model/board.dart';
 import 'package:bobfriend/Model/dm.dart';
 import 'package:bobfriend/provider/user.dart';
 import 'package:bobfriend/screen/friend/pm_write.dart';
@@ -7,8 +6,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:eventsource/eventsource.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../profile/profile.dart';
@@ -44,7 +41,6 @@ class _FriendScreenState extends State<FriendScreen>
           .get();
       tmpMd.opponent = tmpRef.data()!['nickname'];
       tmpMd.profileImageLink = tmpRef.data()!['profile_image'];
-      //debugPrint(tmpMd.profileImageLink);
       var checkPost1 = await FirebaseFirestore.instance
           .collection('dm')
           .where('userID1', isEqualTo: friendsIdList[i])
@@ -61,7 +57,6 @@ class _FriendScreenState extends State<FriendScreen>
       if (checkPost2.docs.isNotEmpty) {
         tmpMd.ref = checkPost2.docs[0].reference;
       }
-      debugPrint(tmpMd.ref.toString());
       friendsList.add(tmpMd);
     }
     setState(() {
@@ -70,7 +65,6 @@ class _FriendScreenState extends State<FriendScreen>
   }
 
   void getDmInfo() async {
-    dmList.clear();
     var checkPost1 = await FirebaseFirestore.instance
         .collection('dm')
         .where('userID1', isEqualTo: curUid)
@@ -89,6 +83,7 @@ class _FriendScreenState extends State<FriendScreen>
               .doc(tmpId)
               .get();
           tmpModel.opponent = tmpRef.data()!['nickname'];
+          tmpModel.opponentId = tmpId;
         } else {
           tmpModel.opponent = checkPost1.docs[i]['userID2'];
           var tmpId = checkPost1.docs[i]['userID2'];
@@ -97,6 +92,7 @@ class _FriendScreenState extends State<FriendScreen>
               .doc(tmpId)
               .get();
           tmpModel.opponent = tmpRef.data()!['nickname'];
+          tmpModel.opponentId = tmpId;
         }
         tmpModel.ref = checkPost1.docs[i].reference;
         var latestDm = await checkPost1.docs[i].reference
@@ -139,8 +135,6 @@ class _FriendScreenState extends State<FriendScreen>
     setState(() {
       dmList = dmList;
     });
-    //debugPrint(dmRef);
-    //debugPrint(dmRef.docs[1].data()!['sender']);
   }
 
   void removeFriend(String othersUid) async {
@@ -157,19 +151,23 @@ class _FriendScreenState extends State<FriendScreen>
     return strTime;
   }
 
-  @override
-  void initState() {
+  void initInfo() {
     dmList.clear();
     friendsList.clear();
     friendsIdList.clear();
+    getFriendInfo();
+    getDmInfo();
+  }
+
+  @override
+  void initState() {
     userProvider = Provider.of<UserProvider>(context, listen: false);
     myNickname = userProvider.nickname;
-    getFriendInfo();
     _tabController = TabController(
       length: 2,
       vsync: this,
     );
-    getDmInfo();
+    initInfo();
     super.initState();
   }
 
@@ -182,7 +180,7 @@ class _FriendScreenState extends State<FriendScreen>
           style: const TextStyle(color: Colors.black),
         ),
         centerTitle: true,
-        elevation: 0.0,
+        elevation: 1,
       ),
       body: Column(
         children: [
@@ -216,6 +214,7 @@ class _FriendScreenState extends State<FriendScreen>
                     itemCount: friendsList.length,
                     itemBuilder: (BuildContext context, int index) {
                       return Card(
+                        elevation: 0,
                         child: ListTile(
                           onTap: () {
                             Navigator.push(
@@ -229,7 +228,8 @@ class _FriendScreenState extends State<FriendScreen>
                             children: [
                               CachedNetworkImage(
                                 imageUrl: friendsList[index].profileImageLink!,
-                                imageBuilder: (context, imageProvider) => Container(
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
                                   width: 30,
                                   height: 30,
                                   decoration: BoxDecoration(
@@ -249,7 +249,7 @@ class _FriendScreenState extends State<FriendScreen>
                                   ),
                                 ),
                                 errorWidget: (context, url, error) =>
-                                const Icon(Icons.person_rounded),
+                                    const Icon(Icons.person_rounded),
                               ),
                               Container(
                                 margin: EdgeInsets.all(15),
@@ -263,7 +263,7 @@ class _FriendScreenState extends State<FriendScreen>
                               onPressed: () {
                                 removeFriend(friendsIdList[index]);
                                 setState(() {
-                                  initState();
+                                  initInfo();
                                 });
                               },
                               icon: const Icon(Icons.person_remove),
@@ -277,7 +277,7 @@ class _FriendScreenState extends State<FriendScreen>
                                               friendsList[index].ref))).then(
                                       (value) {
                                     setState(() {
-                                      initState();
+                                      initInfo();
                                     });
                                   });
                                 },
@@ -292,6 +292,7 @@ class _FriendScreenState extends State<FriendScreen>
                     itemCount: dmList.length,
                     itemBuilder: (BuildContext context, int index) {
                       return Card(
+                        elevation: 0,
                         child: ListTile(
                             onTap: () {
                               Navigator.push(
@@ -299,10 +300,12 @@ class _FriendScreenState extends State<FriendScreen>
                                       MaterialPageRoute(
                                           builder: (context) => postMessage(
                                               dmList[index].ref,
-                                              dmList[index].opponent)))
+                                              dmList[index].opponent,
+                                              dmList[index].opponentId
+                                          )))
                                   .then((value) {
                                 setState(() {
-                                  initState();
+                                  initInfo();
                                 });
                               });
                             },
@@ -327,22 +330,5 @@ class _FriendScreenState extends State<FriendScreen>
         ],
       ),
     );
-    //EventSource eventSource = EventSource.connect('http://192.168.136.150:8080/test');
-
-    // return StreamBuilder(
-    //   stream: eventSource.onMessage,
-    //   builder: (BuildContext context, AsyncSnapshot<Event> snapshot) {
-    //     debugPrint(snapshot.hasData.toString());
-    //     return
-    //       ListView.builder(
-    //         padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
-    //         reverse: true,
-    //         itemCount: 1,
-    //         itemBuilder: (context, index) {
-    //           return Text('hello');
-    //         },
-    //       );
-    //   },
-    // );
   }
 }

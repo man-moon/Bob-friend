@@ -54,7 +54,7 @@ class BoardListScreenState extends State<BoardListScreen>{
       appBar: AppBar(
         title: const Text("게시판", style: TextStyle(color: Colors.black),),
         centerTitle: true,
-        elevation: 0.0,
+        elevation: 1,
         actions: [
           IconButton(onPressed: (){},
           icon: Icon(Icons.search))
