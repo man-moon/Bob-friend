@@ -14,6 +14,7 @@ class ChatProvider extends ChangeNotifier{
   late List<Map<String, dynamic>> _users;
   String? _state;
   String? _restaurantName;
+  String? _meetingPlace;
 
   String? get restaurantName => _restaurantName;
   String? get state => _state;
@@ -27,6 +28,7 @@ class ChatProvider extends ChangeNotifier{
   String? get roomName => _roomName;
   String? get univ => _univ;
   List<Map<String, dynamic>> get users => _users;
+  String? get meetingPlace => _meetingPlace;
 
   set restaurantName(String? value) {
     _restaurantName = value;
@@ -75,6 +77,11 @@ class ChatProvider extends ChangeNotifier{
 
   set state(String? value) {
     _state = value;
+    notifyListeners();
+  }
+
+  set meetingPlace(String? value) {
+    _meetingPlace = value;
     notifyListeners();
   }
 }

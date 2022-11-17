@@ -29,8 +29,7 @@ class Arguments {
   final String? content;
   Arguments(this.author, this.date, this.content);
 }
-//timestamp format
-//몇시간전, 몇분전으로 나타내기
+
 String formatTimestamp(DateTime timestamp){
   DateTime now = DateTime.now();
   DateFormat formatter = DateFormat('yyyy-MM-dd');
@@ -54,7 +53,7 @@ class BoardListScreenState extends State<BoardListScreen>{
       appBar: AppBar(
         title: const Text("게시판", style: TextStyle(color: Colors.black),),
         centerTitle: true,
-        elevation: 0.0,
+        elevation: 1,
         actions: [
           IconButton(onPressed: (){},
           icon: Icon(Icons.search))
@@ -101,7 +100,7 @@ class BoardListScreenState extends State<BoardListScreen>{
             });
           });
         },
-        child: Text('글쓰기'),
+        child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

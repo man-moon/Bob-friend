@@ -20,7 +20,6 @@ class Message extends StatelessWidget {
       stream: ref.collection('chat').orderBy('time', descending: true).snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot){
         if(snapshot.connectionState == ConnectionState.waiting){
-          debugPrint('====================WAITING=======================');
           return const Center(
             child: CircularProgressIndicator(color: Colors.black,),
           );

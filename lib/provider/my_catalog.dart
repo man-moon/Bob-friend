@@ -14,14 +14,11 @@ class MyCatalogProvider extends ChangeNotifier {
 
   void addTotalPrice(int price) {
     _totalPrice += price;
-    debugPrint(price.toString());
-    debugPrint(_totalPrice.toString());
     notifyListeners();
   }
 
   void subTotalPrice(int price) {
     _totalPrice -= price;
-    debugPrint(_totalPrice.toString());
     notifyListeners();
   }
 

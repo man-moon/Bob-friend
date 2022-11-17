@@ -1,6 +1,7 @@
 import 'package:bobfriend/screen/chat/chat_addition/additional_chat.dart';
 import 'package:bobfriend/screen/profile/profile.dart';
 import 'package:bobfriend/screen/chat/chat_list.dart';
+import 'package:bobfriend/screen/rider/rider.dart';
 import 'package:bobfriend/widget/bottom_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,17 +30,16 @@ class _HomeScreenState extends State<HomeScreen> {
     initializeDateFormatting(Localizations.localeOf(context).languageCode);
 
     return const DefaultTabController(
-        length: 4,
+        length: 5,
         child: Scaffold(
           body: TabBarView(
             physics: NeverScrollableScrollPhysics(),
             children: [
-              //Chat, Community, Friends, My Page로 대체
               ChatListScreen(),
               BoardListScreen(),
               FriendScreen(),
-              //FriendScreen(),//Profile
               ProfileScreen(),
+              RiderScreen(),
             ],
           ),
           bottomNavigationBar: BottomBar(),

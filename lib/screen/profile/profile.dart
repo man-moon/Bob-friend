@@ -451,15 +451,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
 
-                  //팔로우
-                  //if (!isMe)
-                  // Padding(
-                  //   padding: const EdgeInsets.only(top: 10),
-                  //   child: context.select((UserProvider u) => u.friends.contains(widget.uid) ?
-                  //           const Icon(Icons.favorite_rounded) : const Icon(Icons.favorite_border_rounded),
-                  //   ),
-                  // ),
-
                   //온도
                   Padding(
                     padding: EdgeInsets.only(top: 30),
@@ -510,22 +501,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ]),
                   ),
 
-                  //선호 음식
-                  Padding(
-                      padding: EdgeInsets.only(top: 30),
-                      child: Container(
-                        margin: EdgeInsets.only(
-                            left: MediaQuery.of(context).size.width * 0.08),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              '선호하는 음식',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      )),
 
                   if (isMe)
                     Row(mainAxisAlignment: MainAxisAlignment.end, children: [

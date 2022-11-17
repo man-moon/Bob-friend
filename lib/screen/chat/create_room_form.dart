@@ -279,6 +279,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                             'type': MessageType.normal.toString(),
                             'action': MessageAction.none.toString(),
                             'restaurant': '',
+                            'meetingPlace': '',
                           })).then((_) => setChatProvider()).then((value) =>
                               Navigator.pop(context)).then(
                                   (value) =>

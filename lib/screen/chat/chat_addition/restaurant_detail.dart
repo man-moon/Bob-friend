@@ -146,21 +146,42 @@ class RestaurantDetailScreen extends StatelessWidget {
               );
             }
       ),
-      floatingActionButton: Container(
-        decoration: BoxDecoration(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton:
+      (type == 'addMenu') ?
+      Container(
+        decoration: const BoxDecoration(
           shape: BoxShape.rectangle,
         ),
         width: MediaQuery.of(context).size.width * 0.9,
         child: FloatingActionButton.extended(
           onPressed: () {
-            FirebaseFirestore.instance.collection('chats')
-              .doc(chatProvider.docId).collection('catalog').doc(userProvider.nickname.toString())
+            var ref = FirebaseFirestore.instance.collection('chats')
+                .doc(chatProvider.docId).collection('catalog');
+
+            ref.doc(userProvider.nickname.toString())
                 .set({
                     'menu': myCatalogProvider.menu,
                     'price': myCatalogProvider.price,
                     'count': myCatalogProvider.count
                   });
-            myCatalogProvider.softReset();
+            debugPrint(myCatalogProvider.count.toString());
+
+            late List<dynamic> count;
+
+            ref.doc('allCatalogs').get().then((value) {
+              count = value.data()!['count'];
+            }).then((_) {
+              for(int i = 0; i < count.length; i++){
+                debugPrint('forloop');
+                count[i] += myCatalogProvider.count[i];
+              }
+            }).then((_){
+              ref.doc('allCatalogs').update({
+                'count': count
+              });
+            }).then((_) => myCatalogProvider.softReset());
+
             Navigator.of(context).pop();
             Navigator.push(
                 context,
@@ -173,8 +194,7 @@ class RestaurantDetailScreen extends StatelessWidget {
           elevation: 30,
           label: Text('${myCatalogProvider.totalPrice}원 장바구니에 담기', style: TextStyle(fontSize: 17),),
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      ) : Container(),
     );
   }
 

@@ -274,12 +274,13 @@ class _FriendScreenState extends State<FriendScreen>
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => pmWriteScreen(
-                                              friendsList[index].ref))).then(
-                                      (value) {
-                                    setState(() {
-                                      initState();
-                                    });
-                                  });
+                                              friendsList[index].ref)));
+                                  // .then(
+                                  //     (value) {
+                                  //   setState(() {
+                                  //     initState();
+                                  //   });
+                                  // });
                                 },
                                 icon: const Icon(Icons.send))
                           ]),
@@ -299,12 +300,12 @@ class _FriendScreenState extends State<FriendScreen>
                                       MaterialPageRoute(
                                           builder: (context) => postMessage(
                                               dmList[index].ref,
-                                              dmList[index].opponent)))
-                                  .then((value) {
-                                setState(() {
-                                  initState();
-                                });
-                              });
+                                              dmList[index].opponent)));
+                              //     .then((value) {
+                              //   setState(() {
+                              //     initState();
+                              //   });
+                              // });
                             },
                             title: Text(
                               dmList[index].recentDm!,
