@@ -1,21 +1,14 @@
-import 'dart:typed_data';
 import 'package:bobfriend/screen/friend/pm_write.dart';
-import 'package:flutter_chat_bubble/bubble_type.dart';
-import 'package:flutter_chat_bubble/chat_bubble.dart';
-import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_4.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../Model/dm.dart';
-import '../../provider/chat.dart';
+import '../profile/profile.dart';
 
 class postMessage extends StatefulWidget {
-  postMessage(this.ref, this.opponent, {Key? key}) : super(key: key);
+  postMessage(this.ref, this.opponent, this.opponentId, {Key? key}) : super(key: key);
   final dynamic ref;
   String? opponent;
+  String? opponentId;
   @override
   State<postMessage> createState() => _postMessageState();
 }
@@ -51,9 +44,7 @@ class _postMessageState extends State<postMessage>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        bottomOpacity: 0.0,
-        elevation: 0.0,
+        elevation: 1,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: (){
@@ -66,10 +57,18 @@ class _postMessageState extends State<postMessage>{
             Navigator.push(
                 context,
                 MaterialPageRoute(
+                    builder: (context) => ProfileScreen(
+                      uid: widget.opponentId,
+                    )));
+          }, icon: const Icon(Icons.person),),
+          IconButton(onPressed: (){
+            Navigator.push(
+                context,
+                MaterialPageRoute(
                     builder: (context) => pmWriteScreen(
                         widget.ref))).then((value){
               setState(() {
-                initState();
+                getDm();
               });
             });
           },
@@ -81,6 +80,7 @@ class _postMessageState extends State<postMessage>{
           itemCount: postList.length,
           itemBuilder: (BuildContext context, int index){
             return Card(
+              elevation: 0,
               child: ListTile(
                 title: Text(postList[index].sender!),
                 trailing: Text(formatTimestamp(postList[index].date!.toDate())),

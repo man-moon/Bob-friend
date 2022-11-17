@@ -543,7 +543,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           });
                         },
                         child: const Text(
-                          "친구추가",
+                          "팔로우",
                           style: TextStyle(color: Colors.black),
                         ),
                       ),
@@ -560,7 +560,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             });
                           },
                           child: const Text(
-                            "친구끊기",
+                            "팔로잉",
                             style: TextStyle(color: Colors.white),
                           ),
                           style:OutlinedButton.styleFrom(backgroundColor: Colors.blueAccent),
