@@ -563,7 +563,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             'friends': FieldValue.arrayUnion([widget.uid])
                           });
                           dmCheck();
-                          this.setState(() {
+                          setState(() {
                             isFriend = true;
                           });
                         },
@@ -580,15 +580,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             FirebaseFirestore.instance.collection('user').doc(FirebaseAuth.instance.currentUser!.uid).update({
                               'friends': FieldValue.arrayRemove([widget.uid])
                             });
-                            this.setState(() {
+                            setState(() {
                               isFriend=false;
                             });
                           },
+                          style:OutlinedButton.styleFrom(backgroundColor: Colors.blueAccent),
                           child: const Text(
                             "팔로잉",
                             style: TextStyle(color: Colors.white),
                           ),
-                          style:OutlinedButton.styleFrom(backgroundColor: Colors.blueAccent),
                         ),
                       ]),
                 ],

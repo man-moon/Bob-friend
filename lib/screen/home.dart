@@ -38,7 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ChatListScreen(),
               BoardListScreen(),
               FriendScreen(),
-              //FriendScreen(),//Profile
               ProfileScreen(),
             ],
           ),

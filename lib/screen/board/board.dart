@@ -4,104 +4,173 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bobfriend/Model/board.dart';
 import 'package:bobfriend/screen/board/board_view.dart';
 import 'package:intl/intl.dart';
+
 //firebase data get
-class FireService{
+/*class FireService {
   static final FireService _fireService = FireService._internal();
+
   factory FireService() => _fireService;
+
   FireService._internal();
-  Future<List<BoardModel>> getFireModels() async{
+
+  Future<void> getFireModels() async {
+    boardList.clear();
     CollectionReference<Map<String, dynamic>> _collectionReference =
-    FirebaseFirestore.instance.collection('board');
+        FirebaseFirestore.instance.collection('board');
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
-    await _collectionReference.orderBy('date', descending: true).get();
-    List<BoardModel> list = [];
-    for(var doc in querySnapshot.docs){
+        await _collectionReference.orderBy('date', descending: true).get();
+    for (var doc in querySnapshot.docs) {
       BoardModel boardModel = BoardModel.fromQuerySnapshot(doc);
-      list.add(boardModel);
+      boardList.add(boardModel);
     }
-    return list;
   }
-}
-//push board view argument
-class Arguments {
-  final String? author;
-  var date;
-  final String? content;
-  Arguments(this.author, this.date, this.content);
-}
-//timestamp format
-//몇시간전, 몇분전으로 나타내기
-String formatTimestamp(DateTime timestamp){
+}*/
+
+String formatTimestamp(DateTime timestamp) {
   DateTime now = DateTime.now();
-  DateFormat formatter = DateFormat('yyyy-MM-dd');
-  String strNow = formatter.format(now);
-  String strBoard = formatter.format(timestamp);
-  return strBoard;
+  Duration diff = now.difference(timestamp);
+  String stdDate = "";
+  if (diff.inSeconds < 60) {
+    stdDate = "${diff.inSeconds}초 전";
+  } else if (diff.inSeconds > 60 && diff.inHours < 1) {
+    stdDate = "${(diff.inSeconds / 60).floor()}분 전";
+  } else if (diff.inHours < 24) {
+    stdDate = "${diff.inHours}시간 전";
+  } else if (diff.inDays < 30) {
+    stdDate = "${diff.inDays}일 전";
+  } else if (diff.inDays < 365) {
+    stdDate = "${diff.inDays / 30}달 전";
+  } else {
+    stdDate = "${diff.inDays / 365}년 전";
+  }
+  return stdDate;
 }
-class BoardListScreen extends StatefulWidget{
+
+class BoardListScreen extends StatefulWidget {
   const BoardListScreen({super.key});
 
   @override
   BoardListScreenState createState() => BoardListScreenState();
 }
+
 //board list
-class BoardListScreenState extends State<BoardListScreen>{
+class BoardListScreenState extends State<BoardListScreen> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+  List<BoardModel> boardList = [];
+
+  void getBoard() async {
+    boardList = [];
+    final tmpRef = FirebaseFirestore.instance.collection('board');
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await tmpRef.orderBy('date', descending: true).get();
+    for (var doc in querySnapshot.docs) {
+      BoardModel boardModel = BoardModel.fromQuerySnapshot(doc);
+      boardList.add(boardModel);
+    }
+    setState(() {
+      boardList = boardList;
+    });
+  }
+  @override
+  void initState() {
+    super.initState();
+    //FireService().getFireModels();
+    getBoard();
+  }
 
   @override
-  Widget build(BuildContext context){
-
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("게시판", style: TextStyle(color: Colors.black),),
+        title: const Text(
+          "게시판",
+          style: TextStyle(color: Colors.black),
+        ),
         centerTitle: true,
         elevation: 1,
-        actions: [
-          IconButton(onPressed: (){},
-          icon: Icon(Icons.search))
-        ],
+        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.search))],
       ),
-      body:
-      FutureBuilder<List<BoardModel>>(
-        future: FireService().getFireModels(),
-        builder: (context,snapshot){
-          if(snapshot.hasData){
-            List<BoardModel> datas = snapshot.data!;
-            return ListView.builder(
-                itemCount: datas.length,
-                itemBuilder: (BuildContext context, int index){
-                  BoardModel data = datas[index];
-                  return Card(
-                      child: ListTile(
-                        title: Text("${data.author}"),
-                        trailing: Text("${formatTimestamp((data.date)!.toDate())}"),
-                        subtitle: Text("${data.content}"),
-                        onTap: ()=> Navigator.pushNamed(
-                          context,
-                          BoardView.routeName,
-                          arguments: Arguments(data.author, (data.date)!.toDate(), data.content),
-                          ),
+      body: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: () async {
+            getBoard();
+            return Future<void>.delayed(const Duration(seconds: 1));
+          },
+          child: ListView.builder(
+              itemCount: boardList.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Card(
+                  elevation: 0,
+                  child: ListTile(
+                    title: Text("${boardList[index].author}"),
+                    trailing:
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                              formatTimestamp(
+                                  (boardList[index].date)!.toDate()),
+                              style: const TextStyle(color: Colors.grey)),
                         ),
-                      );
-                });
-          }
-          else{
-            return const Center(child: CircularProgressIndicator(color: Colors.black,),);
-          }
-        },
-      ),
-
-
+                        Expanded(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(mainAxisSize: MainAxisSize.min, children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(2),
+                                    child: const Icon(Icons.thumb_up_alt_outlined,
+                                        size: 15),
+                                  ),
+                                  Text("${boardList[index].likeCnt?.length}"),
+                                ]),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(2),
+                                      child: const Icon(Icons.comment, size: 15),
+                                    ),
+                                    Text("${boardList[index].commentCnt}"),
+                                  ],
+                                )
+                              ],
+                            )),
+                      ],
+                    ),
+                    subtitle: Text(
+                      "${boardList[index].content}",
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  BoardView(boardList[index].reference))).then((value) {
+                        setState(() {
+                          getBoard();
+                        });
+                      });
+                    },
+                  ),
+                );
+              })),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => BoardWriteScreen()))
-              .then((value){
+        onPressed: () {
+          Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => BoardWriteScreen()))
+              .then((value) {
             setState(() {
+              getBoard();
             });
           });
         },
-        child: Text('글쓰기'),
+        child: const Text('글쓰기'),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
