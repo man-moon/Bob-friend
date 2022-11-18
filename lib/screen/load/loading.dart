@@ -24,15 +24,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     userProvider.univ = userInfo.data()!['univ'];
     userProvider.temperature = userInfo.data()!['temperature'];
     userProvider.friends = userInfo.data()!['friends'];
-
-    debugPrint('==========init test==========');
-    debugPrint('nickname: ${userProvider.nickname}');
-    debugPrint('email: ${userProvider.email}');
-    debugPrint('univ: ${userProvider.univ}');
-    debugPrint('temperature: ${userProvider.temperature}');
-    debugPrint('profileUrl: ${userProvider.profileImageLink}');
-    debugPrint('==========finish test==========');
-
+    userProvider.isRider = userInfo.data()!['isRider'];
   }
   @override
   Widget build(BuildContext context) {

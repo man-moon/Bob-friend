@@ -71,7 +71,7 @@ class ChatBubbles extends StatelessWidget {
                 },
                 child: ChatBubble(
                   clipper: ChatBubbleClipper4(type: BubbleType.receiverBubble),
-                  backGroundColor: const Color(0xffE7E7ED),
+                  backGroundColor: (userNickname == '밥친구') ? const Color.fromRGBO(244, 224, 164, 1) : const Color(0xffE7E7ED),
                   margin: const EdgeInsets.only(top: 20),
                   child: Container(
                     constraints: BoxConstraints(
@@ -88,6 +88,7 @@ class ChatBubbles extends StatelessWidget {
                                 fontWeight: FontWeight.bold, color: Colors.black38),
                           ),
                           const SizedBox(height: 5,),
+                          if(action.compareTo(MessageAction.selectMeetingPlace.toString()) != 0)
                           Text(
                             message,
                             style: const TextStyle(color: Colors.black),
@@ -119,7 +120,10 @@ class ChatBubbles extends StatelessWidget {
                                       MaterialPageRoute(builder: (context) => RestaurantDetailScreen(name: restaurant, type: 'addMenu',)));
                                 },
                                 child: const Text('메뉴 정하러 가기', style: TextStyle(color: Colors.black),)
-                            )
+                            ),
+                          if(action.compareTo(MessageAction.selectMeetingPlace.toString()) == 0)
+                            Text('배달이 도착하면 $message(으)로 모여주세요!', style: TextStyle(color: Colors.black, fontSize: 15),),
+
 
                         ]),
                   ),

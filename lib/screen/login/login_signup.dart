@@ -19,15 +19,6 @@ class _LoginSignupScreen extends State<LoginSignupScreen> {
   Duration get loginTime => const Duration(milliseconds: 2250);
   final _authentication = FirebaseAuth.instance;
 
-  void updateUserProvider(final dynamic data, final dynamic profileUrl, final dynamic univ){
-    UserProvider u = Provider.of<UserProvider>(context, listen: false);
-    u.nickname = data.additionalSignupData!['nickname'];
-    u.email = data.name;
-    u.profileImageLink = profileUrl;
-    u.univ = univ;
-    u.temperature = 36.5;
-  }
-
   void updateUserDatabase(final dynamic data, final dynamic profileUrl, final dynamic univ){
     FirebaseFirestore.instance
         .collection('user')
@@ -39,12 +30,8 @@ class _LoginSignupScreen extends State<LoginSignupScreen> {
       'univ': univ,
       'temperature': 36.5,
       'friends': [],
+      'isRider': false,
     });
-  }
-
-  void updateUser(final dynamic data, final dynamic profileUrl, final dynamic univ) {
-    updateUserProvider(data, profileUrl, univ);
-    updateUserDatabase(data, profileUrl, univ);
   }
 
   Future<String?> setUser(SignupData data) async {
@@ -71,11 +58,10 @@ class _LoginSignupScreen extends State<LoginSignupScreen> {
         .child('basic.jpeg');
 
     await profileRef.getDownloadURL().then(
-            (value) => updateUser(data, value, univ)
+            (profileUrl) => updateUserDatabase(data, profileUrl, univ)
     );
     return null;
   }
-
   Future<String?> _authUser(LoginData data) {
     debugPrint('Name: ${data.name}, Password: ${data.password}');
 

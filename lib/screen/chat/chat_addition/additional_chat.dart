@@ -78,6 +78,21 @@ class AdditionalChatScreenState extends State<AdditionalChatScreen> {
                               'action': MessageAction.selectMenu.toString(),
                               'restaurant': data.name,
                             });
+
+                            chatProvider.restaurantName = data.name;
+
+                            List<int> counts = [];
+                            for(int i = 0; i < data.menu!.length; i++){
+                              counts.add(0);
+                            }
+
+                            FirebaseFirestore.instance.collection('chats').doc(chatProvider.docId)
+                                .collection('catalog').doc('allCatalogs').set({
+                                  'menu': data.menu,
+                                  'price': data.price,
+                                  'count': counts,
+                                });
+
                             Navigator.of(context).pop();
                           },
                           child: const Text(

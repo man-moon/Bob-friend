@@ -7,6 +7,7 @@ class UserProvider extends ChangeNotifier{
   String? _univ;
   List<dynamic> _friends = [];
   double? _temperature;
+  bool? _isRider;
 
   String? get nickname => _nickname;
   String? get email => _email;
@@ -14,6 +15,7 @@ class UserProvider extends ChangeNotifier{
   String? get univ => _univ;
   List<dynamic> get friends => _friends;
   double? get temperature => _temperature;
+  bool? get isRider => _isRider;
 
   set nickname(String? value) {
     _nickname = value;
@@ -43,6 +45,10 @@ class UserProvider extends ChangeNotifier{
     _temperature = value;
     notifyListeners();
   }
+  set isRider(bool? value) {
+    _isRider = value;
+    notifyListeners();
+  }
 
   void clear() {
     _nickname = null;
@@ -51,6 +57,7 @@ class UserProvider extends ChangeNotifier{
     _univ = null;
     _friends = [];
     _temperature = null;
+    _isRider = null;
     debugPrint('User info Cleared!');
   }
 }

@@ -1,5 +1,5 @@
 enum MessageType { normal, action, image }
 enum MessageAction {
   none, selectRestaurant, share, selectMenu, calculatePrice,
-  uploadReceipt, selectMeetingPlace, notifyDeliveryCompletion, rate
+  uploadReceipt, selectMeetingPlace, callRider, notifyDeliveryCompletion, rate
 }

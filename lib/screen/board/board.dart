@@ -26,7 +26,8 @@ import 'package:intl/intl.dart';
   }
 }*/
 
-String formatTimestamp(DateTime timestamp) {
+
+String formatTimestamp(DateTime timestamp){
   DateTime now = DateTime.now();
   Duration diff = now.difference(timestamp);
   String stdDate = "";
@@ -170,7 +171,7 @@ class BoardListScreenState extends State<BoardListScreen> {
             });
           });
         },
-        child: const Text('글쓰기'),
+        child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );

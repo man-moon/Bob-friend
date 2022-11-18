@@ -507,6 +507,8 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Column(children: [
                 TextButton(
                   onPressed: () {
+
+                    //참여자
                     if (chatProvider.owner != userUid) {
                       if (chatProvider.state == ChatState.none.toString()) {
                         showTopSnackBar(
@@ -546,10 +548,13 @@ class _ChatScreenState extends State<ChatScreen> {
                         );
                       }
                     }
+
+                    //방장
                     else if (chatProvider.owner == userUid) {
                       if (chatProvider.state == ChatState.none.toString()) {
                         showStartPopup();
                       }
+
                       else if (chatProvider.state ==
                           ChatState.selectRestaurant.toString()) {
 
@@ -566,16 +571,224 @@ class _ChatScreenState extends State<ChatScreen> {
                             .doc(chatProvider.docId)
                             .update({'state': ChatState.selectMenu.toString()});
 
-                        //send message for menu
-
                       }
+
                       else if (chatProvider.state ==
-                          ChatState.selectMenu.toString()) {
+                        ChatState.selectMenu.toString()) {
+                          var ref = FirebaseFirestore.instance
+                            .collection('chats')
+                            .doc(chatProvider.docId);
+
+                          ref.update({'state': ChatState.selectMeetingPlace.toString()});
+                        }
+
+                      else if (chatProvider.state ==
+                          ChatState.selectMeetingPlace.toString()) {
+                        final controller = TextEditingController();
+                        final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              var ref = FirebaseFirestore.instance
+                                  .collection('chats')
+                                  .doc(chatProvider.docId);
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0)),
+                                //Dialog Main Title
+                                title: Column(
+                                  children: const <Widget>[
+                                    Text('알림'),
+                                  ],
+                                ),
+                                //
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    const Text(
+                                      '어디서 모일지 장소를 공지해주세요!',
+                                    ),
+                                    Form(
+                                      key: formKey,
+                                      child: TextFormField(
+                                        controller: controller,
+                                        validator: (value) {
+                                          if(value!.trim().isEmpty) {
+                                            return '모임 장소를 입력해주세요';
+                                          }
+                                          return null;
+                                        },
+                                        decoration: const InputDecoration(
+                                            labelStyle: TextStyle(color: Colors.grey),
+                                            labelText: '모임 장소'
+                                        ),
+                                        maxLength: 10,
+
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('취소', style: TextStyle(color: Colors.black),),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('공지', style: TextStyle(color: Colors.black)),
+                                    onPressed: () {
+                                      if(formKey.currentState!.validate()) {
+                                        String meetingPlace = controller.text;
+                                        ref.collection("chat")
+                                            .doc("selectMeetingPlace")
+                                            .set({
+                                          'text': meetingPlace,
+                                          'time': Timestamp.now(),
+                                          'userId': 'admin',
+                                          'nickname': '밥친구',
+                                          'type': MessageType.action.toString(),
+                                          'action': MessageAction.selectMeetingPlace.toString(),
+                                          'restaurant': '',
+                                        });
+                                        Navigator.of(context).pop();
+
+                                        FirebaseFirestore.instance
+                                            .collection('chats')
+                                            .doc(chatProvider.docId).update({
+                                                'state': ChatState.callRider.toString(),
+                                                'meetingPlace': controller.text,
+                                            });
+                                        chatProvider.meetingPlace = controller.text;
+                                      }
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
+                      }
+
+                      else if (chatProvider.state ==
+                          ChatState.callRider.toString()) {
+
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              var ref = FirebaseFirestore.instance
+                                  .collection('chats')
+                                  .doc(chatProvider.docId);
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0)),
+                                //Dialog Main Title
+                                title: Column(
+                                  children: const <Widget>[
+                                    Text('배달 서비스 선정'),
+                                  ],
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('타 배달앱 이용하기', style: TextStyle(color: Colors.black),),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('밥친구 배달원 이용하기', style: TextStyle(color: Colors.black)),
+                                    onPressed: () {
+
+                                      //채팅방 전체 카탈로그 정보 보여주는건 어차피 해야될 일임
+                                      //채팅방 카탈로그 불러온 뒤
+                                      //가게, 메뉴, 메뉴 별 가격, 총 가격을 파이어베이스 'allCatalogs'에 저장.
+
+
+                                      //배달 서비스 콜 목록에 뜨게 해야됨
+                                      ref.collection('catalog').doc('allCatalogs').get().then(
+                                              (value) =>
+                                                  FirebaseFirestore.instance.collection('delivery')
+                                                      .doc(chatProvider.docId).set({
+                                                    'name': chatProvider.restaurantName,
+                                                    'menu': value.data()!['menu'],
+                                                    'count': value.data()!['count'],
+                                                    'price': value.data()!['price'],
+                                                    'isMatched': false,
+                                                    'deliveryLocation': chatProvider.meetingPlace,
+                                                    'orderTime': Timestamp.now(),
+                                                  })
+                                      );
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
+
+
                         FirebaseFirestore.instance
                             .collection('chats')
-                            .doc(chatProvider.docId)
-                            .update({'state': ChatState.none.toString()});
+                            .doc(chatProvider.docId).update(
+                            {'state': ChatState.notifyDeliveryCompletion.toString()});
                       }
+
+                      else if(chatProvider.state ==
+                          ChatState.notifyDeliveryCompletion.toString()) {
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              var ref = FirebaseFirestore.instance
+                                  .collection('chats')
+                                  .doc(chatProvider.docId);
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0)),
+                                //Dialog Main Title
+                                title: Column(
+                                  children: const <Widget>[
+                                    Text('알림'),
+                                  ],
+                                ),
+                                //
+                                content:
+                                    const Text('친구들에게 배달도착 알림메시지를 전송할까요?',),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('취소', style: TextStyle(color: Colors.black),),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('공지', style: TextStyle(color: Colors.black)),
+                                    onPressed: () {
+                                        ref.collection("chat")
+                                            .doc("notifyDeliveryCompletion")
+                                            .set({
+                                          'text': '밥 먹을 시간이에요! 모두들 모임장소로 모여주세요!',
+                                          'time': Timestamp.now(),
+                                          'userId': 'admin',
+                                          'nickname': '밥친구',
+                                          'type': MessageType.normal.toString(),
+                                          'action': MessageAction.rate.toString(),
+                                          'restaurant': '',
+                                        });
+                                        Navigator.of(context).pop();
+                                        FirebaseFirestore.instance
+                                            .collection('chats')
+                                            .doc(chatProvider.docId).update({'state': ChatState.rate.toString()});
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
+                      }
+
+
+
+
                     }
                   },
                   style: ButtonStyle(
@@ -630,6 +843,45 @@ class _ChatScreenState extends State<ChatScreen> {
                             return const Text('아직 메뉴를 고르지 못한 친구가 있어요');
                           }
                         }
+
+                        if (snapshot.data!['state'].toString() ==
+                            ChatState.selectMeetingPlace.toString()) {
+                          if (chatProvider.owner ==
+                              userUid) {
+                            return const Text('모임 장소를 공지해주세요');
+                          } else if (chatProvider.owner !=
+                              userUid) {
+                            return const Text('모임 장소를 정하는 중이에요');
+                          }
+                        }
+
+                        if (snapshot.data!['state'].toString() ==
+                            ChatState.callRider.toString()) {
+                          if (chatProvider.owner ==
+                              userUid) {
+                            return const Text('배달 서비스를 골라주세요');
+                          } else if (chatProvider.owner !=
+                              userUid) {
+                            return const Text('배달 서비스를 정하는 중이에요');
+                          }
+                        }
+
+                        if (snapshot.data!['state'].toString() ==
+                            ChatState.notifyDeliveryCompletion.toString()) {
+                          if (chatProvider.owner ==
+                              userUid) {
+                            return const Text('배달 도착 알림을 보낼게요');
+                          } else if (chatProvider.owner !=
+                              userUid) {
+                            return const Text('배달이 도착하면 알려드릴게요');
+                          }
+                        }
+
+                        if (snapshot.data!['state'].toString() ==
+                            ChatState.rate.toString()) {
+                          return const Text('맛있게 드세요!');
+                        }
+
                       } else {
                         return const Text('');
                       }
