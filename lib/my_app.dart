@@ -1,5 +1,6 @@
 import 'package:bobfriend/screen/load/loading.dart';
 import 'package:bobfriend/screen/login/login_signup.dart';
+import 'package:bobfriend/screen/newlogin/new_login_signup.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -45,7 +46,7 @@ class MyApp extends StatelessWidget {
           home: Builder(
             builder: (context) {
               return (FirebaseAuth.instance.currentUser != null) ?
-                const LoadingScreen() : const LoginSignupScreen();
+                const LoadingScreen() : const NewLoginSignupScreen();
             },
           )
         );

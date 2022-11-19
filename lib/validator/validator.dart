@@ -4,15 +4,35 @@ class Regex {
 }
 
 String? emailValidator(value) {
-  if (value!.isEmpty || !Regex.email.hasMatch(value)) {
+  if(value!.isEmpty){
+    return '';
+  }
+  if (!Regex.email.hasMatch(value)) {
     return '이메일 형식을 확인해주세요';
+  }
+  return null;
+}
+
+String? emailVerificationCodeValidator(value) {
+  if(value!.length < 4){
+    return '';
   }
   return null;
 }
 
 String? passwordValidator(value) {
   if (value!.isEmpty || value.length < 6) {
-    return '비밀번호는 6자 이상입니다';
+    return '비밀번호는 6자 이상으로 해주세요';
+  }
+  return null;
+}
+
+String? passwordCheckValidator(password, checkPassword) {
+  if(checkPassword.isEmpty){
+    return '';
+  }
+  if (password != checkPassword) {
+    return '비밀번호가 일치하지 않아요';
   }
   return null;
 }

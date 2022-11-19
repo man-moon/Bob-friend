@@ -1,3 +1,4 @@
+import 'package:bobfriend/screen/newlogin/new_login_signup.dart';
 import 'package:bobfriend/validator/validator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -519,7 +520,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (BuildContext context) =>
-                                        const LoginSignupScreen()),
+                                        const NewLoginSignupScreen()),
                                 (route) => false);
                           },
                           icon: const Icon(

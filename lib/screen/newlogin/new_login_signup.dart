@@ -1,4 +1,5 @@
-import 'package:bobfriend/screen/newlogin/signup.dart';
+import 'package:bobfriend/screen/newlogin/user_signup.dart';
+import 'package:bobfriend/screen/newlogin/signup_branch.dart';
 import 'package:flutter/material.dart';
 
 class NewLoginSignupScreen extends StatefulWidget {
@@ -149,7 +150,7 @@ Widget goSignup(BuildContext context) {
         onPressed: () {
           Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const SignupScreen()));
+              MaterialPageRoute(builder: (context) => const SignupBranchScreen()));
         },
         child: const Text('회원가입 ',
           style: TextStyle(
