@@ -1,4 +1,5 @@
 import 'package:bobfriend/Model/delivery.dart';
+import 'package:bobfriend/screen/rider/delivery_detail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -41,26 +42,28 @@ Widget showDelivery(final dynamic data) {
   List<Delivery> deliveryList = [];
 
   data.forEach((doc) {
-    Delivery delivery = Delivery(
-      restaurantName: doc['name'],
-      menu: doc['menu'],
-      price: doc['price'],
-      count: doc['count'],
-      isMatched: false,
-      deliveryLocation: doc['deliveryLocation'],
-      orderTime: doc['orderTime'].toDate(),
-    );
-    deliveryList.add(delivery);
+    if(doc['isMatched'] == false){
+      debugPrint(doc.id);
+      Delivery delivery = Delivery(
+        restaurantName: doc['name'],
+        chatId: doc.id,
+        menu: doc['menu'],
+        price: doc['price'],
+        count: doc['count'],
+        isMatched: false,
+        deliveryLocation: doc['deliveryLocation'],
+        orderTime: doc['orderTime'].toDate(),
+      );
+      deliveryList.add(delivery);
+    }
   });
-  // String name = data[0]['name'];
-  // debugPrint(name);
 
-  return ListView.builder(
-    itemCount: data.length,
+  return (deliveryList.isEmpty) ? notFound() : ListView.builder(
+    itemCount: deliveryList.length,
     cacheExtent: 10,
     itemBuilder: (BuildContext context, int index){
 
-      final delivery = deliveryList[index];
+      final Delivery delivery = deliveryList[index];
       final String restaurantName = delivery.restaurantName;
       final String orderTimeBefore = formatTimestamp(delivery.orderTime);
       final String deliveryLocation = delivery.deliveryLocation;
@@ -69,6 +72,8 @@ Widget showDelivery(final dynamic data) {
         elevation: 0,
         child: ListTile(
           onTap: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => DeliveryDetailScreen(delivery: delivery)));
           },
           title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

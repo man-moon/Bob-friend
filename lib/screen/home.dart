@@ -36,10 +36,10 @@ class _HomeScreenState extends State<HomeScreen> {
             physics: NeverScrollableScrollPhysics(),
             children: [
               ChatListScreen(),
+              RiderScreen(),
               BoardListScreen(),
               FriendScreen(),
               ProfileScreen(),
-              RiderScreen(),
             ],
           ),
           bottomNavigationBar: BottomBar(),

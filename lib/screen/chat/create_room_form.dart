@@ -268,6 +268,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                             'users': [u],
                             'owner': user.uid,
                             'state': ChatState.none.toString(),
+                            'meetingPlace': '',
                           }).then((value) async =>
                           await ref.collection("chat")
                               .doc("WelcomeMessage")

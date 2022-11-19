@@ -30,9 +30,11 @@ class _FriendScreenState extends State<FriendScreen>
   void getFriendInfo() async {
     final userRef =
         await FirebaseFirestore.instance.collection('user').doc(curUid).get();
-    setState(() {
+    if(mounted) {
+      setState(() {
       friendsIdList = userRef.data()!['friends'];
     });
+    }
     for (var i = 0; i < friendsIdList.length; i++) {
       dmListModel tmpMd = new dmListModel();
       var tmpRef = await FirebaseFirestore.instance

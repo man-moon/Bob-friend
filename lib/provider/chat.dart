@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class ChatProvider extends ChangeNotifier{
+class ChatProvider extends ChangeNotifier {
   String? _docId;
   Timestamp? _date;
   late List<dynamic> _foodType;

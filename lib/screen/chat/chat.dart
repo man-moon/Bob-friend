@@ -347,7 +347,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: DrawerHeader(
                       decoration: BoxDecoration(
                         shape: BoxShape.rectangle,
-                        color: Colors.orangeAccent,
                       ),
                       child: Text(
                         '채팅방 서랍',

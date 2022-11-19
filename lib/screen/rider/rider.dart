@@ -1,4 +1,7 @@
+import 'package:bobfriend/order_delivery_status.dart';
+import 'package:bobfriend/provider/my_delivery.dart';
 import 'package:bobfriend/provider/user.dart';
+import 'package:bobfriend/screen/rider/rider_order_delivery_status.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'rider_description.dart';
@@ -11,20 +14,23 @@ class RiderScreen extends StatefulWidget {
   State<RiderScreen> createState() => _RiderScreenState();
 }
 
-/// 배달라이더 등록이 되어있는지 확인
-/// #등록이 되어있는 경우
-///   배달지 리스트(현재 배달기사를 찾고있는 채팅방) 보여줌
-///
-/// #등록이 안되어있는 경우
-///   배달기사 설명과 함께 등록 페이지로 유도하는 스크린
 class _RiderScreenState extends State<RiderScreen> {
   late UserProvider userProvider;
-
+  late MyDeliveryProvider myDeliveryProvider;
 
   @override
   Widget build(BuildContext context) {
+
     userProvider = Provider.of<UserProvider>(context, listen: true);
+    myDeliveryProvider = Provider.of<MyDeliveryProvider>(context, listen: true);
+
     return userProvider.isRider == null ?
-      const CircularProgressIndicator() : (userProvider.isRider == true ? MatchingScreen() : RiderDescriptionScreen());
+      const CircularProgressIndicator() :
+        (userProvider.isRider == false ?
+          const RiderDescriptionScreen() :
+            (myDeliveryProvider.orderId != '') ?
+            //const RiderOrderDeliveryStatusScreen()
+            OrderDeliveryStatusScreen(orderId: myDeliveryProvider.orderId)
+                : const MatchingScreen());
   }
 }

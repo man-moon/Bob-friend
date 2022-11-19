@@ -31,6 +31,21 @@ class _LoginSignupScreen extends State<LoginSignupScreen> {
       'temperature': 36.5,
       'friends': [],
       'isRider': false,
+      'isDelivering': false,
+    });
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('myDelivery').doc('myDelivery').set({
+      'riderId': '',
+      'restaurantName': '',
+      'status': '',
+      'deliveryLocation': '',
+      'menu': [],
+      'price': [],
+      'count': [],
+      'orderTime': Timestamp.now(),
+      'orderId': '',
     });
   }
 

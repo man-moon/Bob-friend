@@ -51,7 +51,7 @@ class BoardListScreenState extends State<BoardListScreen>{
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("게시판", style: TextStyle(color: Colors.black),),
+        title: const Text('커뮤니티', style: TextStyle(color: Colors.black),),
         centerTitle: true,
         elevation: 1,
         actions: [
@@ -91,6 +91,7 @@ class BoardListScreenState extends State<BoardListScreen>{
 
 
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.greenAccent,
         onPressed: (){
           Navigator.push(
               context,

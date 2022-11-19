@@ -7,7 +7,7 @@ class RestaurantFireService {
 
   Future<List<RestaurantModel>> getDocs() async {
     QuerySnapshot querySnapshot =
-    await FirebaseFirestore.instance.collection('food').get();
+    await FirebaseFirestore.instance.collection('restaurant').get();
     for (int i = 0; i < querySnapshot.docs.length; i++) {
       var Middle_datainfo = querySnapshot.docs[i].data() as Map<String, dynamic>;
       String name = '';
