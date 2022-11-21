@@ -49,3 +49,24 @@ String? nicknameValidator(value) {
   }
   return null;
 }
+
+String? restaurantNameValidator(value) {
+  if(value!.isEmpty) {
+    return '상호명을 입력해주세요';
+  }
+  return null;
+}
+
+String? restaurantAddressValidator(value) {
+  if(value!.isEmpty) {
+    return '주소를 입력해주세요';
+  }
+  return null;
+}
+
+String? restaurantDetailAddressValidator(value) {
+  if(value!.isEmpty) {
+    return '상세주소를 입력해주세요';
+  }
+  return null;
+}

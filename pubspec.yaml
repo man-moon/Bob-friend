@@ -63,6 +63,10 @@ dependencies:
   web_socket_channel: ^2.2.0
   stomp_dart_client: ^0.4.4
   uuid: ^3.0.7
+  kpostal: ^0.5.1
+  #iamport_flutter: ^0.10.3
+  #get: ^4.6.5
+
 
 dev_dependencies:
   flutter_test:

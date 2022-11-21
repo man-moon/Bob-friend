@@ -1,3 +1,4 @@
+import 'package:bobfriend/screen/newlogin/owner_signup.dart';
 import 'package:bobfriend/screen/newlogin/user_signup.dart';
 import 'package:flutter/material.dart';
 
@@ -41,7 +42,7 @@ class SignupBranchScreen extends StatelessWidget {
                     )
                 );
               },
-              child: const Text('배달을 이용하거나 직접 하고 싶어요', style: TextStyle(color: Colors.white, fontSize: 20),)
+              child: const Text('일반 회원', style: TextStyle(color: Colors.white, fontSize: 20),)
             ),
           ),
           const SizedBox(height: 30,),
@@ -53,8 +54,15 @@ class SignupBranchScreen extends StatelessWidget {
                   backgroundColor: MaterialStateProperty.all<Color>(Colors.greenAccent),
 
                 ),
-                onPressed: () {},
-                child: const Text('가게 등록을 하고 싶어요', style: TextStyle(color: Colors.white, fontSize: 20),)
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const OwnerSignupScreen()
+                      )
+                  );
+                },
+                child: const Text('가게 사장님 회원', style: TextStyle(color: Colors.white, fontSize: 20),)
             ),
           ),
           const SizedBox(height: 40,),

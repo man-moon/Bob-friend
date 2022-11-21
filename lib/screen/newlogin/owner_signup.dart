@@ -1,5 +1,4 @@
-import 'package:bobfriend/screen/newlogin/new_login_signup.dart';
-import 'package:bobfriend/screen/newlogin/user_detail_setting.dart';
+import 'package:bobfriend/screen/newlogin/owner_detail_setting.dart';
 import 'package:bobfriend/validator/validator.dart';
 import 'package:flutter/material.dart';
 
@@ -12,14 +11,14 @@ enum SignupStatus {
 
 }
 
-class UserSignupScreen extends StatefulWidget {
-  const UserSignupScreen({Key? key}) : super(key: key);
+class OwnerSignupScreen extends StatefulWidget {
+  const OwnerSignupScreen({Key? key}) : super(key: key);
 
   @override
-  State<UserSignupScreen> createState() => _UserSignupScreenState();
+  State<OwnerSignupScreen> createState() => _OwnerSignupScreenState();
 }
 
-class _UserSignupScreenState extends State<UserSignupScreen> {
+class _OwnerSignupScreenState extends State<OwnerSignupScreen> {
 
   SignupStatus signupStatus = SignupStatus.beforeVerification;
 
@@ -97,88 +96,79 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
             child: Column(
                 children: [
                   ///이메일 입력 필드
-              Padding(
-                  padding: EdgeInsets.symmetric(horizontal: width*0.05),
-                  child: buildEmailField(context)
-              ),
-              const SizedBox(height: 13,),
-              Padding(
-                  padding: EdgeInsets.symmetric(horizontal: width*0.05),
-                  child: Row(
-                    children: [
-                      (emailValidator(email) == null) ?
-                        const Text('') :
-                        Text(emailValidator(email).toString(), style: TextStyle(color: Colors.red),)
-                    ],
-                  )
-              ),
+                  Padding(
+                      padding: EdgeInsets.symmetric(horizontal: width*0.05),
+                      child: buildEmailField(context)
+                  ),
+                  const SizedBox(height: 13,),
+                  Padding(
+                      padding: EdgeInsets.symmetric(horizontal: width*0.05),
+                      child: Row(
+                        children: [
+                          (emailValidator(email) == null) ?
+                          const Text('') :
+                          Text(emailValidator(email).toString(), style: TextStyle(color: Colors.red),)
+                        ],
+                      )
+                  ),
 
-              ///본인인증 테스트코드
-              // TextButton(
-              //   onPressed: () {
-              //     Navigator.push(
-              //         context,
-              //         MaterialPageRoute(builder: (context) => Certification()));
-              //   },
-              //   child: Text('본인 인증', style: TextStyle(color: Colors.black),)),
-
-              ///이메일 인증번호 입력 필드
-              if(signupStatus != SignupStatus.beforeVerification)
-                Padding(
-                    padding: EdgeInsets.symmetric(horizontal: width*0.05),
-                    child: buildEmailVerificationField(context)
-                ),
+                  ///이메일 인증번호 입력 필드
+                  if(signupStatus != SignupStatus.beforeVerification)
+                    Padding(
+                        padding: EdgeInsets.symmetric(horizontal: width*0.05),
+                        child: buildEmailVerificationField(context)
+                    ),
                   const SizedBox(height: 8,),
 
 
                   ///비밀번호 입력 필드
                   if(signupStatus != SignupStatus.verification &&
-                  signupStatus != SignupStatus.beforeVerification)
-                Padding(
-                    padding: EdgeInsets.symmetric(horizontal: width*0.05),
-                    child: buildPasswordField(context)
-                ),
-                if(signupStatus != SignupStatus.verification &&
-                    signupStatus != SignupStatus.beforeVerification)
-                const SizedBox(height: 6,),
-                if(signupStatus != SignupStatus.verification &&
-                    signupStatus != SignupStatus.beforeVerification)
-                Padding(
-                    padding: EdgeInsets.symmetric(horizontal: width*0.05),
-                    child: Row(
-                      children: [
-                        (passwordValidator(password) == null) ?
-                        const Text('') :
-                        Text(passwordValidator(password).toString(), style: const TextStyle(color: Colors.red),)
-                      ],
-                    )
-                ),
+                      signupStatus != SignupStatus.beforeVerification)
+                    Padding(
+                        padding: EdgeInsets.symmetric(horizontal: width*0.05),
+                        child: buildPasswordField(context)
+                    ),
+                  if(signupStatus != SignupStatus.verification &&
+                      signupStatus != SignupStatus.beforeVerification)
+                    const SizedBox(height: 6,),
+                  if(signupStatus != SignupStatus.verification &&
+                      signupStatus != SignupStatus.beforeVerification)
+                    Padding(
+                        padding: EdgeInsets.symmetric(horizontal: width*0.05),
+                        child: Row(
+                          children: [
+                            (passwordValidator(password) == null) ?
+                            const Text('') :
+                            Text(passwordValidator(password).toString(), style: const TextStyle(color: Colors.red),)
+                          ],
+                        )
+                    ),
                   if(signupStatus != SignupStatus.verification &&
                       signupStatus != SignupStatus.beforeVerification)
                     const SizedBox(height: 8,),
                   ///비밀번호 확인 필드
                   if(signupStatus != SignupStatus.verification &&
                       signupStatus != SignupStatus.beforeVerification)
-                  Padding(
-                      padding: EdgeInsets.symmetric(horizontal: width*0.05),
-                      child: buildCheckPasswordField(context)
-                  ),
+                    Padding(
+                        padding: EdgeInsets.symmetric(horizontal: width*0.05),
+                        child: buildCheckPasswordField(context)
+                    ),
                   if(signupStatus != SignupStatus.verification &&
                       signupStatus != SignupStatus.beforeVerification)
                     const SizedBox(height: 6,),
-                if(signupStatus != SignupStatus.verification &&
-                    signupStatus != SignupStatus.beforeVerification)
-                  Padding(
-                      padding: EdgeInsets.symmetric(horizontal: width*0.05),
-                      child: Row(
-                        children: [
-                          (passwordCheckValidator(password, checkPassword) == null) ?
-                          const Text('') :
-                          Text(passwordCheckValidator(password, checkPassword).toString(), style: const TextStyle(color: Colors.red),)
-                        ],
-                      )
-                  ),
-            ]),
+                  if(signupStatus != SignupStatus.verification &&
+                      signupStatus != SignupStatus.beforeVerification)
+                    Padding(
+                        padding: EdgeInsets.symmetric(horizontal: width*0.05),
+                        child: Row(
+                          children: [
+                            (passwordCheckValidator(password, checkPassword) == null) ?
+                            const Text('') :
+                            Text(passwordCheckValidator(password, checkPassword).toString(), style: const TextStyle(color: Colors.red),)
+                          ],
+                        )
+                    ),
+                ]),
           ),
 
           //모든 필드가 정상일 때 활성화됨
@@ -202,13 +192,6 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
       decoration: InputDecoration(
         labelText: '이메일',
         labelStyle: TextStyle(color: Colors.grey,),
-        // disabledBorder: OutlineInputBorder(
-        //   borderRadius: BorderRadius.all(Radius.circular(8)),
-        //   borderSide: BorderSide(
-        //       color: Colors.grey,
-        //       width: 2.0
-        //   ),
-        // ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
@@ -223,8 +206,8 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
               width: 2.0
           ),
         ),
-        hintText: '학교 이메일만 가입이 가능해요',
-        prefixIcon: Icon(Icons.mail_outline, color: Colors.grey,),
+        hintText: '연락 가능한 이메일 주소를 적어주세요',
+        prefixIcon: const Icon(Icons.mail_outline, color: Colors.grey,),
       ),
     );
   }
@@ -242,7 +225,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
 
       decoration: InputDecoration(
         labelText: '인증 코드',
-        labelStyle: TextStyle(color: Colors.grey,),
+        labelStyle: const TextStyle(color: Colors.grey,),
         // disabledBorder: OutlineInputBorder(
         //   borderRadius: BorderRadius.all(Radius.circular(8)),
         //   borderSide: BorderSide(
@@ -344,7 +327,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
           ),
         ),
         prefixIcon: passwordCheckValidator(password, checkPassword) == null ?
-            const Icon(Icons.lock_outline, color: Colors.grey,) : const Icon(Icons.lock_open_outlined, color: Colors.grey,),
+        const Icon(Icons.lock_outline, color: Colors.grey,) : const Icon(Icons.lock_open_outlined, color: Colors.grey,),
       ),
     );
   }
@@ -392,7 +375,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
             Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) =>
-                    UserDetailSettingScreen(email: email, password: password,)));
+                    OwnerDetailSettingScreen(email: email, password: password,)));
           }
 
 
@@ -419,7 +402,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
       return Colors.grey;
     }
     if(signupStatus == SignupStatus.afterVerification && password == checkPassword && passwordValidator(password) == null &&
-    passwordCheckValidator(password, checkPassword) == null){
+        passwordCheckValidator(password, checkPassword) == null){
       return Colors.greenAccent;
     }
     return Colors.greenAccent;

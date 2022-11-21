@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class UserProvider extends ChangeNotifier{
+class UserProvider extends ChangeNotifier {
   String? _nickname;
   String? _email;
   String? _profileImageLink;

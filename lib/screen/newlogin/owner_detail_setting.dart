@@ -1,26 +1,38 @@
+import 'package:bobfriend/screen/address/address.dart';
 import 'package:bobfriend/screen/load/loading.dart';
 import 'package:bobfriend/validator/validator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:kpostal/kpostal.dart';
 
-class SetUserNicknameScreen extends StatefulWidget {
-  const SetUserNicknameScreen({Key? key, required this.email, required this.password}) : super(key: key);
+enum OwnerSignupStatus {
+  beforeMainAddress,
+  completeMainAddress,
+}
+
+class OwnerDetailSettingScreen extends StatefulWidget {
+  const OwnerDetailSettingScreen({Key? key, required this.email, required this.password}) : super(key: key);
 
   final String email;
   final String password;
 
   @override
-  State<SetUserNicknameScreen> createState() => _SetUserNicknameScreenState();
+  State<OwnerDetailSettingScreen> createState() => _OwnerDetailSettingScreenState();
 }
 
-class _SetUserNicknameScreenState extends State<SetUserNicknameScreen> {
-  String nickname = '';
+class _OwnerDetailSettingScreenState extends State<OwnerDetailSettingScreen> {
+  String restaurantName = '';
+  String restaurantAddress = '';
+  String restaurantDetailAddress = '';
+
+  OwnerSignupStatus status = OwnerSignupStatus.beforeMainAddress;
   Duration get loginTime => const Duration(milliseconds: 2250);
   final _authentication = FirebaseAuth.instance;
   bool showCircularProgressIndicator = false;
-
+  //bool enableAddressField = true;
+  TextEditingController addressController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -78,28 +90,73 @@ class _SetUserNicknameScreenState extends State<SetUserNicknameScreen> {
         child: Scaffold(
           appBar: AppBar(
             elevation: 0,
-            title: const Text('닉네임 설정'),
+            title: const Text('가게 세부정보 설정'),
             centerTitle: true,
           ),
           body: Container(
             margin: EdgeInsets.only(top: width*0.05),
             child: Column(
                 children: [
-                  ///닉네임 입력 필드
+                  ///상호명
                   Padding(
                       padding: EdgeInsets.symmetric(horizontal: width*0.05),
-                      child: buildNicknameField(context)
+                      child: buildRestaurantNameField(context)
                   ),
+                  const SizedBox(height: 6,),
                   Padding(
                       padding: EdgeInsets.symmetric(horizontal: width*0.07),
                       child: Row(
                         children: [
-                          (nicknameValidator(nickname) == null) ?
+                          (restaurantNameValidator(restaurantName) == null) ?
                           const Text('') :
-                          Text(nicknameValidator(nickname).toString(), style: const TextStyle(color: Colors.red),)
+                          Text(restaurantNameValidator(restaurantName).toString(), style: const TextStyle(color: Colors.red),)
                         ],
                       )
                   ),
+
+                  const SizedBox(height: 10,),
+
+                  ///가게 주소
+                  Padding(
+                      padding: EdgeInsets.symmetric(horizontal: width*0.05),
+                      child: buildRestaurantAddressField(context)
+                  ),
+                  const SizedBox(height: 6,),
+                  Padding(
+                      padding: EdgeInsets.symmetric(horizontal: width*0.07),
+                      child: Row(
+                        children: [
+                          (restaurantAddressValidator(restaurantAddress) == null) ?
+                          const Text('') :
+                          Text(restaurantAddressValidator(restaurantAddress).toString(), style: const TextStyle(color: Colors.red),)
+                        ],
+                      )
+                  ),
+
+                  const SizedBox(height: 10,),
+
+
+                  ///가게 세부주소
+                  if(status != OwnerSignupStatus.beforeMainAddress)
+                  Column(children: [
+                    Padding(
+                        padding: EdgeInsets.symmetric(horizontal: width*0.05),
+                        child: buildRestaurantDetailAddressField(context)
+                    ),
+                    const SizedBox(height: 6,),
+                    Padding(
+                        padding: EdgeInsets.symmetric(horizontal: width*0.07),
+                        child: Row(
+                          children: [
+                            (restaurantDetailAddressValidator(restaurantDetailAddress) == null) ?
+                            const Text('') :
+                            Text(restaurantDetailAddressValidator(restaurantDetailAddress).toString(), style: const TextStyle(color: Colors.red),)
+                          ],
+                        )
+                    ),
+                  ],)
+
+
                 ]),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -109,36 +166,111 @@ class _SetUserNicknameScreenState extends State<SetUserNicknameScreen> {
     );
   }
 
-  Widget buildNicknameField(BuildContext context) {
+  Widget buildRestaurantNameField(BuildContext context) {
     return TextField(
-      maxLength: 12,
       onChanged: (val) {
         setState(() {
-          nickname = val;
+          restaurantName = val;
         });
       },
       keyboardType: TextInputType.text,
       autofocus: true,
       decoration: InputDecoration(
-        labelText: '닉네임',
+        labelText: '상호명',
         labelStyle: const TextStyle(color: Colors.grey,),
         focusedBorder: OutlineInputBorder(
           borderRadius: const BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
-              color: nicknameValidator(nickname) == null ? Colors.greenAccent : Colors.red,
+              color: restaurantNameValidator(restaurantName) == null ? Colors.greenAccent : Colors.red,
               width: 2.0
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: const BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
-              color: nicknameValidator(nickname) == null ? Colors.greenAccent : Colors.grey,
+              color: restaurantNameValidator(restaurantName) == null ? Colors.greenAccent : Colors.grey,
               width: 2.0
           ),
         ),
       ),
     );
   }
+
+
+  Widget buildRestaurantAddressField(BuildContext context) {
+    return TextField(
+      controller: addressController,
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => KpostalView(
+              callback: (Kpostal result) {
+                debugPrint(result.address);
+                setState(() {
+                  addressController.text = result.address;
+                  restaurantAddress = result.address;
+                  status = OwnerSignupStatus.completeMainAddress;
+                  //enableAddressField = false;
+                });
+              },
+            ),
+          ),
+        );
+      },
+      //enabled: enableAddressField,
+      decoration: InputDecoration(
+        labelText: '가게 주소',
+        labelStyle: const TextStyle(color: Colors.grey,),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
+          borderSide: BorderSide(
+              color: restaurantAddressValidator(restaurantAddress) == null ? Colors.greenAccent : Colors.red,
+              width: 2.0
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
+          borderSide: BorderSide(
+              color: restaurantAddressValidator(restaurantAddress) == null ? Colors.greenAccent : Colors.grey,
+              width: 2.0
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildRestaurantDetailAddressField(BuildContext context) {
+    return TextField(
+      autofocus: true,
+      onChanged: (value) {
+        setState(() {
+          restaurantDetailAddress = value;
+        });
+      },
+      decoration: InputDecoration(
+        labelText: '가게 상세주소',
+        labelStyle: const TextStyle(color: Colors.grey,),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
+          borderSide: BorderSide(
+              color: restaurantDetailAddressValidator(restaurantDetailAddress) == null ? Colors.greenAccent : Colors.red,
+              width: 2.0
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
+          borderSide: BorderSide(
+              color: restaurantDetailAddressValidator(restaurantDetailAddress) == null ? Colors.greenAccent : Colors.grey,
+              width: 2.0
+          ),
+        ),
+      ),
+    );
+  }
+
+
+
 
   Widget buildSignupFloatingActionButton(BuildContext context) {
     return Container(
@@ -147,13 +279,24 @@ class _SetUserNicknameScreenState extends State<SetUserNicknameScreen> {
       ),
       width: MediaQuery.of(context).size.width * 0.9,
       child: FloatingActionButton.extended(
-        backgroundColor: nicknameValidator(nickname) == null ? Colors.greenAccent : Colors.grey,
+        backgroundColor:
+          restaurantNameValidator(restaurantName) == null &&
+              restaurantAddressValidator(restaurantAddress) == null &&
+              restaurantDetailAddressValidator(restaurantDetailAddress) == null ?
+          Colors.greenAccent : Colors.grey,
         onPressed: () async {
-          if(nicknameValidator(nickname) == null) {
+
+          ///회원가입 활성화
+          if(restaurantNameValidator(restaurantName) == null &&
+              restaurantAddressValidator(restaurantAddress) == null &&
+              restaurantDetailAddressValidator(restaurantDetailAddress) == null) {
+
+          }
+          if(restaurantNameValidator(restaurantName) == null) {
             if(mounted) {
               setState(() {
-              showCircularProgressIndicator = true;
-            });
+                showCircularProgressIndicator = true;
+              });
             }
             signupUser().then((value) {
               if(value == null) {
@@ -179,7 +322,7 @@ class _SetUserNicknameScreenState extends State<SetUserNicknameScreen> {
         isExtended: true,
         elevation: 3,
         label: showCircularProgressIndicator ?
-          const CircularProgressIndicator() : const Text('회원가입', style: TextStyle(fontSize: 18)),
+        const CircularProgressIndicator() : const Text('회원가입', style: TextStyle(fontSize: 18)),
       ),
     );
   }
@@ -236,7 +379,7 @@ class _SetUserNicknameScreenState extends State<SetUserNicknameScreen> {
         .collection('user')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .set({
-      'nickname': nickname,
+      'nickname': restaurantName,
       'email': widget.email,
       'profile_image': profileUrl,
       'univ': univ,
@@ -261,6 +404,9 @@ class _SetUserNicknameScreenState extends State<SetUserNicknameScreen> {
     });
   }
 
-
+  @override
+  void dispose() {
+    addressController.dispose();
+    super.dispose();
+  }
 }
-
