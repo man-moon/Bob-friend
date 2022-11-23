@@ -1,0 +1,31 @@
+server:
+  port: 8080
+
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      authentication-database: admin
+      database: bobfriend
+
+  mail:
+    # Google smtp server ??
+    host: smtp.gmail.com
+    port: 587
+    username: a43310029@gmail.com
+    password: qlimrpfbxgijpdai
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
+
+naver:
+  cloud:
+    sms:
+      access-key: ux4GDsaVdL9NT5ZKVtHP
+      secret-key: EdcoqCFPpROdU0tJd6hI6tOlXlzs7J0C3tv944Gd
+      service-id: ncp:sms:kr:296530689772:bobfriend
+      sender: 01043310029
