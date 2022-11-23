@@ -1,4 +1,5 @@
 import 'package:bobfriend/screen/newlogin/owner_signup.dart';
+import 'package:bobfriend/screen/newlogin/phone_number_certification.dart';
 import 'package:bobfriend/screen/newlogin/user_signup.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +39,7 @@ class SignupBranchScreen extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const UserSignupScreen()
+                        builder: (context) => const PhoneNumberCertificationScreen()
                     )
                 );
               },

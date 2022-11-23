@@ -28,34 +28,8 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  String roomName = '';
-  late int now;
-  List<dynamic> users = [];
-  List<dynamic> usersNickname = [];
-  late String owner;
   final userUid = FirebaseAuth.instance.currentUser!.uid;
   late ChatProvider chatProvider;
-
-  Future<void> getRoomInfo() async {
-    await widget.ref.get().then((DocumentSnapshot ds) {
-      setState(() {
-        roomName = ds.get('roomName');
-        now = ds.get('nowPersonnel');
-        //users = ds.get('users');
-        owner = ds.get('owner');
-      });
-    });
-    for (var e in users) {
-      var userData = await FirebaseFirestore.instance
-          .collection('user')
-          .doc(e.toString())
-          .get();
-      usersNickname.add(userData.data()![0]['nickname']);
-    }
-    setState(() {
-      usersNickname = usersNickname;
-    });
-  }
 
   void showOutPopup() {
     showDialog(
@@ -91,10 +65,8 @@ class _ChatScreenState extends State<ChatScreen> {
               TextButton(
                 child: const Text('나가기'),
                 onPressed: () {
-                  users.remove(userUid);
-                  widget.ref.update({'nowPersonnel': now - 1});
-                  widget.ref.update({'users': users});
 
+                  //필요
                   Navigator.pop(context);
                   Navigator.pop(context);
                   Navigator.pop(context);
@@ -187,9 +159,6 @@ class _ChatScreenState extends State<ChatScreen> {
               TextButton(
                 child: const Text('삭제'),
                 onPressed: () {
-                  users.remove(userUid);
-                  widget.ref.update({'nowPersonnel': now - 1});
-                  widget.ref.update({'users': users});
 
                   Navigator.pop(context);
                   Navigator.pop(context);
@@ -318,9 +287,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 1,
           foregroundColor: Colors.black,
           title: Text(
-            roomName,
+            chatProvider.roomName.toString(),
             style: const TextStyle(
               color: Colors.black,
             ),
@@ -899,6 +869,5 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getRoomInfo();
   }
 }

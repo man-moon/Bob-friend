@@ -18,9 +18,11 @@ class _RegisterRiderScreenState extends State<RegisterRiderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('배달원 등록'),
+        elevation: 0,
+        title: const Text('배달원 등록'),
         centerTitle: true,
       ),
+      body: const Center(child: Text('추후 이용약관이 들어올 페이지'),),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Container(
         decoration: const BoxDecoration(
@@ -28,6 +30,7 @@ class _RegisterRiderScreenState extends State<RegisterRiderScreen> {
         ),
         width: MediaQuery.of(context).size.width * 0.9,
         child: FloatingActionButton.extended(
+          backgroundColor: Colors.greenAccent,
           onPressed: () {
             UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
             
@@ -41,7 +44,7 @@ class _RegisterRiderScreenState extends State<RegisterRiderScreen> {
           },
           icon: const Icon(
             Icons.delivery_dining,
-            color: Colors.white70,
+            color: Colors.white,
           ),
           isExtended: true,
           elevation: 30,

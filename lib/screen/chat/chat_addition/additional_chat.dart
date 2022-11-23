@@ -31,12 +31,14 @@ class AdditionalChatScreenState extends State<AdditionalChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.close),
-        ),
+        elevation: 1,
+        automaticallyImplyLeading: false,
+        // leading: IconButton(
+        //   onPressed: () {
+        //     Navigator.pop(context);
+        //   },
+        //   icon: const Icon(Icons.close),
+        // ),
         title: const TextField(
           decoration: InputDecoration(
             border: InputBorder.none,
@@ -57,6 +59,7 @@ class AdditionalChatScreenState extends State<AdditionalChatScreen> {
 
                   if(widget.type == 'confirm'){
                     return Card(
+                      elevation: 0,
                       child: ListTile(
                         title: Text("${data.name}"),
                         onTap: () {
@@ -105,8 +108,9 @@ class AdditionalChatScreenState extends State<AdditionalChatScreen> {
                     );
                   }
 
-                  {
+                  else {
                     return Card(
+                      elevation: 1,
                       child: ListTile(
                         title: Text("${data.name}"),
                         onTap: () {

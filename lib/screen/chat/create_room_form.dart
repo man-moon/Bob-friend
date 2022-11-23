@@ -66,7 +66,9 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
   Widget build(BuildContext context) {
     chatProvider = Provider.of<ChatProvider>(context, listen: false);
     return Scaffold(
-      appBar: AppBar(title: const Text('방 만들기')),
+      floatingActionButton: buildCreateRoomFAB(context),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      appBar: AppBar(title: const Text('방 만들기'), elevation: 0, centerTitle: true,),
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: SingleChildScrollView(
@@ -196,7 +198,7 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                       decoration: const InputDecoration(
                           labelText: '뭐 먹을까요?'),
                       name: 'foodType',
-                      selectedColor: Colors.orangeAccent,
+                      selectedColor: Colors.greenAccent,
                       options: const [
                         FormBuilderChipOption(
                           value: '한식',
@@ -235,78 +237,150 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                 ),
               ),
               const SizedBox(height: 7),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState?.saveAndValidate() ?? false) {
-                          debugPrint(_formKey.currentState?.value.toString());
-                          debugPrint(_formKey.currentState!.value['roomName']);
-
-                          ref = FirebaseFirestore.instance
-                              .collection('chats')
-                              .doc();
-
-                          final user = FirebaseAuth.instance.currentUser;
-                          userProvider = Provider.of<UserProvider>(context,
-                              listen: false);
-
-                          Map u = {user!.uid: userProvider.nickname};
-
-                          await ref.set({
-                            'roomName': _formKey.currentState!
-                                .value['roomName'],
-                            'maxPersonnel': _formKey.currentState!
-                                .value['maxPersonnel'],
-                            'date': _formKey.currentState!.value['date'],
-                            'gender': _formKey.currentState!.value['gender'],
-                            'foodType': _formKey.currentState!
-                                .value['foodType'],
-                            'univ': widget.univ,
-                            'nowPersonnel': 1,
-                            'users': [u],
-                            'owner': user.uid,
-                            'state': ChatState.none.toString(),
-                            'meetingPlace': '',
-                          }).then((value) async =>
-                          await ref.collection("chat")
-                              .doc("WelcomeMessage")
-                              .set({
-                            'text': '채팅방을 생성하였습니다! 새로운 친구가 오면 알려드릴게요!',
-                            'time': Timestamp.now(),
-                            'userId': 'admin',
-                            'nickname': '밥친구',
-                            'type': MessageType.normal.toString(),
-                            'action': MessageAction.none.toString(),
-                            'restaurant': '',
-                            'meetingPlace': '',
-                          })).then((_) => setChatProvider()).then((value) =>
-                              Navigator.pop(context)).then(
-                                  (value) =>
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                        //deliver doc ref
-                                        return ChatScreen(ref);
-                                      })
-                                  ));
-                        } else {
-                          debugPrint(_formKey.currentState?.value.toString());
-                          debugPrint('validation failed');
-                        }
-                      },
-                      child: const Text(
-                        '방 만들기',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: <Widget>[
+              //     Expanded(
+              //       child: ElevatedButton(
+              //         onPressed: () async {
+              //           if (_formKey.currentState?.saveAndValidate() ?? false) {
+              //             debugPrint(_formKey.currentState?.value.toString());
+              //             debugPrint(_formKey.currentState!.value['roomName']);
+              //
+              //             ref = FirebaseFirestore.instance
+              //                 .collection('chats')
+              //                 .doc();
+              //
+              //             final user = FirebaseAuth.instance.currentUser;
+              //             userProvider = Provider.of<UserProvider>(context,
+              //                 listen: false);
+              //
+              //             Map u = {user!.uid: userProvider.nickname};
+              //
+              //             await ref.set({
+              //               'roomName': _formKey.currentState!
+              //                   .value['roomName'],
+              //               'maxPersonnel': _formKey.currentState!
+              //                   .value['maxPersonnel'],
+              //               'date': _formKey.currentState!.value['date'],
+              //               'gender': _formKey.currentState!.value['gender'],
+              //               'foodType': _formKey.currentState!
+              //                   .value['foodType'],
+              //               'univ': widget.univ,
+              //               'nowPersonnel': 1,
+              //               'users': [u],
+              //               'owner': user.uid,
+              //               'state': ChatState.none.toString(),
+              //               'meetingPlace': '',
+              //             }).then((value) async =>
+              //             await ref.collection("chat")
+              //                 .doc("WelcomeMessage")
+              //                 .set({
+              //               'text': '채팅방을 생성하였습니다! 새로운 친구가 오면 알려드릴게요!',
+              //               'time': Timestamp.now(),
+              //               'userId': 'admin',
+              //               'nickname': '밥친구',
+              //               'type': MessageType.normal.toString(),
+              //               'action': MessageAction.none.toString(),
+              //               'restaurant': '',
+              //               'meetingPlace': '',
+              //             })).then((_) => setChatProvider()).then((value) =>
+              //                 Navigator.pop(context)).then(
+              //                     (value) =>
+              //                     Navigator.push(context,
+              //                         MaterialPageRoute(builder: (context) {
+              //                           //deliver doc ref
+              //                           return ChatScreen(ref);
+              //                         })
+              //                     ));
+              //           } else {
+              //             debugPrint(_formKey.currentState?.value.toString());
+              //             debugPrint('validation failed');
+              //           }
+              //         },
+              //         child: const Text(
+              //           '방 만들기',
+              //           style: TextStyle(color: Colors.black),
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
             ],
           ),
         ),
       ),
     );
   }
+  Widget buildCreateRoomFAB(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        shape: BoxShape.rectangle,
+      ),
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: FloatingActionButton.extended(
+
+        backgroundColor: Colors.greenAccent,
+        onPressed: () async {
+          if (_formKey.currentState?.saveAndValidate() ?? false) {
+            debugPrint(_formKey.currentState?.value.toString());
+            debugPrint(_formKey.currentState!.value['roomName']);
+
+            ref = FirebaseFirestore.instance
+                .collection('chats')
+                .doc();
+
+            final user = FirebaseAuth.instance.currentUser;
+            userProvider = Provider.of<UserProvider>(context,
+                listen: false);
+
+            Map u = {user!.uid: userProvider.nickname};
+
+            await ref.set({
+              'roomName': _formKey.currentState!
+                  .value['roomName'],
+              'maxPersonnel': _formKey.currentState!
+                  .value['maxPersonnel'],
+              'date': _formKey.currentState!.value['date'],
+              'gender': _formKey.currentState!.value['gender'],
+              'foodType': _formKey.currentState!
+                  .value['foodType'],
+              'univ': widget.univ,
+              'nowPersonnel': 1,
+              'users': [u],
+              'owner': user.uid,
+              'state': ChatState.none.toString(),
+              'meetingPlace': '',
+            }).then((value) async =>
+            await ref.collection("chat")
+                .doc("WelcomeMessage")
+                .set({
+              'text': '채팅방을 생성하였습니다! 새로운 친구가 오면 알려드릴게요!',
+              'time': Timestamp.now(),
+              'userId': 'admin',
+              'nickname': '밥친구',
+              'type': MessageType.normal.toString(),
+              'action': MessageAction.none.toString(),
+              'restaurant': '',
+              'meetingPlace': '',
+            })).then((_) => setChatProvider()).then((value) =>
+                Navigator.pop(context)).then(
+                    (value) =>
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          //deliver doc ref
+                          return ChatScreen(ref);
+                        })
+                    ));
+          } else {
+            debugPrint(_formKey.currentState?.value.toString());
+            debugPrint('validation failed');
+          }
+        },
+        isExtended: true,
+        elevation: 3,
+        label: const Text('방 만들기', style: TextStyle(fontSize: 18),),
+      ),
+    );
+  }
+
 }

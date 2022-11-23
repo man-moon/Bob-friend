@@ -246,7 +246,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       RefreshIndicator(
         key: _refreshIndicatorKey,
         color: Colors.white,
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Colors.greenAccent,
         strokeWidth: 4.0,
         onRefresh: () async {
           // Replace this delay with the code to be executed during refresh

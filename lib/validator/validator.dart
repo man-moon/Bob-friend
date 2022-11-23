@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Regex {
   // https://stackoverflow.com/a/32686261/9449426
   static final email = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
@@ -9,6 +11,11 @@ String? emailValidator(value) {
   }
   if (!Regex.email.hasMatch(value)) {
     return '이메일 형식을 확인해주세요';
+  }
+
+  String emailDomain = value.split('@')[1];
+  if(emailDomain != 'ajou.ac.kr' && emailDomain != 'inha.edu.kr') {
+    return '학교 이메일만 허용됩니다';
   }
   return null;
 }
@@ -69,4 +76,20 @@ String? restaurantDetailAddressValidator(value) {
     return '상세주소를 입력해주세요';
   }
   return null;
+}
+
+String? phoneNumberValidator(value) {
+  if(value!.length == 11) {
+    return null;
+  } else {
+    return '';
+  }
+}
+
+String? phoneNumberCertificationCodeValidator(value) {
+  if(value!.length == 6) {
+    return null;
+  } else {
+    return '';
+  }
 }

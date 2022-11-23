@@ -112,7 +112,7 @@ class _NewLoginSignupScreenState extends State<NewLoginSignupScreen> {
         labelStyle: TextStyle(color: Colors.grey,),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
-          borderSide: BorderSide(color: emailValidator(email) == null ? Colors.greenAccent : Colors.redAccent, width: 2.0),
+          borderSide: BorderSide(color: emailValidator(email) == null ? Colors.greenAccent : Colors.grey, width: 2.0),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -138,7 +138,7 @@ class _NewLoginSignupScreenState extends State<NewLoginSignupScreen> {
         labelStyle: TextStyle(color: Colors.grey),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
-          borderSide: BorderSide(color: passwordValidator(password) == null ? Colors.greenAccent : Colors.redAccent, width: 2.0),
+          borderSide: BorderSide(color: passwordValidator(password) == null ? Colors.greenAccent : Colors.grey, width: 2.0),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),

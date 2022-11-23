@@ -189,7 +189,8 @@ class RestaurantDetailScreen extends StatelessWidget {
             );
           },
 
-          icon: const Icon(Icons.add_shopping_cart_rounded, color: Colors.white70,),
+          icon: const Icon(Icons.add_shopping_cart_rounded, color: Colors.white,),
+          backgroundColor: Colors.greenAccent,
           isExtended: true,
           elevation: 30,
           label: Text('${myCatalogProvider.totalPrice}원 장바구니에 담기', style: TextStyle(fontSize: 17),),
