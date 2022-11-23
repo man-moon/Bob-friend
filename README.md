@@ -26,16 +26,16 @@ Flutter(dart)
 
 ### Back-end
 
-Firebase
-Spring boot(Java)
-Spring Security
-MongoDB
+Firebase  
+Spring boot(Java)  
+Spring Security  
+MongoDB  
 
 ### Version Control
 
-Git
+Git  
 
-Github
+Github  
 
 ## 🌟 주요기능
 
