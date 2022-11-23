@@ -106,7 +106,7 @@ Github
 
 ### 채팅방 생성
 
-<img width="20%" src="https://user-images.githubusercontent.com/88218891/203548453-92549c17-8d50-4759-9bbb-708ed990008e.gif"/>
+<img width="20%" src="https://user-images.githubusercontent.com/88218891/203561452-8723b44e-e981-4b14-82de-f7c61f1ae635.gif"/>
 
 ### 실시간 채팅
 
