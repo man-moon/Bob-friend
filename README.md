@@ -1,6 +1,14 @@
 # 🍚 밥친구
 ## 목차
 [1. 서비스 소개](https://github.com/man-moon/Bob-friend#%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%86%8C%EA%B0%9C)
+[2. 서비스 목표](https://github.com/man-moon/Bob-friend#%EC%84%9C%EB%B9%84%EC%8A%A4-%EB%AA%A9%ED%91%9C)
+[3. 기술 스택](https://github.com/man-moon/Bob-friend#%EA%B8%B0%EC%88%A0%EC%8A%A4%ED%83%9D)
+[4. 주요 기능](https://github.com/man-moon/Bob-friend#%EC%A3%BC%EC%9A%94%EA%B8%B0%EB%8A%A5)
+[5. 프로젝트 개요](https://github.com/man-moon/Bob-friend#%EF%B8%8F%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B0%9C%EC%9A%94)
+[6. 데모 시연](https://github.com/man-moon/Bob-friend#%EB%8D%B0%EB%AA%A8-%EC%8B%9C%EC%97%B0)
+[7. 서비스 차별점 및 기대효과](https://github.com/man-moon/Bob-friend#%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%B0%A8%EB%B3%84%EC%A0%90-%EB%B0%8F-%EA%B8%B0%EB%8C%80-%ED%9A%A8%EA%B3%BC)
+[8. 개발팀원 소개](https://github.com/man-moon/Bob-friend#%EA%B0%9C%EB%B0%9C%ED%8C%80%EC%9B%90-%EC%86%8C%EA%B0%9C)
+[9. 개발기간 및 일정](https://github.com/man-moon/Bob-friend#%EF%B8%8F%EA%B0%9C%EB%B0%9C-%EA%B8%B0%EA%B0%84-%EB%B0%8F-%EC%9D%BC%EC%A0%95)
 
 
 ## 💁🏻 서비스 소개
