@@ -1,4 +1,5 @@
 import 'package:bobfriend/provider/chat.dart';
+import 'package:bobfriend/provider/my_catalog.dart';
 import 'package:bobfriend/provider/user.dart';
 import 'package:bobfriend/screen/chat/create_room_form.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -116,6 +117,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
       chatProvider.users = usersList;
       chatProvider.docId = _chatList[index][1].toString();
+      chatProvider.roomName = ds.get('roomName');
       chatProvider.date = ds.get('date');
       chatProvider.foodType = ds.get('foodType');
       chatProvider.gender = ds.get('gender');
@@ -123,6 +125,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
       chatProvider.nowPersonnel = ds.get('nowPersonnel');
       chatProvider.owner = ds.get('owner');
       chatProvider.univ = ds.get('univ');
+      chatProvider.state = ds.get('state');
+      chatProvider.meetingPlace = ds.get('meetingPlace');
     });
 
     return chatRef;
@@ -199,6 +203,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 1,
+        backgroundColor: Colors.white,
         title: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -240,7 +246,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       RefreshIndicator(
         key: _refreshIndicatorKey,
         color: Colors.white,
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Colors.greenAccent,
         strokeWidth: 4.0,
         onRefresh: () async {
           // Replace this delay with the code to be executed during refresh
@@ -252,6 +258,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             itemCount: _chatList.length,
             itemBuilder: (BuildContext context, int index) {
               return Card(
+                elevation: 0,
                 child: ListTile(
                   onLongPress: () {
                     showPopup();
@@ -279,7 +286,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
       ),
 
 
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           //입력폼
@@ -292,16 +299,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
             loadChatList();
           });
         },
-        backgroundColor: Colors.orangeAccent[150],
+        backgroundColor: Colors.greenAccent,
         child: const Icon(Icons.add),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    debugPrint('chatlist dispose');
-
   }
 }
