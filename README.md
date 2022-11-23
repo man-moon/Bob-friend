@@ -1,7 +1,6 @@
 # 🍚 밥친구
 ## 목차
-1. 서비스 소개
-<https://github.com/man-moon/Bob-friend#%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%86%8C%EA%B0%9C>
+[1. 서비스 소개](https://github.com/man-moon/Bob-friend#%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%86%8C%EA%B0%9C)
 
 
 ## 💁🏻 서비스 소개
