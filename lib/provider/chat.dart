@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class ChatProvider extends ChangeNotifier{
+class ChatProvider extends ChangeNotifier {
   String? _docId;
   Timestamp? _date;
   late List<dynamic> _foodType;
@@ -12,7 +12,12 @@ class ChatProvider extends ChangeNotifier{
   String? _roomName;
   String? _univ;
   late List<Map<String, dynamic>> _users;
+  String? _state;
+  String? _restaurantName;
+  String? _meetingPlace;
 
+  String? get restaurantName => _restaurantName;
+  String? get state => _state;
   String? get docId => _docId;
   Timestamp? get date => _date;
   List<dynamic> get foodType => _foodType;
@@ -23,7 +28,12 @@ class ChatProvider extends ChangeNotifier{
   String? get roomName => _roomName;
   String? get univ => _univ;
   List<Map<String, dynamic>> get users => _users;
+  String? get meetingPlace => _meetingPlace;
 
+  set restaurantName(String? value) {
+    _restaurantName = value;
+    notifyListeners();
+  }
   set docId(String? value) {
     _docId = value;
     notifyListeners();
@@ -62,6 +72,16 @@ class ChatProvider extends ChangeNotifier{
   }
   set users(List<Map<String, dynamic>> value) {
     _users = value;
+    notifyListeners();
+  }
+
+  set state(String? value) {
+    _state = value;
+    notifyListeners();
+  }
+
+  set meetingPlace(String? value) {
+    _meetingPlace = value;
     notifyListeners();
   }
 }

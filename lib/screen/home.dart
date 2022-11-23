@@ -1,5 +1,7 @@
+import 'package:bobfriend/screen/chat/chat_addition/additional_chat.dart';
 import 'package:bobfriend/screen/profile/profile.dart';
 import 'package:bobfriend/screen/chat/chat_list.dart';
+import 'package:bobfriend/screen/rider/rider.dart';
 import 'package:bobfriend/widget/bottom_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +11,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/user.dart';
+import 'friend/friend.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -27,16 +30,15 @@ class _HomeScreenState extends State<HomeScreen> {
     initializeDateFormatting(Localizations.localeOf(context).languageCode);
 
     return const DefaultTabController(
-        length: 4,
+        length: 5,
         child: Scaffold(
           body: TabBarView(
             physics: NeverScrollableScrollPhysics(),
             children: [
-              //Chat, Community, Friends, My Page로 대체
               ChatListScreen(),
+              RiderScreen(),
               BoardListScreen(),
-              Center(child: Text('Friends'),),
-              //Profile
+              FriendScreen(),
               ProfileScreen(),
             ],
           ),
@@ -45,24 +47,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
 
-  }
-
-
-  @override
-  void initState() {
-    super.initState();
-    initUserInfo();
-  }
-
-  void initUserInfo() async {
-    UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
-    final userInfo = await FirebaseFirestore.instance.collection('user').
-                            doc(FirebaseAuth.instance.currentUser!.uid).get();
-    userProvider.nickname = userInfo.data()!['nickname'];
-    userProvider.email = userInfo.data()!['email'];
-    userProvider.profileImageLink = userInfo.data()!['profile_image'];
-    userProvider.univ = userInfo.data()!['univ'];
-    userProvider.temperature = userInfo.data()!['temperature'];
-    userProvider.friends = userInfo.data()!['friends'];
   }
 }

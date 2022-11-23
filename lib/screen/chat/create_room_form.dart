@@ -1,5 +1,9 @@
+import 'package:bobfriend/config/chat_config.dart';
 import 'package:bobfriend/config/palette.dart';
+import 'package:bobfriend/provider/chat.dart';
+import 'package:bobfriend/provider/user.dart';
 import 'package:bobfriend/screen/chat/chat.dart';
+import 'package:bobfriend/screen/chat/new_message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -7,6 +11,9 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+
+import '../../config/msg_config.dart';
 
 
 class CreateRoomFormScreen extends StatefulWidget {
@@ -25,15 +32,43 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
   bool _roomNameHasError = false;
   bool _genderHasError = false;
 
+  late ChatProvider chatProvider;
+  late UserProvider userProvider;
+
+  late var ref;
+
   var genderOptions = ['남자만 있었으면 좋겠어요', '여자만 있었으면 좋겠어요', '혼성도 괜찮아요'];
+
+  dynamic setChatProvider() {
+    debugPrint(ref.id.toString());
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    chatProvider.users =
+    [{FirebaseAuth.instance.currentUser!.uid: userProvider.nickname}];
+    chatProvider.roomName = _formKey.currentState!.value['roomName'];
+    chatProvider.docId = ref.id;
+    chatProvider.date =
+        Timestamp.fromDate(_formKey.currentState!.value['date']);
+    chatProvider.foodType = _formKey.currentState!.value['foodType'];
+    chatProvider.gender = _formKey.currentState!.value['gender'];
+    chatProvider.maxPersonnel = _formKey.currentState!.value['maxPersonnel'];
+    chatProvider.nowPersonnel = 1;
+    chatProvider.owner = FirebaseAuth.instance.currentUser!.uid;
+    chatProvider.univ = widget.univ;
+    chatProvider.state = ChatState.none.toString();
+
+    return;
+  }
 
   //void _onChanged(dynamic val) => debugPrint(val.toString());
 
   @override
   Widget build(BuildContext context) {
-
+    chatProvider = Provider.of<ChatProvider>(context, listen: false);
     return Scaffold(
-      appBar: AppBar(title: const Text('방 만들기')),
+      floatingActionButton: buildCreateRoomFAB(context),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      appBar: AppBar(title: const Text('방 만들기'), elevation: 0, centerTitle: true,),
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: SingleChildScrollView(
@@ -68,16 +103,19 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                       ),
                       onChanged: (val) {
                         setState(() {
-                          _roomNameHasError = !(_formKey.currentState?.fields['roomName']
+                          _roomNameHasError =
+                          !(_formKey.currentState?.fields['roomName']
                               ?.validate() ??
                               false);
                         });
                       },
                       // valueTransformer: (text) => num.tryParse(text),
                       validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.required(errorText: '방 제목 입력은 필수에요'),
+                        FormBuilderValidators.required(
+                            errorText: '방 제목 입력은 필수에요'),
                         //FormBuilderValidators.numeric(),
-                        FormBuilderValidators.maxLength(16, errorText: '제목 수는 16글자까지 작성 가능해요'),
+                        FormBuilderValidators.maxLength(
+                            16, errorText: '제목 수는 16글자까지 작성 가능해요'),
                       ]),
                       // initialValue: '12',
                       keyboardType: TextInputType.text,
@@ -93,7 +131,8 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                         suffixIcon: IconButton(
                           icon: const Icon(Icons.add),
                           onPressed: () {
-                            _formKey.currentState!.fields['date']?.didChange(null);
+                            _formKey.currentState!.fields['date']?.didChange(
+                                null);
                           },
                         ),
                       ),
@@ -107,7 +146,9 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                       name: 'gender',
                       decoration: InputDecoration(
                         labelText: '입장 가능한 성별',
-                        suffix: _genderHasError ? const Icon(Icons.error) : const Icon(Icons.check),
+                        suffix: _genderHasError
+                            ? const Icon(Icons.error)
+                            : const Icon(Icons.check),
                       ),
                       // initialValue: 'Male',
                       allowClear: true,
@@ -115,11 +156,12 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                       validator: FormBuilderValidators.compose(
                           [FormBuilderValidators.required()]),
                       items: genderOptions
-                          .map((gender) => DropdownMenuItem(
-                        alignment: AlignmentDirectional.centerStart,
-                        value: gender,
-                        child: Text(gender),
-                      ))
+                          .map((gender) =>
+                          DropdownMenuItem(
+                            alignment: AlignmentDirectional.centerStart,
+                            value: gender,
+                            child: Text(gender),
+                          ))
                           .toList(),
                       onChanged: (val) {
                         setState(() {
@@ -139,14 +181,15 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                       // initialValue: 1,
                       // textStyle: TextStyle(fontWeight: FontWeight.bold),
                       options: List.generate(5, (i) => i + 2)
-                          .map((number) => FormBuilderFieldOption(
-                        value: number,
-                        child: Text(
-                          number.toString(),
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold),
-                        ),
-                      )).toList(),
+                          .map((number) =>
+                          FormBuilderFieldOption(
+                            value: number,
+                            child: Text(
+                              number.toString(),
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          )).toList(),
                       //onChanged: _onChanged,
                     ),
 
@@ -155,32 +198,38 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                       decoration: const InputDecoration(
                           labelText: '뭐 먹을까요?'),
                       name: 'foodType',
-                      selectedColor: Colors.orangeAccent,
+                      selectedColor: Colors.greenAccent,
                       options: const [
                         FormBuilderChipOption(
                           value: '한식',
-                          avatar: CircleAvatar(backgroundImage: AssetImage('image/korean.jpg')),
+                          avatar: CircleAvatar(backgroundImage: AssetImage(
+                              'image/korean.jpg')),
                         ),
                         FormBuilderChipOption(
                           value: '양식',
-                          avatar: CircleAvatar(backgroundImage: AssetImage('image/steak.png')),
+                          avatar: CircleAvatar(backgroundImage: AssetImage(
+                              'image/steak.png')),
                         ),
                         FormBuilderChipOption(
                           value: '일식',
-                          avatar: CircleAvatar(backgroundImage: AssetImage('image/sushi.png')),
+                          avatar: CircleAvatar(backgroundImage: AssetImage(
+                              'image/sushi.png')),
                         ),
                         FormBuilderChipOption(
                           value: '중식',
-                          avatar: CircleAvatar(backgroundImage: AssetImage('image/jaja.png')),
+                          avatar: CircleAvatar(backgroundImage: AssetImage(
+                              'image/jaja.png')),
                         ),
                         FormBuilderChipOption(
                           value: '패스트푸드',
-                          avatar: CircleAvatar(backgroundImage: AssetImage('image/burger.png')),
+                          avatar: CircleAvatar(backgroundImage: AssetImage(
+                              'image/burger.png')),
                         ),
                       ],
                       //onChanged: _onChanged,
                       validator: FormBuilderValidators.compose([
-                        FormBuilderValidators.minLength(1, errorText: '한 개 이상의 카테고리를 골라주세요'),
+                        FormBuilderValidators.minLength(
+                            1, errorText: '한 개 이상의 카테고리를 골라주세요'),
                         //FormBuilderValidators.maxLength(3),
                       ]),
                     ),
@@ -188,80 +237,150 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                 ),
               ),
               const SizedBox(height: 7),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState?.saveAndValidate() ?? false) {
-                          debugPrint(_formKey.currentState?.value.toString());
-                          debugPrint(_formKey.currentState!.value['roomName']);
-
-                          final ref = FirebaseFirestore.instance
-                              .collection('chats')
-                              .doc();
-
-                          final user = FirebaseAuth.instance.currentUser;
-                          final userRef = await FirebaseFirestore.instance.collection('user').doc(user!.uid).get();
-
-                          Map u = {user.uid: userRef.data()!['nickname']};
-
-                          await ref.set({
-                            'roomName': _formKey.currentState!.value['roomName'],
-                            'maxPersonnel': _formKey.currentState!.value['maxPersonnel'],
-                            'date': _formKey.currentState!.value['date'],
-                            'gender': _formKey.currentState!.value['gender'],
-                            'foodType': _formKey.currentState!.value['foodType'],
-                            'univ': widget.univ,
-                            'nowPersonnel': 1,
-                            'users': [u],
-                            'owner': user.uid,
-                          });
-
-                          await ref.collection("chat").doc("WelcomeMessage").set({
-                            'text': '채팅방을 생성하였습니다! 새로운 친구가 오면 알려드릴게요!',
-                            'time': Timestamp.now(),
-                            'userId': 'admin',
-                            'nickname': '귀요미',
-                          });
-
-                          Navigator.pop(context);
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                                //deliver doc ref
-                                return ChatScreen(ref);
-                              })
-                          );
-
-
-                        } else {
-                          debugPrint(_formKey.currentState?.value.toString());
-                          debugPrint('validation failed');
-                        }
-                      },
-                      child: const Text(
-                        '방 만들기',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: <Widget>[
+              //     Expanded(
+              //       child: ElevatedButton(
+              //         onPressed: () async {
+              //           if (_formKey.currentState?.saveAndValidate() ?? false) {
+              //             debugPrint(_formKey.currentState?.value.toString());
+              //             debugPrint(_formKey.currentState!.value['roomName']);
+              //
+              //             ref = FirebaseFirestore.instance
+              //                 .collection('chats')
+              //                 .doc();
+              //
+              //             final user = FirebaseAuth.instance.currentUser;
+              //             userProvider = Provider.of<UserProvider>(context,
+              //                 listen: false);
+              //
+              //             Map u = {user!.uid: userProvider.nickname};
+              //
+              //             await ref.set({
+              //               'roomName': _formKey.currentState!
+              //                   .value['roomName'],
+              //               'maxPersonnel': _formKey.currentState!
+              //                   .value['maxPersonnel'],
+              //               'date': _formKey.currentState!.value['date'],
+              //               'gender': _formKey.currentState!.value['gender'],
+              //               'foodType': _formKey.currentState!
+              //                   .value['foodType'],
+              //               'univ': widget.univ,
+              //               'nowPersonnel': 1,
+              //               'users': [u],
+              //               'owner': user.uid,
+              //               'state': ChatState.none.toString(),
+              //               'meetingPlace': '',
+              //             }).then((value) async =>
+              //             await ref.collection("chat")
+              //                 .doc("WelcomeMessage")
+              //                 .set({
+              //               'text': '채팅방을 생성하였습니다! 새로운 친구가 오면 알려드릴게요!',
+              //               'time': Timestamp.now(),
+              //               'userId': 'admin',
+              //               'nickname': '밥친구',
+              //               'type': MessageType.normal.toString(),
+              //               'action': MessageAction.none.toString(),
+              //               'restaurant': '',
+              //               'meetingPlace': '',
+              //             })).then((_) => setChatProvider()).then((value) =>
+              //                 Navigator.pop(context)).then(
+              //                     (value) =>
+              //                     Navigator.push(context,
+              //                         MaterialPageRoute(builder: (context) {
+              //                           //deliver doc ref
+              //                           return ChatScreen(ref);
+              //                         })
+              //                     ));
+              //           } else {
+              //             debugPrint(_formKey.currentState?.value.toString());
+              //             debugPrint('validation failed');
+              //           }
+              //         },
+              //         child: const Text(
+              //           '방 만들기',
+              //           style: TextStyle(color: Colors.black),
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
             ],
           ),
         ),
       ),
     );
   }
+  Widget buildCreateRoomFAB(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        shape: BoxShape.rectangle,
+      ),
+      width: MediaQuery.of(context).size.width * 0.9,
+      child: FloatingActionButton.extended(
 
-// @override
-// void initState() {
-//   super.initState();
-// }
-//
-// @override
-// void didChangeDependencies() {
-//   super.didChangeDependencies();
-//   initializeDateFormatting('ko_KR');
-// }
+        backgroundColor: Colors.greenAccent,
+        onPressed: () async {
+          if (_formKey.currentState?.saveAndValidate() ?? false) {
+            debugPrint(_formKey.currentState?.value.toString());
+            debugPrint(_formKey.currentState!.value['roomName']);
+
+            ref = FirebaseFirestore.instance
+                .collection('chats')
+                .doc();
+
+            final user = FirebaseAuth.instance.currentUser;
+            userProvider = Provider.of<UserProvider>(context,
+                listen: false);
+
+            Map u = {user!.uid: userProvider.nickname};
+
+            await ref.set({
+              'roomName': _formKey.currentState!
+                  .value['roomName'],
+              'maxPersonnel': _formKey.currentState!
+                  .value['maxPersonnel'],
+              'date': _formKey.currentState!.value['date'],
+              'gender': _formKey.currentState!.value['gender'],
+              'foodType': _formKey.currentState!
+                  .value['foodType'],
+              'univ': widget.univ,
+              'nowPersonnel': 1,
+              'users': [u],
+              'owner': user.uid,
+              'state': ChatState.none.toString(),
+              'meetingPlace': '',
+            }).then((value) async =>
+            await ref.collection("chat")
+                .doc("WelcomeMessage")
+                .set({
+              'text': '채팅방을 생성하였습니다! 새로운 친구가 오면 알려드릴게요!',
+              'time': Timestamp.now(),
+              'userId': 'admin',
+              'nickname': '밥친구',
+              'type': MessageType.normal.toString(),
+              'action': MessageAction.none.toString(),
+              'restaurant': '',
+              'meetingPlace': '',
+            })).then((_) => setChatProvider()).then((value) =>
+                Navigator.pop(context)).then(
+                    (value) =>
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                          //deliver doc ref
+                          return ChatScreen(ref);
+                        })
+                    ));
+          } else {
+            debugPrint(_formKey.currentState?.value.toString());
+            debugPrint('validation failed');
+          }
+        },
+        isExtended: true,
+        elevation: 3,
+        label: const Text('방 만들기', style: TextStyle(fontSize: 18),),
+      ),
+    );
+  }
+
 }

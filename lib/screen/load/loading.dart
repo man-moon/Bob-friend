@@ -1,4 +1,4 @@
-import 'package:bobfriend/my_app.dart';
+import 'package:bobfriend/provider/my_delivery.dart';
 import 'package:bobfriend/screen/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,6 +16,7 @@ class LoadingScreen extends StatefulWidget {
 
 class _LoadingScreenState extends State<LoadingScreen> {
   late UserProvider userProvider;
+  late MyDeliveryProvider myDeliveryProvider;
 
   void initUserInfo(final dynamic userInfo) async {
     userProvider.nickname = userInfo.data()!['nickname'];
@@ -24,28 +25,38 @@ class _LoadingScreenState extends State<LoadingScreen> {
     userProvider.univ = userInfo.data()!['univ'];
     userProvider.temperature = userInfo.data()!['temperature'];
     userProvider.friends = userInfo.data()!['friends'];
-
-    debugPrint('==========init test==========');
-    debugPrint('nickname: ${userProvider.nickname}');
-    debugPrint('email: ${userProvider.email}');
-    debugPrint('univ: ${userProvider.univ}');
-    debugPrint('temperature: ${userProvider.temperature}');
-    debugPrint('profileUrl: ${userProvider.profileImageLink}');
-    debugPrint('==========finish test==========');
-
+    userProvider.isRider = userInfo.data()!['isRider'];
+    userProvider.isDelivering = userInfo.data()!['isDelivering'];
+  }
+  void initMyDeliveryInfo(final dynamic myDeliveryInfo) {
+    myDeliveryProvider.count = myDeliveryInfo.data()!['count'];
+    myDeliveryProvider.price = myDeliveryInfo.data()!['price'];
+    myDeliveryProvider.menu = myDeliveryInfo.data()!['menu'];
+    myDeliveryProvider.restaurantName = myDeliveryInfo.data()!['restaurantName'];
+    myDeliveryProvider.orderTime = myDeliveryInfo.data()!['orderTime'].toDate();
+    myDeliveryProvider.deliveryLocation = myDeliveryInfo.data()!['deliveryLocation'];
+    myDeliveryProvider.status = myDeliveryInfo.data()!['status'];
+    myDeliveryProvider.riderId = myDeliveryInfo.data()!['riderId'];
+    myDeliveryProvider.orderId = myDeliveryInfo.data()!['orderId'];
   }
   @override
   Widget build(BuildContext context) {
     userProvider = Provider.of<UserProvider>(context, listen: false);
+    myDeliveryProvider = Provider.of<MyDeliveryProvider>(context, listen: false);
+
     if(mounted){
       FirebaseFirestore.instance.collection('user').
       doc(FirebaseAuth.instance.currentUser!.uid).get().then(
               (value) => initUserInfo(value)).then(
-              (value) =>
-              Navigator.pushAndRemoveUntil(context,
+              (value) => FirebaseFirestore.instance.collection('user')
+                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                  .collection('myDelivery').doc('myDelivery').get().then(
+                  (value) => initMyDeliveryInfo(value))
+                  .then((value) {Navigator.pushAndRemoveUntil(context,
                   MaterialPageRoute(builder: (BuildContext context) =>
                   const HomeScreen()), (route) => false
-              )
+              );})
+
       );
     }
 
@@ -54,3 +65,5 @@ class _LoadingScreenState extends State<LoadingScreen> {
     );
   }
 }
+
+
