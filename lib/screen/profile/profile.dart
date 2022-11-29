@@ -81,7 +81,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
-    debugPrint('INIT!!');
     friendCheck();
     if (!checkIsMe()) {
       getUserInfo();
@@ -91,15 +90,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void dispose() {
-    debugPrint('DISPOSE!');
     _nicknameController.dispose();
     super.dispose();
-  }
-
-  @override
-  void didChangeDependencies() {
-    debugPrint('didChangeDependencies!!');
-    super.didChangeDependencies();
   }
 
   bool checkIsMe() {
@@ -312,6 +304,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         text: context.select((UserProvider u) => u.nickname));
     return Scaffold(
         appBar: AppBar(
+          elevation: 1,
           centerTitle: true,
           title: Text(
             isMe ? '마이페이지' : '$othersNickname님의 프로필',

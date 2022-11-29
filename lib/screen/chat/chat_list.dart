@@ -288,6 +288,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
+        heroTag: 'chat_list',
         onPressed: () {
           //입력폼
           Navigator.push(

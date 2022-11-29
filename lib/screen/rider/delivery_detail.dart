@@ -24,6 +24,7 @@ class DeliveryDetailScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 1,
         centerTitle: true,
         title: const Text('주문 세부정보'),
       ),

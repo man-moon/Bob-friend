@@ -460,12 +460,12 @@ class _ChatScreenState extends State<ChatScreen> {
           Container(
               decoration: BoxDecoration(
                 color: Colors.grey[300],
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),
                   //Radius.circular(40),
                 ),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.grey,
                     blurRadius: 15.0,

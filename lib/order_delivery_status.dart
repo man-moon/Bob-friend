@@ -23,6 +23,7 @@ class _OrderDeliveryStatusScreenState extends State<OrderDeliveryStatusScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 1,
         title: const Text('주문/배달 상세정보', style: TextStyle(color: Colors.black),),
         centerTitle: true,
       ),
@@ -258,6 +259,7 @@ Widget buildFloatingActionButton(BuildContext context, String statusFAB) {
     ),
     width: MediaQuery.of(context).size.width * 0.9,
     child: FloatingActionButton.extended(
+      heroTag: 'order_delivery_status',
       backgroundColor: buildFABColor(statusFAB),
 
       onPressed: () {

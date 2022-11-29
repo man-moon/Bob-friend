@@ -162,6 +162,7 @@ class BoardListScreenState extends State<BoardListScreen> {
                 );
               })),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'board_list',
         backgroundColor: Colors.greenAccent,
         onPressed: () {
           Navigator.push(context,
