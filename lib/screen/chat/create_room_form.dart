@@ -174,6 +174,9 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                       valueTransformer: (val) => val?.toString(),
                     ),
                     FormBuilderSegmentedControl(
+                      borderColor: Colors.greenAccent,
+                      pressedColor: Colors.greenAccent,
+                      selectedColor: Colors.greenAccent,
                       decoration: const InputDecoration(
                         labelText: '방 인원수',
                       ),
@@ -187,7 +190,8 @@ class _CreateRoomFormScreenState extends State<CreateRoomFormScreen> {
                             child: Text(
                               number.toString(),
                               style: const TextStyle(
-                                  fontWeight: FontWeight.bold),
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold),
                             ),
                           )).toList(),
                       //onChanged: _onChanged,
