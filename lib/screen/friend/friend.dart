@@ -134,9 +134,11 @@ class _FriendScreenState extends State<FriendScreen>
         dmList.add(tmpModel);
       }
     }
-    setState(() {
+    if(mounted) {
+      setState(() {
       dmList = dmList;
     });
+    }
   }
 
   void removeFriend(String othersUid) async {
