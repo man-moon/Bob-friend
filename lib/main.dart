@@ -1,6 +1,7 @@
 import 'package:bobfriend/provider/chat.dart';
 import 'package:bobfriend/provider/my_catalog.dart';
 import 'package:bobfriend/provider/my_delivery.dart';
+import 'package:bobfriend/provider/owner.dart';
 import 'package:bobfriend/provider/user.dart';
 import 'package:flutter/material.dart';
 import 'package:bobfriend/my_app.dart';
@@ -18,6 +19,7 @@ void main() async{
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => MyCatalogProvider()),
         ChangeNotifierProvider(create: (_) => MyDeliveryProvider()),
+        ChangeNotifierProvider(create: (_) => OwnerProvider()),
       ],
       child: const MyApp(),
     )

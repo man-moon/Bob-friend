@@ -64,6 +64,7 @@ dependencies:
   stomp_dart_client: ^0.4.4
   uuid: ^3.0.7
   kpostal: ^0.5.1
+  switcher_button: ^0.0.4
   #iamport_flutter: ^0.10.3
   #get: ^4.6.5
 
