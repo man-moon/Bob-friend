@@ -26,6 +26,7 @@ class _RiderOrderDeliveryStatusScreenState extends State<RiderOrderDeliveryStatu
     order = Order(
       restaurantName: myDeliveryProvider.restaurantName.toString(),
       riderId: myDeliveryProvider.riderId.toString(),
+      chatId: myDeliveryProvider.orderId,
       menu: myDeliveryProvider.menu,
       price: myDeliveryProvider.price,
       count: myDeliveryProvider.count,

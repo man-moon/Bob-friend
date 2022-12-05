@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class OwnerProvider extends ChangeNotifier {
 
-  String _name = '3대 맛집';
+  String _name = '3대맛집';
   String _imageLink = '';
   String _address = '경기도 수원시 월드컵로 206';
   String _callNumber = '031-433-9812';

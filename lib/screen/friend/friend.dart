@@ -61,9 +61,11 @@ class _FriendScreenState extends State<FriendScreen>
       }
       friendsList.add(tmpMd);
     }
-    setState(() {
+    if(mounted) {
+      setState(() {
       friendsList = friendsList;
     });
+    }
   }
 
   void getDmInfo() async {

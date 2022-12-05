@@ -34,6 +34,7 @@ class _OrderDeliveryStatusScreenState extends State<OrderDeliveryStatusScreen> {
             Order order = Order(
               restaurantName: snapshot.data!.get('restaurantName'),
               riderId: snapshot.data!.get('riderId'),
+              chatId: widget.orderId,
               menu: snapshot.data!.get('menu'),
               price: snapshot.data!.get('price'),
               count: snapshot.data!.get('count'),
