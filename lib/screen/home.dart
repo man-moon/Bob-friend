@@ -1,6 +1,7 @@
 import 'package:bobfriend/screen/chat/chat_addition/additional_chat.dart';
 import 'package:bobfriend/screen/profile/profile.dart';
 import 'package:bobfriend/screen/chat/chat_list.dart';
+import 'package:bobfriend/screen/restaurant/restaurant_main.dart';
 import 'package:bobfriend/screen/rider/rider.dart';
 import 'package:bobfriend/widget/bottom_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
     initializeDateFormatting(Localizations.localeOf(context).languageCode);
 
     return const DefaultTabController(
-        length: 5,
+        length: 6,
         child: Scaffold(
           body: TabBarView(
             physics: NeverScrollableScrollPhysics(),
@@ -40,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
               BoardListScreen(),
               FriendScreen(),
               ProfileScreen(),
+              RestaurantMainScreen(),
             ],
           ),
           bottomNavigationBar: BottomBar(),

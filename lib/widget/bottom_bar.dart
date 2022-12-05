@@ -20,6 +20,7 @@ class BottomBar extends StatelessWidget {
         TabItem(title: '커뮤니티', icon: Icon(Icons.format_list_bulleted_rounded, color: Colors.greenAccent)),
         TabItem(title: '친구', icon: Icon(Icons.people, color: Colors.greenAccent)),
         TabItem(title: '마이페이지', icon: Icon(Icons.person, color: Colors.greenAccent)),
+        TabItem(title: '내 가게', icon: Icon(Icons.restaurant, color: Colors.greenAccent)),
       ],
     );
   }
