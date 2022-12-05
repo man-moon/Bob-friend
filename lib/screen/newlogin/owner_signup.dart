@@ -105,9 +105,9 @@ class _OwnerSignupScreenState extends State<OwnerSignupScreen> {
                       padding: EdgeInsets.symmetric(horizontal: width*0.05),
                       child: Row(
                         children: [
-                          (emailValidator(email) == null) ?
+                          (ownerEmailValidator(email) == null) ?
                           const Text('') :
-                          Text(emailValidator(email).toString(), style: TextStyle(color: Colors.red),)
+                          Text(ownerEmailValidator(email).toString(), style: TextStyle(color: Colors.red),)
                         ],
                       )
                   ),
@@ -191,18 +191,18 @@ class _OwnerSignupScreenState extends State<OwnerSignupScreen> {
       autofocus: true,
       decoration: InputDecoration(
         labelText: '이메일',
-        labelStyle: TextStyle(color: Colors.grey,),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
+        labelStyle: const TextStyle(color: Colors.grey,),
+        focusedBorder: UnderlineInputBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
-              color: emailValidator(email) == null ? Colors.greenAccent : Colors.red,
+              color: ownerEmailValidator(email) == null ? Colors.greenAccent : Colors.red,
               width: 2.0
           ),
         ),
-        enabledBorder: OutlineInputBorder(
+        enabledBorder: UnderlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
-              color: emailValidator(email) == null ? Colors.greenAccent : Colors.grey,
+              color: ownerEmailValidator(email) == null ? Colors.greenAccent : Colors.grey,
               width: 2.0
           ),
         ),
@@ -226,21 +226,21 @@ class _OwnerSignupScreenState extends State<OwnerSignupScreen> {
       decoration: InputDecoration(
         labelText: '인증 코드',
         labelStyle: const TextStyle(color: Colors.grey,),
-        // disabledBorder: OutlineInputBorder(
+        // disabledBorder: UnderlineInputBorder(
         //   borderRadius: BorderRadius.all(Radius.circular(8)),
         //   borderSide: BorderSide(
         //       color: Colors.grey,
         //       width: 2.0
         //   ),
         // ),
-        focusedBorder: OutlineInputBorder(
+        focusedBorder: UnderlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
               color: emailVerificationCodeValidator(emailVerificationCode) == null ? Colors.greenAccent : Colors.red,
               width: 2.0
           ),
         ),
-        enabledBorder: OutlineInputBorder(
+        enabledBorder: UnderlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
               color: emailVerificationCodeValidator(emailVerificationCode) == null ? Colors.greenAccent : Colors.grey,
@@ -278,14 +278,14 @@ class _OwnerSignupScreenState extends State<OwnerSignupScreen> {
         ),
         labelText: '비밀번호',
         labelStyle: TextStyle(color: Colors.grey,),
-        focusedBorder: OutlineInputBorder(
+        focusedBorder: UnderlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
               color: passwordValidator(password) == null ? Colors.greenAccent : Colors.red,
               width: 2.0
           ),
         ),
-        enabledBorder: OutlineInputBorder(
+        enabledBorder: UnderlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
               color: passwordValidator(password) == null ? Colors.greenAccent : Colors.grey,
@@ -312,14 +312,14 @@ class _OwnerSignupScreenState extends State<OwnerSignupScreen> {
       decoration: InputDecoration(
         labelText: '비밀번호 확인',
         labelStyle: TextStyle(color: Colors.grey,),
-        focusedBorder: OutlineInputBorder(
+        focusedBorder: UnderlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
               color: passwordCheckValidator(password, checkPassword) == null && passwordValidator(password) == null ? Colors.greenAccent : Colors.red,
               width: 2.0
           ),
         ),
-        enabledBorder: OutlineInputBorder(
+        enabledBorder: UnderlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
               color: passwordCheckValidator(password, checkPassword) == null && passwordValidator(password) == null ? Colors.greenAccent : Colors.grey,
@@ -344,9 +344,9 @@ class _OwnerSignupScreenState extends State<OwnerSignupScreen> {
         backgroundColor: setFABColor(),
         onPressed: () {
           if(signupStatus == SignupStatus.beforeVerification &&
-              emailValidator(email) != null) {}
+              ownerEmailValidator(email) != null) {}
           if(signupStatus == SignupStatus.beforeVerification &&
-              emailValidator(email) == null) {
+              ownerEmailValidator(email) == null) {
             setState(() {
               signupStatus = SignupStatus.verification;
             });
@@ -390,7 +390,7 @@ class _OwnerSignupScreenState extends State<OwnerSignupScreen> {
   //회색이어야 되는 경우만
   ColorSwatch<int> setFABColor() {
     if(signupStatus == SignupStatus.beforeVerification &&
-        emailValidator(email) != null) {
+        ownerEmailValidator(email) != null) {
       return Colors.grey;
     }
     if(signupStatus == SignupStatus.verification &&

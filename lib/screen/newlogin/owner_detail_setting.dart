@@ -76,6 +76,7 @@ class _OwnerDetailSettingScreenState extends State<OwnerDetailSettingScreen> {
                       Navigator.pop(context);
                       Navigator.pop(context);
                       Navigator.pop(context);
+                      Navigator.pop(context);
                     },
                   ),
                 ],
@@ -176,16 +177,17 @@ class _OwnerDetailSettingScreenState extends State<OwnerDetailSettingScreen> {
       keyboardType: TextInputType.text,
       autofocus: true,
       decoration: InputDecoration(
+        prefixIcon: const Icon(Icons.restaurant, color: Colors.grey,),
         labelText: '상호명',
         labelStyle: const TextStyle(color: Colors.grey,),
-        focusedBorder: OutlineInputBorder(
+        focusedBorder: UnderlineInputBorder(
           borderRadius: const BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
               color: restaurantNameValidator(restaurantName) == null ? Colors.greenAccent : Colors.red,
               width: 2.0
           ),
         ),
-        enabledBorder: OutlineInputBorder(
+        enabledBorder: UnderlineInputBorder(
           borderRadius: const BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
               color: restaurantNameValidator(restaurantName) == null ? Colors.greenAccent : Colors.grey,
@@ -220,16 +222,17 @@ class _OwnerDetailSettingScreenState extends State<OwnerDetailSettingScreen> {
       },
       //enabled: enableAddressField,
       decoration: InputDecoration(
+        prefixIcon: const Icon(Icons.map, color: Colors.grey,),
         labelText: '가게 주소',
         labelStyle: const TextStyle(color: Colors.grey,),
-        focusedBorder: OutlineInputBorder(
+        focusedBorder: UnderlineInputBorder(
           borderRadius: const BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
               color: restaurantAddressValidator(restaurantAddress) == null ? Colors.greenAccent : Colors.red,
               width: 2.0
           ),
         ),
-        enabledBorder: OutlineInputBorder(
+        enabledBorder: UnderlineInputBorder(
           borderRadius: const BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
               color: restaurantAddressValidator(restaurantAddress) == null ? Colors.greenAccent : Colors.grey,
@@ -249,16 +252,17 @@ class _OwnerDetailSettingScreenState extends State<OwnerDetailSettingScreen> {
         });
       },
       decoration: InputDecoration(
+        prefixIcon: const Icon(Icons.more, color: Colors.grey,),
         labelText: '가게 상세주소',
         labelStyle: const TextStyle(color: Colors.grey,),
-        focusedBorder: OutlineInputBorder(
+        focusedBorder: UnderlineInputBorder(
           borderRadius: const BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
               color: restaurantDetailAddressValidator(restaurantDetailAddress) == null ? Colors.greenAccent : Colors.red,
               width: 2.0
           ),
         ),
-        enabledBorder: OutlineInputBorder(
+        enabledBorder: UnderlineInputBorder(
           borderRadius: const BorderRadius.all(Radius.circular(8)),
           borderSide: BorderSide(
               color: restaurantDetailAddressValidator(restaurantDetailAddress) == null ? Colors.greenAccent : Colors.grey,

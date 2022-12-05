@@ -18,6 +18,7 @@ class _MatchingScreenState extends State<MatchingScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 1,
         title: const Text('배달'),
         centerTitle: true,
       ),

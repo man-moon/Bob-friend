@@ -1,3 +1,4 @@
+import 'package:bobfriend/screen/newlogin/owner_signup.dart';
 import 'package:bobfriend/screen/newlogin/user_signup.dart';
 import 'package:bobfriend/validator/validator.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +11,8 @@ enum PhoneNumberCertificationStatus {
 }
 
 class PhoneNumberCertificationScreen extends StatefulWidget {
-  const PhoneNumberCertificationScreen({Key? key}) : super(key: key);
-
+  const PhoneNumberCertificationScreen({Key? key, required this.signupType}) : super(key: key);
+  final String signupType;
   @override
   State<PhoneNumberCertificationScreen> createState() => _PhoneNumberCertificationScreenState();
 }
@@ -33,7 +34,7 @@ class _PhoneNumberCertificationScreenState extends State<PhoneNumberCertificatio
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('환영합니다'),
+          title: const Text('회원가입'),
           centerTitle: true,
           elevation: 0,
         ),
@@ -74,7 +75,7 @@ class _PhoneNumberCertificationScreenState extends State<PhoneNumberCertificatio
                       children: [
                         (phoneNumberValidator(phoneNumber) == null) ?
                         const Text('') :
-                        Text(phoneNumberValidator(phoneNumber).toString(), style: TextStyle(color: Colors.grey),)
+                        Text(phoneNumberValidator(phoneNumber).toString(), style: const TextStyle(color: Colors.grey),)
                       ],
                     )
                 ),
@@ -146,7 +147,7 @@ class _PhoneNumberCertificationScreenState extends State<PhoneNumberCertificatio
           if(phoneNumberCertificationCodeValidator(certificationCode) == null) {
             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const UserSignupScreen()));
+                MaterialPageRoute(builder: (context) => widget.signupType == 'user' ? const UserSignupScreen() : const OwnerSignupScreen()));
           }
         },
         isExtended: true,

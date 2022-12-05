@@ -20,6 +20,16 @@ String? emailValidator(value) {
   return null;
 }
 
+String? ownerEmailValidator(value) {
+  if(value!.isEmpty){
+    return '';
+  }
+  if (!Regex.email.hasMatch(value)) {
+    return '이메일 형식을 확인해주세요';
+  }
+  return null;
+}
+
 String? emailVerificationCodeValidator(value) {
   if(value!.length < 4){
     return '';

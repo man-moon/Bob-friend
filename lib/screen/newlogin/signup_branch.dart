@@ -39,7 +39,7 @@ class SignupBranchScreen extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const PhoneNumberCertificationScreen()
+                        builder: (context) => const PhoneNumberCertificationScreen(signupType: 'user',)
                     )
                 );
               },
@@ -59,7 +59,7 @@ class SignupBranchScreen extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const OwnerSignupScreen()
+                          builder: (context) => const PhoneNumberCertificationScreen(signupType: 'owner',)
                       )
                   );
                 },
