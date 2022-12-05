@@ -8,11 +8,11 @@ class OwnerProvider extends ChangeNotifier {
   String _address = '경기도 수원시 월드컵로 206';
   String _callNumber = '031-433-9812';
   List<Product> _menu = [
-    Product('제육볶음', 7500),
-    Product('돼지국밥', 7000),
-    Product('등심돈까스', 8000),
-    Product('콜라', 1500),
-    Product('사이다', 1500),
+    Product(name: '제육볶음', price: 7500, isAvailable: true),
+    Product(name: '돼지국밥', price: 7000, isAvailable: true),
+    Product(name: '등심돈까스', price: 8000, isAvailable: true),
+    Product(name: '콜라', price: 1500, isAvailable: true),
+    Product(name: '사이다', price: 1500, isAvailable: true),
   ];
   bool _isOpen = true;
 

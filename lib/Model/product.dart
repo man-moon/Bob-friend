@@ -1,6 +1,7 @@
 class Product {
-  String? name;
-  int? price;
+  String name;
+  int price;
+  bool isAvailable;
 
-  Product(this.name, this.price);
+  Product({required this.name, required this.price, required this.isAvailable});
 }

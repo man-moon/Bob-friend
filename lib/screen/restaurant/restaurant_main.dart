@@ -1,4 +1,5 @@
 import 'package:bobfriend/provider/owner.dart';
+import 'package:bobfriend/screen/restaurant/menu_management.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:switcher_button/switcher_button.dart';
@@ -45,43 +46,46 @@ class _RestaurantMainScreenState extends State<RestaurantMainScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          Text('가게 정보', style: TextStyle(fontSize: 20, color: Colors.grey),),
+          const Text('가게 정보', style: TextStyle(fontSize: 20, color: Colors.grey),),
           const SizedBox(height: 5,),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               //가게 썸네일
-              Icon(Icons.restaurant_outlined, size: 100,),
+              const Icon(Icons.restaurant_outlined, size: 100,),
 
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
 
-                //가게 이름, 주소, 전화번호
-                children: [
-                  Row(
-                    children: [
-                    const Text('가게이름  ', style: TextStyle(color: Colors.grey, fontSize: 16),),
-                    Text(ownerProvider.name, style: const TextStyle(color: Colors.black, fontSize: 16),)
-                  ],),
+                  //가게 이름, 주소, 전화번호
+                  children: [
+                    Row(
+                      children: [
+                      const Text('가게이름  ', style: TextStyle(color: Colors.grey, fontSize: 16),),
+                      Text(ownerProvider.name, style: const TextStyle(color: Colors.black, fontSize: 16),)
+                    ],),
 
-                  const SizedBox(height: 5,),
-                  Row(children: [
-                    const Text('전화번호  ', style: TextStyle(color: Colors.grey, fontSize: 16),),
-                    Text(ownerProvider.callNumber, style: const TextStyle(color: Colors.black, fontSize: 16),)
-                  ],),
+                    const SizedBox(height: 5,),
+                    Row(children: [
+                      const Text('전화번호  ', style: TextStyle(color: Colors.grey, fontSize: 16),),
+                      Text(ownerProvider.callNumber, style: const TextStyle(color: Colors.black, fontSize: 16),)
+                    ],),
 
-                  const SizedBox(height: 5,),
-                  Row(children: [
-                    const Text('주소  ', style: TextStyle(color: Colors.grey, fontSize: 16),),
-                    Text(ownerProvider.address, style: const TextStyle(color: Colors.black, fontSize: 16),)
-                  ],),
+                    const SizedBox(height: 5,),
+                    Row(children: [
+                      const Text('주소  ', style: TextStyle(color: Colors.grey, fontSize: 16),),
+                      Text(ownerProvider.address, style: const TextStyle(color: Colors.black, fontSize: 16),)
+                    ],),
 
-                  const SizedBox(height: 5,),
-                  Row(children: [
-                    const Text('현재상태  ', style: TextStyle(color: Colors.grey, fontSize: 16),),
-                    Text(ownerProvider.isOpen ? '영업중' : '영업 종료', style: const TextStyle(color: Colors.black, fontSize: 16),)
-                  ],),
-                ],
+                    const SizedBox(height: 5,),
+                    Row(children: [
+                      const Text('현재상태  ', style: TextStyle(color: Colors.grey, fontSize: 16),),
+                      Text(ownerProvider.isOpen ? '영업중' : '영업 종료', style: const TextStyle(color: Colors.black, fontSize: 16),)
+                    ],),
+                  ],
+                ),
               )
 
 
@@ -138,7 +142,10 @@ class _RestaurantMainScreenState extends State<RestaurantMainScreen> {
                       alignment: Alignment.centerLeft
                     ),
                     onPressed: (){
-                      debugPrint('tapped');
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const MenuManagementScreen()));
                     },
                     child: const Text('메뉴 관리', style: TextStyle(color: Colors.black, fontSize: 18,),),
                   ),
