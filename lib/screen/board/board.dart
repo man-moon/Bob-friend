@@ -69,9 +69,11 @@ class BoardListScreenState extends State<BoardListScreen> {
       BoardModel boardModel = BoardModel.fromQuerySnapshot(doc);
       boardList.add(boardModel);
     }
-    setState(() {
+    if(mounted) {
+      setState(() {
       boardList = boardList;
     });
+    }
   }
   @override
   void initState() {
