@@ -50,10 +50,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
       })
     });
 
-    setState(() {
+    if(mounted) {
+      setState(() {
       showSpinner = false;
       _chatList = _chatList;
     });
+    }
   }
   void showPopup() {
     showDialog(

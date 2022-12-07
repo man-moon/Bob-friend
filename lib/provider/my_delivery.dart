@@ -11,6 +11,19 @@ class MyDeliveryProvider extends ChangeNotifier {
   List<dynamic> _count = [];
   DateTime? _orderTime;
 
+  void clearAll() {
+    _orderId = '';
+    _restaurantName = null;
+    _riderId = null;
+    _status = null;
+    _deliveryLocation = null;
+    _menu = [];
+    _price = [];
+    _count = [];
+    _orderTime = null;
+    notifyListeners();
+  }
+
   String get orderId => _orderId;
 
   set orderId(String value) {

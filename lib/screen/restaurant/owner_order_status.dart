@@ -1,22 +1,19 @@
 import 'package:bobfriend/Model/order.dart';
-import 'package:bobfriend/provider/my_delivery.dart';
 import 'package:bobfriend/screen/rider/delivery_detail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:provider/provider.dart';
 
-class OrderDeliveryStatusScreen extends StatefulWidget {
-  const OrderDeliveryStatusScreen({Key? key, required this.orderId}) : super(key: key);
+
+class OwnerOrderStatusScreen extends StatefulWidget {
+  const OwnerOrderStatusScreen({Key? key, required this.orderId}) : super(key: key);
   final String orderId;
 
   @override
-  State<OrderDeliveryStatusScreen> createState() => _OrderDeliveryStatusScreenState();
+  State<OwnerOrderStatusScreen> createState() => _OwnerOrderStatusScreenState();
 }
 
-class _OrderDeliveryStatusScreenState extends State<OrderDeliveryStatusScreen> {
-
+class _OwnerOrderStatusScreenState extends State<OwnerOrderStatusScreen> {
   String statusFAB = 'waiting';
   late DocumentReference orderRef;
 
@@ -66,50 +63,11 @@ class _OrderDeliveryStatusScreenState extends State<OrderDeliveryStatusScreen> {
           }
         },
       ),
-      floatingActionButton: buildFloatingActionButton(context, statusFAB),
+      floatingActionButton: buildFloatingActionButton(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
 
     );
   }
-
-  Future<void> clearMyDelivery() async {
-
-    final userRef = FirebaseFirestore.instance.collection('user').doc(FirebaseAuth.instance.currentUser!.uid);
-    final myDeliveryRef = userRef.collection('myDelivery').doc('myDelivery');
-
-    await userRef.update({'isDelivering': false});
-
-    await myDeliveryRef.set({
-      'riderId': null,
-      'restaurantName': null,
-      'status': null,
-      'deliveryLocation': null,
-      'menu': [],
-      'price': [],
-      'count': [],
-      'orderTime': null,
-      'orderId': null,
-    });
-  }
-
-  void actionFAB() {
-    if(statusFAB == 'deliveryStart') {
-      orderRef.update({'status': 'deliveryArrival'});
-      setState(() {
-        statusFAB = 'deliveryArrival';
-      });
-    }
-    else if(statusFAB == 'deliveryArrival') {
-      orderRef.update({'status': 'deliveryComplete'});
-      setState(() {
-        statusFAB = 'deliveryComplete';
-      });
-      MyDeliveryProvider myDeliveryProvider = Provider.of<MyDeliveryProvider>(context, listen: false);
-      clearMyDelivery();
-      myDeliveryProvider.clearAll();
-    }
-  }
-
   Widget buildProgressStatusBar(BuildContext context, Order order) {
     String status = order.status;
 
@@ -130,7 +88,7 @@ class _OrderDeliveryStatusScreenState extends State<OrderDeliveryStatusScreen> {
                   LinearPercentIndicator(
                     width: MediaQuery.of(context).size.width * 0.9,
                     lineHeight: 15.0,
-                    percent: calculatePercent(order.status),
+                    percent: calculatePercent(),
                     backgroundColor: Colors.grey[340],
                     progressColor: Colors.greenAccent,
                     animation: true,
@@ -144,17 +102,15 @@ class _OrderDeliveryStatusScreenState extends State<OrderDeliveryStatusScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if(status == 'waiting')
-                    const Text('가게에서 주문을 확인 중이에요'),
+                    const Text('주문을 수락해주세요'),
                   if(status == 'cooking')
-                    const Text('가게에서 주문을 확인했어요'),
-                  if(status == 'pickup')
-                    const Text('조리가 완료되었어요. 픽업대기 중이에요.'),
+                    const Text('조리를 시작했어요'),
                   if(status == 'deliveryStart')
-                    const Text('라이더에게 전달을 완료했어요. 곧 도착합니다!'),
+                    const Text('배달원에게 전달을 완료했어요'),
                   if(status == 'deliveryArrival')
-                    const Text('배달이 도착했어요!'),
+                    const Text('배달원이 배달지에 도착했어요'),
                   if(status == 'deliveryComplete')
-                    const Text('배달이 완료되었어요.'),
+                    const Text('배달이 완료되었어요'),
                 ],
               ),
               const SizedBox(height: 5,),
@@ -163,12 +119,12 @@ class _OrderDeliveryStatusScreenState extends State<OrderDeliveryStatusScreen> {
     );
   }
 
-  double calculatePercent(String status) {
-    if(status == 'waiting') return 0.2;
-    if(status == 'cooking') return 0.4;
-    if(status == 'deliveryStart') return 0.6;
-    if(status == 'deliveryArrival') return 0.8;
-    if(status == 'deliveryCompletion') return 1;
+  double calculatePercent() {
+    if(statusFAB == 'waiting') return 0.2;
+    if(statusFAB == 'cooking') return 0.4;
+    if(statusFAB == 'deliveryStart') return 0.6;
+    if(statusFAB == 'deliveryArrival') return 0.8;
+    if(statusFAB == 'deliveryComplete') return 1;
     return 1;
   }
 
@@ -178,7 +134,7 @@ class _OrderDeliveryStatusScreenState extends State<OrderDeliveryStatusScreen> {
 
     return Card(
 
-      margin: const EdgeInsets.only(top: 15, left: 5, right: 5),
+      margin: const EdgeInsets.only(top:  5, left: 5, right: 5),
       elevation: 0,
       child: Container(
         padding: const EdgeInsets.all(13),
@@ -189,7 +145,7 @@ class _OrderDeliveryStatusScreenState extends State<OrderDeliveryStatusScreen> {
                   Text.rich(
                       TextSpan(
                           children: <TextSpan>[
-                            const TextSpan(text: '픽업가게  ', style: TextStyle(color: Colors.grey, fontSize: 20)),
+                            const TextSpan(text: '가게  ', style: TextStyle(color: Colors.grey, fontSize: 20)),
                             TextSpan(text: restaurantName, style: const TextStyle(color: Colors.black, fontSize: 20),),
                           ]
                       )
@@ -299,47 +255,67 @@ class _OrderDeliveryStatusScreenState extends State<OrderDeliveryStatusScreen> {
 
   }
 
-  Widget buildFloatingActionButton(BuildContext context, String statusFAB) {
+  Widget buildFloatingActionButton(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
         shape: BoxShape.rectangle,
       ),
       width: MediaQuery.of(context).size.width * 0.9,
       child: FloatingActionButton.extended(
-        heroTag: 'order_delivery_status',
-        backgroundColor: buildFABColor(statusFAB),
+        heroTag: 'owner_order_status',
+        backgroundColor: buildFABColor(),
 
         onPressed: () {
           actionFAB();
         },
         isExtended: true,
         elevation: 5,
-        label: buildFABText(statusFAB),
+        label: buildFABText(),
       ),
     );
   }
 
-  Widget buildFABText(String statusFAB) {
+// if(status == 'waiting') return 0.2;
+// if(status == 'cooking') return 0.4;
+// if(status == 'deliveryStart') return 0.6;
+// if(status == 'deliveryArrival') return 0.8;
+// if(status == 'deliveryComplete') return 1;
+
+  void actionFAB() {
     if(statusFAB == 'waiting') {
-      return const Text('가게에서 주문을 확인 중이에요', style: TextStyle(fontSize: 18),);
+      orderRef.update({'status': 'cooking'});
+      setState(() {
+        statusFAB = 'cooking';
+      });
     }
-    if(statusFAB == 'cooking') {
-      return const Text('가게로 픽업하러 가주세요', style: TextStyle(fontSize: 18),);
+    else if(statusFAB == 'cooking') {
+      orderRef.update({'status': 'deliveryStart'});
+      setState(() {
+        statusFAB = 'deliveryStart';
+      });
     }
-    if(statusFAB == 'deliveryStart') {
-      return const Text('배달 도착 알림을 보낼게요', style: TextStyle(fontSize: 18),);
-    }
-    if(statusFAB == 'deliveryArrival') {
-      return const Text('배달을 완료했어요', style: TextStyle(fontSize: 18),);
-    }
-    return const Text('완료된 배달입니다');
   }
 
-  ColorSwatch<int> buildFABColor(String statusFAB) {
-    if(statusFAB == 'waiting' || statusFAB == 'cooking' || statusFAB == 'deliveryComplete') {
-      return Colors.grey;
+  Widget buildFABText() {
+    if(statusFAB == 'waiting') {
+      return const Text('주문을 수락할게요', style: TextStyle(fontSize: 18),);
     }
+    if(statusFAB == 'cooking') {
+      return const Text('배달원이 음식을 픽업했어요', style: TextStyle(fontSize: 18),);
+    }
+    if(statusFAB == 'deliveryStart') {
+      return const Text('배달 중이에요', style: TextStyle(fontSize: 18),);
+    }
+    if(statusFAB == 'deliveryArrival') {
+      return const Text('배달 중이에요', style: TextStyle(fontSize: 18),);
+    }
+    return const Text('완료된 주문이에요');
+  }
 
-    return Colors.greenAccent;
+  ColorSwatch<int> buildFABColor() {
+    if(statusFAB == 'waiting' || statusFAB == 'cooking') {
+      return Colors.greenAccent;
+    }
+    return Colors.grey;
   }
 }

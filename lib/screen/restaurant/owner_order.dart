@@ -1,5 +1,7 @@
 import 'package:bobfriend/Model/order.dart';
+import 'package:bobfriend/order_delivery_status.dart';
 import 'package:bobfriend/provider/owner.dart';
+import 'package:bobfriend/screen/restaurant/owner_order_status.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -70,9 +72,13 @@ class _OwnerOrderScreenState extends State<OwnerOrderScreen> {
           final String deliveryLocation = order.deliveryLocation;
           final List<dynamic> menu = order.menu;
           int totalPrice = 0;
-          for (int i = 0; i < order.menu.length; i++) {
+          int totalCounts = 0;
+          String firstMenuName = '';
+          for (int i = order.menu.length - 1; i >= 0; i--) {
             if(order.count[i] > 0) {
+              firstMenuName = order.menu[i];
               totalPrice += order.price[i] * order.count[i] as int;
+              totalCounts++;
             }
           }
 
@@ -80,8 +86,8 @@ class _OwnerOrderScreenState extends State<OwnerOrderScreen> {
             elevation: 0,
             child: ListTile(
               onTap: () {
-                // Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => DeliveryDetailScreen(delivery: delivery)));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => OwnerOrderStatusScreen(orderId: order.chatId,)));
               },
               title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -90,7 +96,7 @@ class _OwnerOrderScreenState extends State<OwnerOrderScreen> {
                         TextSpan(
                             children: <TextSpan>[
                               const TextSpan(text: '메뉴  ', style: TextStyle(color: Colors.grey)),
-                              TextSpan(text: '${menu[0]} 외 ${menu.length - 1}개($totalPrice원)', style: const TextStyle(color: Colors.black),),
+                              TextSpan(text: totalCounts > 1 ? '$firstMenuName 외 ${totalCounts - 1}개($totalPrice원)' : '$firstMenuName($totalPrice원)', style: const TextStyle(color: Colors.black),),
                             ]
                         )
                     ),
